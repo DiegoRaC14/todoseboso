@@ -121,3 +121,22 @@ python scripts/check_model_story.py
 node --test tests/test_parcel_core.cjs
 node --check site/predictor.js
 ```
+
+## API opcional para ejecutar Reference26 de verdad
+
+`site/inference_client.js` conecta el formulario de 26 indicadores con una
+API Python externa (`deployment/inference_api.py`). GitHub Pages no puede
+cargar un `joblib` directamente, por lo que el botón **«Calcular rendimiento»**
+permanece desactivado hasta que `site/data/inference_config.json` contenga
+la URL real del servicio y su endpoint de salud confirme la reproducción de
+las 59 predicciones originales.
+
+El modo ficticio continúa separado; nunca muestra resultados como si fueran
+predicciones del modelo entrenado. La inferencia remota utiliza exactamente
+`src/current_champions.py:predict_saved`, el `joblib` verificado por hash,
+las 197 características y la matriz geográfica. La predicción de parcelas
+nuevas sólo se habilita cuando el servicio confirma el algoritmo de
+normalización de distancias; en caso contrario siguen disponibles las 59
+parcelas originales por ID.
+
+[Pasos y advertencias para desplegar la API](../deployment/README.md).
