@@ -7,37 +7,37 @@
 <title>GeoCebada · Ensamble de Reference26 y Compact14</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css"><link rel="stylesheet" href="./ensemble_story.css">
-<script src="./navigation.js" defer></script><script src="./portal.js" defer></script><script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./field_charts.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
+<script src="./navigation.js" defer></script><script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./field_charts.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
 <script src="./reference26_engine.js" defer></script>
 <script src="./predictions59.js" defer></script>
 <script src="./ensemble_contract.js" defer></script>
 <script src="./ensemble_story.js" defer></script>
 <script src="./browser_inference.js" defer></script>
-<link rel="stylesheet" href="./interactive-map.css"><link rel="stylesheet" href="./navigation.css"><link rel="stylesheet" href="./portal.css">
+<link rel="stylesheet" href="./interactive-map.css"><link rel="stylesheet" href="./navigation.css"><link rel="stylesheet" href="./editorial.css">
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 <header class="site-header" id="inicio">
 <div class="shell nav-inner">
-<a href="#inicio" class="brand"><span class="brand-icon" aria-hidden="true">✳</span><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
-<button id="menu-toggle" class="menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false">Menú ☰</button>
+<a href="#inicio" class="brand"><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
+<button id="menu-toggle" class="menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false">Menú</button>
 <nav id="nav-links" class="nav-links" aria-label="Navegación principal">
 <a href="#inicio" class="nav-home">Inicio</a>
 <details class="nav-group"><summary>El estudio<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">01 · CONTEXTO Y DATOS</p><a href="#datos">El problema y las parcelas</a><a href="#variables">Las 26 variables</a><a href="#preparacion">Preparación de datos</a><a href="#datos-reales">Clima y vegetación reales</a></div></details>
 <details class="nav-group"><summary>El modelo<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">02 · MÉTODOS Y ENSAMBLE</p><a href="#ensamble">Ensamble Reference26 + Compact14</a><a href="#arquitectura">Arquitectura Reference26</a><a href="#geologia">Geología y pesos</a><a href="#faltantes">Datos incompletos</a><a href="#ajuste">Entrenamiento y ajuste</a></div></details>
 <details class="nav-group"><summary>Evaluación<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">03 · EVIDENCIA Y ALCANCE</p><a href="#resultados">Resultados y métricas</a><a href="#pruebas">Pruebas estadísticas</a><a href="#limites">Limitaciones</a><a href="#preguntas">Preguntas frecuentes</a></div></details>
 <details class="nav-group"><summary>Explorar<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">04 · HERRAMIENTAS</p><a href="#predicciones-59">Las 59 estimaciones</a><a href="#simulador">Probar una parcela</a><a href="#mapa-interactivo">Mapa interactivo</a></div></details>
-<a href="#recorrido" class="nav-action">Ver capítulos <span aria-hidden="true">↗</span></a>
+<a href="#recorrido" class="nav-action">Índice</a>
 </nav>
 </div></header>
 <main id="contenido">
 <section class="hero model-hero"><div class="shell hero-grid">
 <div class="hero-content">
-<p class="eyebrow hero-eyebrow">DOS MODELOS, UNA ESTRATEGIA DE PREDICCIÓN</p>
-<h1>Del dato agrícola <em>a la predicción.</em></h1>
-<p class="hero-description">Un estudio de 197 parcelas para estimar el rendimiento de cebada. Combinaremos Reference26 (Regresión local con mezcla geológica) y Compact14 en un ensamble validado. Los pesos y las predicciones finales siguen pendientes.</p>
-<p class="hero-description minor-intro">Abre un capítulo para consultar los datos, los dos modelos, los resultados o el mapa. <strong>Toda la evidencia original permanece disponible</strong>, sin recorrer una página interminable.</p>
-<div class="hero-actions"><a class="primary-cta" href="#ensamble">Explorar ensamble <span aria-hidden="true">↗</span></a><a class="secondary-cta" href="#variables">Entender Reference26 ↓</a></div>
+<p class="eyebrow hero-eyebrow">GEOCEBADA · RETO AGROCEBADA FIRA 2026</p>
+<h1>Estimación del rendimiento <em>de cebada.</em></h1>
+<p class="hero-description">Estudiamos 197 parcelas agrícolas en Hidalgo, Puebla y Tlaxcala. Conocemos el rendimiento reportado de 138 y estimamos el de las 59 restantes. Comparamos modelos que combinan clima, vegetación satelital, geología e información espacial.</p>
+<p class="hero-description minor-intro">El resultado propuesto es un ensamble de <strong>Reference26 (Regresión local con mezcla geológica)</strong> y <strong>Compact14</strong>. Los pesos finales y su validación siguen pendientes. Esta página explica los datos, los métodos, sus resultados y sus límites, en ese orden.</p>
+<div class="hero-actions"><a class="primary-cta" href="#recorrido">Leer el índice</a><a class="secondary-cta" href="#ensamble">Ver modelos y resultados</a></div>
 <p class="hero-metadata">HIDALGO · PUEBLA · TLAXCALA · CICLO 2025</p>
 </div>
 <div class="hero-visual model-visual" aria-label="Esquema de etapas del modelo"><div class="visual-header"><span>INTERIOR DE REFERENCE26 · PRIMER COMPONENTE</span><span>t/ha</span></div>
@@ -52,6 +52,51 @@
 </div>
 </div></section>
 <div class="stat-band"><div class="shell stats-grid"><div class="stat-item"><strong>197</strong><span>parcelas del estudio</span></div><div class="stat-item"><strong>138</strong><span>con rendimiento conocido</span></div><div class="stat-item"><strong>59</strong><span>sin rendimiento conocido</span></div><div class="stat-item"><strong>26 / 14</strong><span>indicadores de cada componente</span></div></div></div>
+
+<section class="reading-guide" id="recorrido" aria-labelledby="recorrido-title"><div class="shell">
+<div class="reading-guide-head">
+<div><p class="eyebrow">ÍNDICE DE LA INVESTIGACIÓN</p><h2 id="recorrido-title">De las observaciones a las estimaciones.</h2></div>
+<p>Esta es la ruta de lectura completa. Cada apartado resume qué estudiamos y por qué importa. Puedes leer la página de principio a fin o ir directamente al análisis detallado.</p>
+</div>
+<div class="index-introduction">
+<p>Partimos de <strong>197 parcelas</strong>: 138 con rendimientos reportados y 59 sin una cosecha conocida. Estudiamos sus variables ambientales y geográficas, construimos modelos predictivos y examinamos su error fuera de muestra. El objetivo final es combinar Reference26 y Compact14; esa combinación no se presenta como validada hasta contar con sus resultados definitivos.</p>
+</div>
+<div class="chapter-grid">
+<article class="chapter-card">
+<div class="chapter-intro"><span class="chapter-number">01 / DATOS</span><h3>El estudio</h3><p>Qué información tenemos, cómo se recogió y qué limitaciones hay antes de entrenar un modelo.</p><a class="chapter-readmore" href="#datos">Leer el estudio</a></div>
+<ul class="chapter-subsections">
+<li><a href="#datos">Parcelas y objetivo</a><span>Qué significan los 138 rendimientos conocidos y las 59 parcelas por estimar.</span></li>
+<li><a href="#variables">Variables explicativas</a><span>Los 26 indicadores de Reference26 y su papel agrícola y espacial.</span></li>
+<li><a href="#preparacion">Preparación de datos</a><span>Agregaciones, valores faltantes y transformaciones previas a cada ajuste.</span></li>
+<li><a href="#datos-reales">Lluvia y NDVI observados</a><span>Gráficas de 2025 basadas en mediciones de las parcelas, no en ejemplos.</span></li>
+</ul></article>
+<article class="chapter-card">
+<div class="chapter-intro"><span class="chapter-number">02 / MÉTODOS</span><h3>Los modelos</h3><p>Cómo se calcula una predicción y por qué planteamos combinar dos enfoques complementarios.</p><a class="chapter-readmore" href="#ensamble">Ver el ensamble</a></div>
+<ul class="chapter-subsections">
+<li><a href="#ensamble">Ensamble y componentes</a><span>Reference26 y Compact14; qué falta validar antes de combinarlos.</span></li>
+<li><a href="#arquitectura">Arquitectura de Reference26</a><span>Regresión climática, experto geográfico y corrección residual.</span></li>
+<li><a href="#geologia">Geología y pesos</a><span>Cómo los grupos geológicos modifican la mezcla de predicciones.</span></li>
+<li><a href="#faltantes">Información incompleta</a><span>Cómo se manejan variables ausentes sin inventar cosechas.</span></li>
+<li><a href="#ajuste">Entrenamiento</a><span>Hiperparámetros, separación de datos y calibración interna.</span></li>
+</ul></article>
+<article class="chapter-card">
+<div class="chapter-intro"><span class="chapter-number">03 / EVIDENCIA</span><h3>Resultados y límites</h3><p>Qué tan precisas son las estimaciones y qué conclusiones resisten los diagnósticos.</p><a class="chapter-readmore" href="#resultados">Examinar resultados</a></div>
+<ul class="chapter-subsections">
+<li><a href="#resultados">Desempeño predictivo</a><span>RMSE, MAE, R² y protocolos diferentes de validación.</span></li>
+<li><a href="#pruebas">Pruebas estadísticas</a><span>Asociaciones, sensibilidad e incertidumbre de las comparaciones.</span></li>
+<li><a href="#limites">Limitaciones</a><span>Calidad de las etiquetas, falta de cosechas verificadas y alcance del estudio.</span></li>
+<li><a href="#preguntas">Preguntas frecuentes</a><span>Interpretación correcta de las cifras y de las partes del modelo.</span></li>
+</ul></article>
+<article class="chapter-card">
+<div class="chapter-intro"><span class="chapter-number">04 / APLICACIÓN</span><h3>Explorar las parcelas</h3><p>Consultar los resultados del estudio y recorrer sus herramientas interactivas.</p><a class="chapter-readmore" href="#predicciones-59">Explorar estimaciones</a></div>
+<ul class="chapter-subsections">
+<li><a href="#predicciones-59">Las 59 estimaciones</a><span>Predicciones verificadas de Reference26; los rendimientos reales siguen desconocidos.</span></li>
+<li><a href="#simulador">Laboratorio de predicción</a><span>Ejemplos educativos y entrada de los indicadores de una parcela.</span></li>
+<li><a href="#mapa-interactivo">Mapa geográfico</a><span>Ubicación y filtros interactivos desarrollados por Andrea-HH.</span></li>
+</ul></article>
+</div>
+<p class="reading-guide-foot">A continuación se encuentra el contenido íntegro de la investigación. El índice no sustituye las explicaciones, las pruebas ni las visualizaciones.</p>
+</div></section>
 
 <section class="section ensemble-story" id="ensamble"><div class="shell">
 <div class="section-heading"><div><p class="eyebrow">EL RESULTADO PRINCIPAL · EN PREPARACIÓN</p><h2>Primero el ensamble. <em>Después, sus dos componentes.</em></h2></div>
@@ -108,14 +153,7 @@
 <p>Los dos <code>.joblib</code> actualizados y los pesos finales del ensamble se integrarán posteriormente. Esta vista mantiene separado el modelo final por preparar de las predicciones ya verificadas.</p></div>
 </div></section>
 
-<section class="reading-guide" id="recorrido" aria-labelledby="recorrido-title"><div class="shell">
-<div class="reading-guide-head"><div><p class="eyebrow">GUÍA DE LECTURA</p><h2 id="recorrido-title">Una investigación, <em>cuatro capítulos.</em></h2></div><p>Explora el estudio y el ensamble desde sus datos hasta las estimaciones. Sigue el orden o abre directamente una sección.</p></div>
-<div class="chapter-grid">
-<article class="chapter-card"><span class="chapter-number">01 / CONTEXTO</span><h3><a href="#datos">Entender los datos <span aria-hidden="true">↗</span></a></h3><p>Las 197 parcelas, las señales satelitales y la preparación de las variables.</p><ul class="chapter-subsections"><li><a href="#datos">El problema y las parcelas</a></li><li><a href="#variables">Las 26 variables</a></li><li><a href="#preparacion">Preparación de datos</a></li><li><a href="#datos-reales">Clima y vegetación reales</a></li></ul></article>
-<article class="chapter-card"><span class="chapter-number">02 / MÉTODO</span><h3><a href="#ensamble">Conocer los modelos <span aria-hidden="true">↗</span></a></h3><p>Primero el ensamble y sus dos componentes; después la arquitectura de Reference26.</p><ul class="chapter-subsections"><li><a href="#ensamble">Ensamble Reference26 + Compact14</a></li><li><a href="#arquitectura">Arquitectura Reference26</a></li><li><a href="#geologia">Geología y pesos</a></li><li><a href="#faltantes">Datos incompletos</a></li><li><a href="#ajuste">Entrenamiento y ajuste</a></li></ul></article>
-<article class="chapter-card"><span class="chapter-number">03 / VALIDACIÓN</span><h3><a href="#resultados">Revisar la evidencia <span aria-hidden="true">↗</span></a></h3><p>Qué revelan las evaluaciones y qué no permiten concluir sobre las 59 parcelas.</p><ul class="chapter-subsections"><li><a href="#resultados">Resultados y métricas</a></li><li><a href="#pruebas">Pruebas estadísticas</a></li><li><a href="#limites">Limitaciones</a></li><li><a href="#preguntas">Preguntas frecuentes</a></li></ul></article>
-<article class="chapter-card"><span class="chapter-number">04 / EXPLORACIÓN</span><h3><a href="#predicciones-59">Explorar las parcelas <span aria-hidden="true">↗</span></a></h3><p>Consulta las estimaciones, utiliza el laboratorio y visita el mapa.</p><ul class="chapter-subsections"><li><a href="#predicciones-59">Las 59 estimaciones</a></li><li><a href="#simulador">Probar una parcela</a></li><li><a href="#mapa-interactivo">Mapa interactivo</a></li></ul></article>
-</div></div></section>
+
 <section class="section" id="datos"><div class="shell">
 <div class="section-heading"><div><p class="eyebrow">CONTEXTO · LOS DATOS</p><h2>Sabemos lo que cosecharon 138 parcelas. <em>¿Y las otras 59?</em></h2></div><p>El rendimiento se mide en toneladas de cebada por hectárea (t/ha). Un valor de 4 t/ha significa cuatro toneladas por cada hectárea, sin importar el tamaño de la parcela.</p></div>
 <div class="split-prose"><div><h3>Qué conocemos</h3><p>Para las 197 parcelas se prepararon variables de lluvia, vegetación, relieve, ubicación y geología. Sólo 138 tienen un rendimiento reportado para entrenar y evaluar el modelo.</p><p>Las series históricas provienen principalmente de 2022–2024; las medidas del ciclo que queremos describir utilizan 2025, incluso hasta octubre. <strong>Es una estimación retrospectiva del ciclo, no una predicción disponible desde mayo.</strong></p></div><div><h3>Qué intentamos aprender</h3><p>Una misma cantidad de lluvia no produce necesariamente el mismo rendimiento. Las parcelas varían en vegetación, ubicación y composición geológica. Por eso utilizamos varias estimaciones que se complementan.</p><p>Los rendimientos conocidos pueden contener errores de reporte. El modelo aprende de ellos, pero <strong>no puede verificar que todos sean mediciones exactas</strong>.</p></div></div>
