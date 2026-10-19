@@ -1,0 +1,30 @@
+name: Verify ensemble metrics dashboard
+
+on:
+  pull_request:
+    paths:
+      - "site/index.html"
+      - "site/ensemble_metrics.js"
+      - "site/ensemble_metrics.css"
+      - "site/ensemble_predictions59.js"
+      - "tests/test_ensemble_metrics.cjs"
+      - "tests/test_ensemble_predictions59.cjs"
+      - ".github/workflows/validate_ensemble_dashboard.yml"
+  workflow_dispatch:
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify JavaScript syntax
+        run: |
+          node --check site/ensemble_metrics.js
+          node --check site/ensemble_predictions59.js
+      - name: Verify browser contracts and privacy gates
+        run: node --test tests/test_ensemble_metrics.cjs tests/test_ensemble_predictions59.cjs
