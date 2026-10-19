@@ -48,9 +48,7 @@
       return;
     }
     const g=model.final_fit.cluster_weights[k];
-    const base=c+g*(e-c);
-    const correction=support?delta:0;
-    const total=base+correction;
+    const {base,correction,predictedExample:total}=window.ParcelMath.combine(c,e,g,delta,support);
     result.textContent=total.toFixed(3);
     description.textContent="Primero se combinan "+c.toFixed(2)+" t/ha de clima y "+
       e.toFixed(2)+" t/ha de la regresión local. El grupo "+k+
@@ -184,7 +182,7 @@
   function percentage(){
     const value=Number(referenceSlider.value)/100;
     $("#yield-reference-value").textContent=value.toFixed(1)+" t/ha";
-    $("#yield-scale-percent").textContent=(100*0.468186/value).toFixed(2)+" %";
+    $("#yield-scale-percent").textContent=window.ParcelMath.relativeRmse(0.468186,value).toFixed(2)+" %";
   }
   referenceSlider.addEventListener("input",percentage);
   percentage();
