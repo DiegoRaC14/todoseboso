@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - "site/**"
+      - "deployment/**"
+      - "render.yaml"
+      - "tests/test_inference_contract.py"
+      - "scripts/check_inference_runtime.py"
       - "scripts/sync_story_data.py"
       - "scripts/check_site_charts.py"
       - "scripts/check_model_story.py"
@@ -58,6 +62,16 @@ jobs:
         run: python scripts/check_site_charts.py
       - name: Verify single-model description and all 26 features
         run: python scripts/check_model_story.py
+      - name: Audit original Reference26 API and browser connector
+        run: python -m unittest discover -s tests -p 'test_inference_contract.py'
+      - name: Run fitted-model parity if the permitted binaries have been committed
+        run: |
+          if [ -f deployment/model_artifacts/final_train138.joblib ] &&              [ -f deployment/model_artifacts/features197.parquet ] &&              [ -f deployment/model_artifacts/distance197.npy ]; then
+            python -m pip install -r deployment/requirements-api.txt
+            python scripts/check_inference_runtime.py
+          else
+            echo "Source checks only: three binary files not committed yet."
+          fi
       - name: Validate SVG chart rendering and data fidelity
         run: node --test tests/test_svg_charts.cjs
       - name: Check parcel arithmetic and percentage interpretation
@@ -68,6 +82,7 @@ jobs:
           node --check site/model.js
           node --check site/parcel_core.js
           node --check site/predictor.js
+          node --check site/inference_client.js
 
   deploy:
     needs: validate
