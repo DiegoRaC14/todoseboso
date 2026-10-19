@@ -15,9 +15,9 @@ function loadGallery(){
 }
 test("59-panel source contains live search, state filter, sort and CSV",()=>{
   const s=fs.readFileSync(path.join(root,"site/predictions59.js"),"utf8");
-  for(const fragment of ['"pred59-search"','"pred59-state"','"pred59-sort"',
-                          '"pred59-export"','"pred59-examples"','"pred59-plot"',
-                          '"pred59-detail"','"reference26_59_estimaciones_no_observadas.csv"',
+  for(const fragment of ['pred59-search','pred59-state','pred59-sort',
+                          'pred59-export','pred59-examples','pred59-plot',
+                          'pred59-detail','reference26_59_estimaciones_no_observadas.csv',
                           "window.Reference26Browser.run", "Math.abs(prediction.predicted_t_ha-entry.expected) > 1e-7"]){
     assert.ok(s.includes(fragment),fragment);
   }
