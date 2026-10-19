@@ -66,6 +66,28 @@ contra predicho ni mapas de centroides a partir de resúmenes agregados.
 
 ## Dataset pequeño para nuevas gráficas reales
 
+## Observaciones reales publicadas · 2025
+
+`site/data/real_charts.json` contiene ahora las cifras empíricas de lluvia
+mensual y NDVI para abril–octubre de 2025, obtenidas del archivo original
+`monthly_inputs_apr_oct.parquet` aportado el 19 de octubre de 2026
+(SHA-256 `971bdac1808036e7ca9be3260faa7608e82e2530ef0285a0c0f432a6fae2d635`).
+La fuente incluye **5,516 registros** de **197 parcelas** en **2022–2025**.
+Para 2025 hay **197 observaciones válidas en cada mes** tanto de lluvia
+como de NDVI. En los años previos existen 39 faltantes de NDVI, que no se
+imputan. Los gráficos publicados describen sólo 2025.
+
+Los gráficos usan valores calculados del archivo original: la mediana de
+precipitación de junio de 2025 fue `237.6761 mm`; la mediana NDVI de
+septiembre fue `0.545`. Incluyen percentiles 10/90 y número real de
+parcelas. Las mediciones climáticas y satelitales no son rendimientos
+observados y **no** estiman el error de las 59 parcelas desconocidas.
+
+La tabla de errores LOOCV individuales continúa vacía hasta disponer de
+138 predicciones fuera de muestra por modelo. La demostración didáctica
+separada de 210 mm sigue identificada como inventada.
+
+
 La herramienta [`scripts/export_real_chart_data.py`](../scripts/export_real_chart_data.py)
 extrae sólo las cinco columnas mensuales necesarias de los Parquet
 locales, resume lluvia y NDVI por mes sin inventar mediciones y, si se
