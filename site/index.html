@@ -328,6 +328,86 @@
     </section>
 
     <section class="section limits" id="limites" aria-labelledby="limits-title"><div class="shell limits-grid"><div><p class="eyebrow">QUÉ FALTA COMPROBAR</p><h2 id="limits-title">Las estimaciones son útiles para estudiar las parcelas, <em>pero todavía tienen límites.</em></h2></div><div><div class="limit-item"><span>01</span><div><h3>Todavía desconocemos las 59 cosechas reales.</h3><p>El modelo ya produjo estimaciones para esas parcelas, pero no podemos medir su error sin conocer la cantidad realmente cosechada. Esas estimaciones se conservan fuera de esta página.</p></div></div><div class="limit-item"><span>02</span><div><h3>Las 138 cosechas se han usado en muchos experimentos.</h3><p>Aunque cada evaluación reserve parcelas, las mismas 138 cosechas han servido para estudiar y elegir modelos. Necesitamos resultados nuevos para comprobar qué tan bien se comportan fuera de este conjunto.</p></div></div><div class="limit-item"><span>03</span><div><h3>Una relación estadística no demuestra una causa.</h3><p>El modelo encuentra patrones entre lluvia, vegetación, terreno y cosecha; no demuestra que cambiar una de esas características produzca un cambio específico en el rendimiento.</p></div></div><div class="limit-item"><span>04</span><div><h3>Los intervalos de las pruebas no son garantías para nuevas parcelas.</h3><p>Calculamos cobertura y anchura de intervalos en evaluaciones anteriores, pero no está validado que esos intervalos cubran con la misma frecuencia las 59 cosechas desconocidas.</p></div></div></div></div></section>
+  
+<!-- TRABAJO A FUTURO -->
+<section id="trabajo-futuro" class="future-work">
+  <div class="future-work__header">
+    <span class="future-work__eyebrow">12 · TRABAJO A FUTURO</span>
+    <h2>De la estimación a la validación en campo</h2>
+    <p>
+      GeoCebada constituye una base para estimar el rendimiento agrícola
+      a partir de variables climáticas, satelitales y geográficas. La
+      siguiente etapa consiste en fortalecer la evidencia del modelo y
+      evaluar su utilidad en condiciones reales de producción.
+    </p>
+  </div>
+
+  <div class="future-work__grid">
+    <article class="future-work__card">
+      <span class="future-work__number">01</span>
+      <h3>Validación con cosechas reales</h3>
+      <p>
+        Incorporar rendimientos observados al momento de la cosecha y
+        compararlos con predicciones generadas previamente. Esto permitirá
+        medir el error fuera de muestra y comprobar la capacidad de
+        generalización del modelo.
+      </p>
+      <span class="future-work__tag">Validación externa</span>
+    </article>
+
+    <article class="future-work__card">
+      <span class="future-work__number">02</span>
+      <h3>Ampliación de los datos</h3>
+      <p>
+        Integrar nuevos ciclos agrícolas, parcelas y registros históricos,
+        además de mejorar la cobertura de variables climáticas y
+        satelitales. Una base más amplia puede ayudar a representar mejor
+        la variabilidad entre regiones y temporadas.
+      </p>
+      <span class="future-work__tag">Más datos · Más cobertura</span>
+    </article>
+
+    <article class="future-work__card">
+      <span class="future-work__number">03</span>
+      <h3>Cuantificación de la incertidumbre</h3>
+      <p>
+        Desarrollar intervalos de predicción y criterios de confianza que
+        acompañen cada estimación. Así sería posible distinguir las
+        parcelas con mayor respaldo de datos de aquellas que requieren
+        una interpretación más cautelosa.
+      </p>
+      <span class="future-work__tag">Incertidumbre</span>
+    </article>
+
+    <article class="future-work__card">
+      <span class="future-work__number">04</span>
+      <h3>Evaluación y mejora del modelo</h3>
+      <p>
+        Comparar las variantes Reference26 y Compact14 mediante los mismos
+        conjuntos de evaluación y criterios estadísticos. También se
+        podrán explorar nuevos métodos y estudiar si la complejidad
+        adicional produce mejoras consistentes.
+      </p>
+      <span class="future-work__tag">Comparación de modelos</span>
+    </article>
+  </div>
+
+  <div class="future-work__note">
+    <span class="future-work__note-icon" aria-hidden="true">↗</span>
+    <div>
+      <h3>El siguiente paso clave</h3>
+      <p>
+        La prioridad es obtener rendimientos reales de las parcelas
+        actualmente sin etiqueta y utilizarlos en una evaluación
+        independiente. Hasta contar con esas observaciones, sus
+        predicciones deben considerarse estimaciones pendientes de
+        validación, no rendimientos confirmados.
+      </p>
+    </div>
+  </div>
+</section>
+
+  
   </main>
   <footer class="site-footer"><div class="shell footer-main"><div><a class="footer-brand" href="#inicio">GeoCebada<span> / investigación</span></a><p>Cómo usamos lluvia, satélites y parcelas cercanas para estimar cosechas y comprobar nuestros errores.</p></div><div class="footer-links"><a href="https://github.com/heri-espino/todoseboso" target="_blank" rel="noopener noreferrer">Código y documentación ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/current_champions_reproduction.md" target="_blank" rel="noopener noreferrer">Reproducibilidad ↗</a><a href="https://github.com/heri-espino/GeoC" target="_blank" rel="noopener noreferrer">Proyecto GeoC ↗</a></div></div><div class="shell footer-bottom"><span>AGROCEBADA · FIRA 2026 · ESTUDIO DE PREDICCIÓN DEL RENDIMIENTO DE CEBADA</span><span>DATOS PRIVADOS NO INCLUIDOS · <a href="#limites">LIMITACIONES</a></span></div></footer>
 </body>
