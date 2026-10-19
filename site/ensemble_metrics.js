@@ -85,7 +85,7 @@
     if (typeof x === "number") {
       if (x !== 0 && Math.abs(x) < 0.00001) return x.toExponential(3);
       return Number.isInteger(x) ? x.toLocaleString("es-MX") :
-        Number(x.toPrecision(6)).toLocaleString("es-MX", {maximumFractionDigits:8});
+        Number(x.toPrecision(7)).toLocaleString("es-MX", {maximumFractionDigits:8});
     }
     return String(x);
   }
