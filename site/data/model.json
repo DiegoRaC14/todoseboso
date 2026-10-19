@@ -286,5 +286,17 @@
     "configs/current_champions_inputs.json",
     "documentation/models/Reference26/README.md",
     "results/current_champions_final/v1/README.md"
-  ]
+  ],
+  "loocv": {
+    "name": "Validación dejando una parcela fuera (LOOCV)",
+    "model": "Reference26",
+    "folds": 138,
+    "training_labels_per_fold": 137,
+    "held_out_per_fold": 1,
+    "rmse_t_ha": 0.468186,
+    "r2_approx": 0.6952,
+    "mean_observed_t_ha": 3.9554,
+    "provenance": "Resultado confirmado y comunicado por el equipo el 19 de octubre de 2026; el repositorio público todavía no contiene la tabla de predicciones individuales de esta evaluación.",
+    "do_not_infer": "RMSE/mean is a scale comparison, not MAPE or an expected individual percentage error."
+  }
 }
