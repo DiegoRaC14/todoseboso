@@ -55,7 +55,7 @@
     const note=document.createElement("p");
     note.className="figure-reading";
     note.setAttribute("aria-live","polite");
-    note.textContent="Select a point or use Tab to read its original statistics.";
+    note.textContent="Selecciona un punto o utiliza Tab para consultar las estadísticas originales.";
     series.months.forEach((r,i)=>{
       const x=xAt(i), detail=months[i]+": "+r.n+" parcelas con datos; mediana "+
         r.median.toFixed(rainfall?1:3)+" "+unit[series.variable]+
@@ -79,14 +79,14 @@
   }
   function drawResiduals(target, models) {
     if (!Array.isArray(models) || !models.length) {
-      target.textContent="Parcel-level LOOCV exports have not been provided. No residual distribution is inferred from RMSE alone.";
+      target.textContent="Todavía no se han proporcionado las 138 predicciones individuales LOOCV. No se infieren residuos a partir del RMSE.";
       return;
     }
     const table=document.createElement("table");
     table.className="real-model-metrics";
     const head=document.createElement("thead");
     const header=document.createElement("tr");
-    for(const field of ["Model","LOOCV RMSE","MAE","Bias","Maximum |error|","R²"]){
+    for(const field of ["Modelo","RMSE LOOCV","MAE","Sesgo","Error absoluto máximo","R²"]){
       const th=document.createElement("th");th.textContent=field;header.appendChild(th);
     }
     head.appendChild(header);table.appendChild(head);
@@ -107,8 +107,8 @@
     table.appendChild(body);
     const small=document.createElement("p");
     small.className="figure-axis-note";
-    small.textContent="138 held-out predictions per model, training on 137 labels per fold. "+
-      "Bias = prediction minus observation; no hidden 59-parcel yields used.";
+    small.textContent="138 predicciones reservadas por modelo, con 137 etiquetas de entrenamiento en cada ajuste. "+
+      "Sesgo = predicción menos observación; no se utilizan las 59 cosechas desconocidas.";
     target.replaceChildren(table,small);
   }
   async function main(){
@@ -117,8 +117,8 @@
     if(!rain||!ndvi||!validation||!status)return;
     const response=await fetch("./data/real_charts.json",{cache:"no-store"});
     if(response.status===404){
-      status.textContent="2025 measurements are not yet exported. "+
-        "The local extraction script is ready; no synthetic chart is shown here.";
+      status.textContent="Las mediciones de 2025 todavía no están exportadas. "+
+        "El programa local de extracción está disponible; no se muestran gráficas sintéticas.";
       return;
     }
     if(!response.ok)throw Error("Cannot load aggregated source data");
@@ -130,13 +130,13 @@
     drawMonthly(rain,data.rainfall);
     drawMonthly(ndvi,data.ndvi);
     drawResiduals(validation,data.loocv_models);
-    status.textContent="Source-backed 2025 data: monthly precipitation and NDVI "+
-      "across available study parcels (observed coverage varies by month). "+
-      "Percentile bands show cross-parcel variation, not prediction intervals.";
+    status.textContent="Datos originales de 2025: precipitación mensual y NDVI "+
+      "de las parcelas del estudio (la cobertura se informa por mes). "+
+      "Las bandas de percentiles muestran variación entre parcelas, no intervalos predictivos.";
   }
   main().catch(error=>{
     const status=byId("real-chart-status");
-    if(status)status.textContent="The real-data export could not be verified; charts were not rendered.";
+    if(status)status.textContent="No se pudo verificar el archivo de datos reales; no se muestran gráficas.";
     console.error("Real chart data verification failed:",error);
   });
 })();
