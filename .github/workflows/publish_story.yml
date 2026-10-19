@@ -66,6 +66,8 @@ jobs:
         run: python scripts/check_new_research.py
       - name: Verify published chart data
         run: python scripts/check_site_charts.py
+      - name: Validate source-backed 2025 chart data
+        run: python -m unittest discover -s tests -p 'test_real_chart_snapshot.py'
       - name: Verify single-model description and all 26 features
         run: python scripts/check_model_story.py
       - name: Audit original Reference26 API and browser connector
