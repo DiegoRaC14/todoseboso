@@ -15,6 +15,45 @@ test("Reference26 inference is pure local JavaScript with no network or external
   assert.ok(!source.includes("fetch("));
   assert.ok(!source.includes("Math.random"));
 });
+test("weighted local Ridge and mixture match an independent one-dimensional solution",()=>{
+  const feat=Array.from({length:26},(_,i)=>"f"+i);
+  const xs=Array.from({length:138},(_,i)=>[i<24?i:0]);
+  const targets=Array.from({length:138},(_,i)=>i<24?1+.3*i:1);
+  const model={
+    schema_version:1,model:"Reference26",feature_names:feat,
+    climate:{transform:{cols:["f0"],median:[0],mean:[0],scale:[1],support:[true]},coef:[1],intercept:0},
+    local:{cols:["f1"],med:[0],mean:[0],scale:[1],support:[true],
+      train_positions:Array.from({length:138},(_,i)=>i),
+      standardized:xs,targets,neighbors:24,ridge_alpha:30},
+    internal:{transform:{cols:["f0"],median:[0],mean:[0],scale:[1],support:[true]},
+      coef:[0],intercept:0,amplitude:0},
+    geology:{columns:["f2"],medians:[0],mean:[0],scale:[1],norm:1,
+      centers:[[0],[1]],weights:[.4,.8]},
+    correction:{cols:["f3"],med:[0],mean:[0],scale:[1],support:[true],
+      inner_median:[0],inner_mean:[0],inner_scale:[1],inner_support:[true],
+      coef:[1],intercept:0,offset:0,amplitude:.5,clip:.5,strength:1}
+  };
+  const row=Object.fromEntries(feat.map(x=>[x,0]));
+  row.f0=4;row.f1=2;row.f2=0;row.f3=1;
+  const distance=Array.from({length:138},()=>1);
+  // 24 equally weighted observations, one-dimensional weighted centering:
+  const xx=Array.from({length:24},(_,i)=>i);
+  const xmean=xx.reduce((a,b)=>a+b,0)/24;
+  const S=xx.reduce((a,b)=>a+(b-xmean)**2,0);
+  const coefficient=.3*S/(S+30);
+  const local=1+.3*xmean+(2-xmean)*coefficient;
+  const result=engine.run(model,row,distance);
+  assert.ok(Math.abs(result.local-local)<1e-10);
+  const expected=4+.4*(local-4)+.25;
+  assert.ok(Math.abs(result.predicted_t_ha-expected)<1e-10);
+  assert.equal(result.geology_group,0);
+  assert.equal(result.has_r3_support,true);
+  row.f3=null;
+  const masked=engine.run(model,row,distance);
+  assert.equal(masked.residual_adjustment,0);
+  assert.ok(Math.abs(masked.predicted_t_ha-(expected-.25))<1e-10);
+});
+
 const file=path.join(root,"site/data/reference26_runtime.json");
 if(fs.existsSync(file)) {
   const model=JSON.parse(fs.readFileSync(file,"utf8"));
