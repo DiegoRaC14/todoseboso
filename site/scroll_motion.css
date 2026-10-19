@@ -33,6 +33,7 @@
  .model-hero .secondary-cta:active,.ensemble-selector button:active{
    transform:scale(.985);
  }
+ .chapter-card,.chapter-subsections li,
  .pred59-example,.cluster-choice,.process-grid article,
  .math-item,.ensemble-flow-card,.tech-intro article,
  .loocv-panel,.pred59-viz,.real-data-figure,
@@ -41,6 +42,8 @@
               border-color .31s ease,background-color .31s ease;
    transform-origin:center center;
  }
+ .chapter-card:hover{transform:scale(1.005)!important}
+ .chapter-subsections li:hover{transform:translateX(2px)}
  .pred59-example:hover,.cluster-choice:hover,.process-grid article:hover,
  .math-item:hover,.ensemble-flow-card:hover,.tech-intro article:hover{
    transform:translate3d(0,-3px,0) scale(1.009);
@@ -61,6 +64,7 @@
  .scroll-reveal-pending,.scroll-reveal-visible{
    opacity:1!important;transform:none!important;animation:none!important;
  }
+ .chapter-card,.chapter-subsections li,
  .chapter-readmore,.model-hero .primary-cta,.model-hero .secondary-cta,
  .pred59-example,.figure-host,.model-formula,.model-visual,
  .ensemble-selector button,.collaborator-map-frame{transition:none!important}
