@@ -85,13 +85,14 @@ def check() -> None:
                    "limites", "preguntas", "rain-chart", "cluster-list",
                    "feature-rows", "performance-chart", "r3-comparison",
                    "association-chart", "distribution-quantiles", "interval-results",
-                   "expert-weights", "hhi-forest"):
+                   "expert-weights", "hhi-forest", "simulador", "fictitious-mode", "own-mode",
+                   "parcel-input-groups", "parcel-export", "parcel-estimate", "yield-reference"):
         assert target in page.ids, target
     assert all(a in page.ids for a in page.anchors), "Broken internal navigation"
     for asset in page.assets:
         assert (SITE / asset).is_file(), ("missing site asset", asset)
-    assert page.scripts == ["./charts.js", "./model.js"]
-    for forbidden in ("LOOCV", "Compact14", "Champion", "B1</", "Local04D"):
+    assert page.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js"]
+    for forbidden in ("Compact14", "Champion", "B1</", "Local04D"):
         assert forbidden not in html, forbidden
     for required in ("Regresión local con mezcla geológica", "K-means",
                      "mediana", "faltantes", "24 vecinas", "α = 30",
@@ -99,6 +100,21 @@ def check() -> None:
                      "51", "8", "11", "3.9564", "3.9554", "2025"):
         assert required in html, required
     assert "https://cdn." not in html + js
+    assert "Notación matemática" in html
+    assert '<math xmlns="http://www.w3.org/1998/Math/MathML"' in html
+    assert "11.84 %" in html and "468.186 kilogramos por hectárea" in html
+    assert "no es el porcentaje de error esperado" in html.lower() or "no es el porcentaje de error esperado" in html
+    assert "No se calcula un rendimiento real desde esta página" in html
+    assert "parcel_core.js" in html and "predictor.js" in html
+    assert (SITE / "parcel_core.js").is_file() and (SITE / "predictor.js").is_file()
+    loocv = data["loocv"]
+    assert loocv["model"] == "Reference26" and loocv["folds"] == 138
+    assert loocv["training_labels_per_fold"] == 137 and loocv["held_out_per_fold"] == 1
+    assert math.isclose(loocv["rmse_t_ha"], .468186, abs_tol=1e-12)
+    assert math.isclose(loocv["r2_approx"], .6952, abs_tol=1e-12)
+    assert math.isclose(loocv["rmse_t_ha"] * 1000, 468.186, abs_tol=1e-9)
+    assert "confirmado" in loocv["provenance"] and "no contienen" not in loocv["provenance"]
+
     assert "train138.parquet" not in html
     assert "./data/model.json" in js or '"model.json"' in js
     assert "GeoCharts.performance" in js
