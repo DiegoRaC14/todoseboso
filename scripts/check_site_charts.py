@@ -59,25 +59,26 @@ def main():
     html = (SITE / "index.html").read_text(encoding="utf-8")
     parser = PageHTML()
     parser.feed(html)
-    for name in ("parcel-coverage", "performance-chart", "association-chart",
+    for name in ("parcel-coverage", "real-rainfall", "real-ndvi", "real-loocv", "performance-chart", "association-chart",
                  "hhi-forest", "interval-results", "rain-chart",
                  "distribution-quantiles", "r3-comparison", "expert-weights"):
         assert name in parser.ids
-    assert parser.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./browser_inference.js"]
+    assert parser.scripts == ["./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./browser_inference.js"]
     assert (SITE / "charts.css").is_file()
     assert "originales del estudio" in html or "curvas acumuladas originales" in html.lower()
 
-    for path in ("charts.js", "model.js", "parcel_core.js", "predictor.js", "reference26_engine.js", "predictions59.js", "browser_inference.js"):
+    for path in ("charts.js", "model.js", "field_charts.js", "parcel_core.js", "predictor.js", "reference26_engine.js", "predictions59.js", "browser_inference.js"):
         text = (SITE / path).read_text(encoding="utf-8")
         assert "https://cdn." not in text
-        assert "LOOCV" not in text
+        if path != "field_charts.js":
+            assert "LOOCV" not in text
     assert "GeoCharts.parcelCounts" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.distribution" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.forest" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.r3" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.coefficients" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.performance" in (SITE / "model.js").read_text(encoding="utf-8")
-    print("PASS: all 8 distribution rows and 9 chart mounts match their published sources.")
+    print("PASS: all 8 distribution rows and 12 chart mounts match their published sources.")
 
 
 if __name__ == "__main__":
