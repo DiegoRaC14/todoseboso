@@ -135,6 +135,22 @@
     caption.textContent = o.note || "Comparación en una misma escala. Consulta los números exactos en cada punto.";
     target.append(caption);
   }
+  function performance(target, protocols) {
+    dotRows(target, {
+      title: "Error RMSE de la regresión local con mezcla geológica por tipo de evaluación",
+      rows: protocols.map((p) => ({
+        label: p.label,
+        subtitle: p.description,
+        value: p.rmse,
+        color: palette().jade,
+        detail: p.label + ". RMSE " + fmt(p.rmse) +
+          " t/ha, MAE " + fmt(p.mae) +
+          " t/ha y R cuadrada " + fmt(p.r2) + "."
+      })),
+      domain: [0.40, 0.72], ticks: [0.4, 0.5, 0.6, 0.7],
+      note: "El eje RMSE comienza en 0.40 t/ha. Estas evaluaciones retienen parcelas de manera distinta: no son cinco estimaciones de una misma incertidumbre."
+    });
+  }
   const MODEL_COLORS = {Reference26: "jade", Compact14: "forest", B1: "gold", L40: "cool", CT3: "soft"};
   function models(target, data, labelMap) {
     const sorted = data.slice().sort((a, b) => a.rmse - b.rmse);
@@ -356,5 +372,5 @@
       textNode(canvas, months[i], x + 36, 251, {size: 12, anchor: "middle"});
     });
   }
-  global.GeoCharts = Object.freeze({models, ablations, r3, expertWeights, coefficients, forest, intervals, distribution, rainfall});
+  global.GeoCharts = Object.freeze({models, performance, ablations, r3, expertWeights, coefficients, forest, intervals, distribution, rainfall});
 })(window);
