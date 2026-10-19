@@ -201,7 +201,7 @@ def health():
                 "held_out": 59, "new_parcels_supported": rt["km_scale"] is not None,
                 "reproduced_59_aggregate": True}
     except Exception as exc:
-        return {"ready": False, "error": str(exc)[:300]}
+        raise HTTPException(503, detail="El motor de inferencia no está listo: " + str(exc)[:300]) from exc
 
 
 @app.post("/api/predict-existing")
