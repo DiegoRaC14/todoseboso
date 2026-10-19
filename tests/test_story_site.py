@@ -13,8 +13,9 @@ SITE = ROOT / "site"
 
 class StorySiteTest(unittest.TestCase):
     def test_model_story_is_sourced(self):
-        subprocess.run([sys.executable, str(ROOT / "scripts/check_model_story.py")],
-                       check=True, capture_output=True, text=True)
+        run = subprocess.run([sys.executable, str(ROOT / "scripts/check_model_story.py")],
+                             capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + "\n" + run.stderr)
 
     def test_original_results_remain_unchanged_and_sourced(self):
         subprocess.run([sys.executable, str(ROOT / "scripts/sync_story_data.py"), "--check"],
