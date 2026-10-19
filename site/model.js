@@ -17,18 +17,6 @@
       button.setAttribute("aria-pressed", String(on));
     });
   };
-  const menu = $("#menu-toggle");
-  const nav = $("#nav-links");
-  menu.addEventListener("click", () => {
-    const open = menu.getAttribute("aria-expanded") !== "true";
-    menu.setAttribute("aria-expanded", String(open));
-    nav.classList.toggle("open", open);
-  });
-  $$("#nav-links a").forEach((link) => link.addEventListener("click", () => {
-    nav.classList.remove("open");
-    menu.setAttribute("aria-expanded", "false");
-  }));
-
   // Both rainfall scenes are fictional, 210 mm in April–October.
   const RAIN = {
     uniform: [30,30,30,30,30,30,30],

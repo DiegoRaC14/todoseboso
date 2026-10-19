@@ -276,3 +276,17 @@ Prueba local sin acceso de red:
 `python -m unittest discover -s tests -p 'test_interactive_map_section.py'`.
 La disponibilidad del iframe y de sus capas remotas se debe verificar
 manualmente en el despliegue después de fusionar la PR.
+
+
+## Navegación por capítulos, sin pérdida de información
+
+El menú de `site/index.html` agrupa los enlaces existentes en **El estudio**,
+**El modelo**, **Evaluación** y **Explorar**, con submenús accesibles y un
+índice visual de cuatro capítulos (`#recorrido`). **El ensamble precede a
+la guía de lectura y sus vistas Reference26 / Compact14 siguen intactas**.
+No se mueven, sustituyen ni eliminan las secciones originales, los gráficos
+reales de 2025, los datos de evaluación, las 59 predicciones ni el mapa de
+Andrea-HH. La navegación funciona con enlaces HTML, sin dependencia de JS;
+`site/navigation.js` añade cierre por Escape/clic y resaltado según la
+posición real de cada sección. `tests/test_site_navigation.cjs` impide
+perder IDs, enlaces críticos o la ubicación final del mapa.
