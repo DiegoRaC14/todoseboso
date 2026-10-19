@@ -59,7 +59,7 @@
     let closestTop = -Infinity;
     for (const entry of tracked) {
       if (!entry.section.getClientRects().length ||
-          entry.section.closest(".portal-chapter[hidden],.portal-topic[hidden]")) continue;
+          entry.section.closest("[hidden]")) continue;
       const top = entry.section.getBoundingClientRect().top;
       // Find the closest preceding section by on-page position, not menu order.
       if (top <= threshold && top > closestTop) {
@@ -86,6 +86,32 @@
   window.addEventListener("scroll", requestRefresh, {passive:true});
   window.addEventListener("resize", requestRefresh, {passive:true});
   window.addEventListener("hashchange", requestRefresh);
-  window.addEventListener("portal:change", requestRefresh);
+  // Reposition the existing diagram, without replacing or removing it.
+  const figure = document.querySelector(".model-hero .hero-visual");
+  const modelShell = document.querySelector("#arquitectura .shell");
+  const modelHeading = modelShell?.querySelector(".section-heading");
+  if (figure && modelHeading)
+    modelHeading.insertAdjacentElement("afterend", figure);
+
+  // A direct link to a Reference26 prediction lies inside a genuine model tab.
+  // Select that original tab before the browser scrolls to its anchor.
+  function revealReferenceFromHash(hash) {
+    if (!hash?.startsWith("#")) return;
+    const id = decodeURIComponent(hash.slice(1));
+    const target = document.getElementById(id);
+    if (!target?.closest("#reference26-view")) return;
+    const tab = document.querySelector('[data-ensemble-tab="Reference26"]');
+    if (tab && tab.getAttribute("aria-selected") !== "true") tab.click();
+    window.requestAnimationFrame(() => {
+      if (target.getClientRects().length)
+        target.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  }
+  document.addEventListener("click", event => {
+    const anchor = event.target.closest('a[href^="#"]');
+    if (anchor) revealReferenceFromHash(anchor.getAttribute("href"));
+  });
+  window.addEventListener("hashchange", () => revealReferenceFromHash(window.location.hash));
+  window.addEventListener("DOMContentLoaded", () => revealReferenceFromHash(window.location.hash));
   requestRefresh();
 })();

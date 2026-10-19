@@ -94,7 +94,7 @@ jobs:
         run: node --test tests/test_svg_charts.cjs
       - name: Validate chapter navigation links and preserved research sections
         run: node tests/test_site_navigation.cjs
-      - name: Validate progressive chapter portal and all protected content
+      - name: Validate scrollable editorial index and all protected content
         run: node tests/test_site_portal.cjs
       - name: Check parcel arithmetic and percentage interpretation
         run: node --test tests/test_parcel_core.cjs
@@ -103,7 +103,6 @@ jobs:
           node --check site/charts.js
           node --check site/model.js
           node --check site/navigation.js
-          node --check site/portal.js
           node --check site/field_charts.js
           node --check site/parcel_core.js
           node --check site/predictor.js
