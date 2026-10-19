@@ -40,7 +40,8 @@ test("weighted local Ridge and mixture match an independent one-dimensional solu
   const xx=Array.from({length:24},(_,i)=>i);
   const xmean=xx.reduce((a,b)=>a+b,0)/24;
   const S=xx.reduce((a,b)=>a+(b-xmean)**2,0);
-  const coefficient=.3*S/(S+30);
+  const w=1/(1+1e-6);  // exact frozen inverse-distance regularization
+  const coefficient=.3*S*w/(S*w+30);
   const local=1+.3*xmean+(2-xmean)*coefficient;
   const result=engine.run(model,row,distance);
   assert.ok(Math.abs(result.local-local)<1e-10);
@@ -61,6 +62,7 @@ if(fs.existsSync(file)) {
     const result=engine.parity(model,1e-7);
     assert.equal(result.tested,59);
     assert.ok(result.max_abs_difference<=1e-7);
+    console.log("59 Reference26 Python-to-JavaScript maximum absolute difference:",result.max_abs_difference,"t/ha");
     assert.ok(Math.abs(result.mean-3.956432328667021)<1e-5);
   });
   test("new parcel coordinates use frozen normalized Haversine scale",()=>{
