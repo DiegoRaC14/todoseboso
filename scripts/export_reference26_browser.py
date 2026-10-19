@@ -213,6 +213,8 @@ def serialize():
     samples=frame.iloc[138:]
     fixture=[dict(
         id=str(row["ID_POLIGONO"]),
+        state=(str(row["Estado"]) if pd.notna(row.get("Estado")) else "No indicado"),
+        municipality=(str(row["Municipio"]) if pd.notna(row.get("Municipio")) else "No indicado"),
         x={col:(float(row[col]) if pd.notna(row[col]) else None) for col in columns},
         distances=arr(distance[138+i,:138]),
         expected=float(originals[i])
