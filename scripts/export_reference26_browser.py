@@ -79,6 +79,8 @@ def arr(v):
 
 def checked_json(obj):
     """Convert numpy and NaNs to JSON null, never NaN or Infinity tokens."""
+    if obj is None:
+        return None
     if isinstance(obj, dict):
         return {str(k): checked_json(v) for k, v in obj.items()}
     if isinstance(obj, (list, tuple, np.ndarray)):
