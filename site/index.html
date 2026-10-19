@@ -8,7 +8,8 @@
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css">
 <script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
-<script src="./inference_client.js" defer></script>
+<script src="./reference26_engine.js" defer></script>
+<script src="./browser_inference.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -208,7 +209,7 @@
 </div>
 <div class="source-index"><strong>Documentación técnica original</strong><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Fórmula, 26 variables y ajuste final ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de cada componente ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Soporte, sensibilidad e intervalos ↗</a></div></div></section>
 <section class="section section-soft" id="simulador"><div class="shell">
-<div class="section-heading"><div><p class="eyebrow">11 · LABORATORIO DE PREDICCIÓN</p><h2>Explora la predicción <em>con parcelas inventadas o con tus propios datos.</em></h2></div><p>Elige qué deseas hacer. Una simulación sirve para entender cómo se combinan las partes del modelo, mientras que una predicción real requiere ejecutar todos los regresores entrenados con las 26 variables.</p></div>
+<div class="section-heading"><div><p class="eyebrow">11 · LABORATORIO DE PREDICCIÓN</p><h2>Explora la predicción <em>con parcelas inventadas o con tus propios datos.</em></h2></div><p>Puedes experimentar con una simulación o ejecutar el modelo entrenado dentro de tu navegador cuando esté disponible su exportación verificada.</p></div>
 <div class="prediction-mode" role="group" aria-label="Modo de exploración"><button type="button" data-predmode="fictitious" class="active" aria-pressed="true">Parcelas inventadas · simulación</button><button type="button" data-predmode="own" aria-pressed="false">Mi parcela · preparar datos</button></div>
 <div id="fictitious-mode" class="prediction-panel">
 <h3>¿Cómo cambia la estimación entre parcelas imaginarias?</h3>
@@ -226,24 +227,23 @@
 <div id="own-mode" class="prediction-panel" hidden>
 <h3>Prepara los indicadores de una parcela</h3>
 <p>Esta herramienta organiza <strong>las mismas 26 variables derivadas</strong> que utiliza el modelo. Algunas proceden de imágenes satelitales, información geológica y series históricas; por eso no basta con escribir la latitud y la longitud. Los valores se introducen ya calculados, con las unidades que se indican en el inventario de variables.</p>
-<p>Los 26 indicadores pueden enviarse a una <strong>API Python que ejecuta Reference26 de verdad</strong>, después de conectar el servicio de inferencia. Mientras la API no esté publicada, el formulario continúa permitiendo preparar y descargar las variables. La simulación anterior permanece claramente separada de estas predicciones.</p>
+<p>Los 26 indicadores se utilizan directamente en <strong>Reference26 dentro de tu navegador</strong>, después de comprobar que la exportación conserva los resultados del modelo de Python. Mientras esa comprobación no esté disponible, puedes preparar y descargar el archivo JSON. La simulación anterior es completamente independiente.</p>
 <div class="own-status"><strong id="parcel-completeness" aria-live="polite">0 de 26 variables completadas</strong><span id="own-r3-status">Sin evaluar soporte R3</span></div>
 <div id="parcel-input-groups"></div>
 <div class="own-actions"><button id="parcel-export" type="button">Descargar mis 26 indicadores en JSON</button><button id="parcel-clear" type="button" class="secondary-cta">Limpiar el formulario</button></div>
-<div class="live-inference" id="live-inference"><p class="eyebrow">PREDICCIÓN REAL · MODELO ENTRENADO</p>
-<h3>Ejecutar Reference26 en el servidor</h3><p>La API compara su modelo con el archivo final verificado y reproduce primero las 59 estimaciones originales. Para una parcela nueva también verifica que las distancias respeten la normalización geográfica del modelo.</p>
-<div class="live-api-config"><label for="api-override">Dirección del servicio de inferencia (opcional, para probar la conexión)</label>
-<input id="api-override" type="url" placeholder="https://mi-servicio.onrender.com" autocomplete="url">
-<button id="api-check" type="button">Comprobar conexión</button></div>
-<p id="api-status" role="status" aria-live="polite">Comprobando si el servicio está configurado…</p>
+<div class="live-inference" id="live-inference"><p class="eyebrow">PREDICCIÓN REAL · EN TU NAVEGADOR</p>
+<h3>Ejecutar Reference26 sin servidor ni cuenta</h3>
+<p>Los coeficientes entrenados, los pesos geológicos y los 138 ejemplos de referencia se descargan una sola vez como un archivo JSON. Todos los cálculos de la regresión climática, Ridge local, K-means y la corrección residual se realizan en tu dispositivo. No se envían tus 26 indicadores a un servidor.</p>
+<div class="live-api-config"><button id="api-check" type="button">Comprobar modelo local</button></div>
+<p id="api-status" role="status" aria-live="polite">Verificando los parámetros exportados y la coincidencia de las 59 predicciones del estudio…</p>
 <div class="live-inference-actions"><button id="predict-real" type="button" disabled>Calcular rendimiento con mis 26 indicadores</button>
 <div id="live-result" class="live-result" aria-live="polite"></div></div>
 <div class="existing-parcel-lookup"><h4>Reproducir la estimación de una de las 59 parcelas originales</h4>
-<p>Introduce el ID exacto de una parcela del conjunto de 59. El servidor utilizará las variables y distancias archivadas, sin necesitar introducir las 26 variables manualmente.</p>
+<p>Introduce el ID exacto de una parcela del conjunto de 59. El navegador reutilizará las características y distancias congeladas de esa parcela, sin necesidad de introducir sus 26 indicadores.</p>
 <label for="existing-id">ID de la parcela</label><input id="existing-id" type="text" placeholder="ID_POLIGONO" autocomplete="off">
 <button id="predict-existing" type="button" disabled>Consultar estimación original</button>
 <div id="existing-result" aria-live="polite"></div></div></div>
-<p class="small-note">Este JSON <strong>no contiene una predicción</strong>. Para una inferencia exacta hacen falta el modelo ajustado, su preprocesamiento, los centroides geológicos y los datos de los 138 vecinos disponibles en el entrenamiento. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
+<p class="small-note">Este JSON <strong>no contiene una predicción</strong>. La inferencia exige el modelo ajustado, su preprocesamiento, los centroides geológicos y los 138 ejemplos de entrenamiento, que estarán incluidos en la exportación web verificada. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
 </div>
 </div></section>
 </main><footer class="model-footer"><div class="shell"><strong>GeoCebada · AgroCebada FIRA 2026</strong><span>Regresión local con mezcla geológica · Código: Reference26 · Investigación retrospectiva del ciclo 2025</span><a href="#inicio">Volver al inicio ↑</a></div></footer>
