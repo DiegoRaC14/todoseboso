@@ -33,3 +33,19 @@ requiere borrarlos del disco.
 
 No usar `git add -f` para incluir datos o artefactos ignorados. Antes de publicar,
 revisar `git status` y `git diff --cached --stat`.
+
+## Excepción aprobada para el despliegue de inferencia Reference26
+
+Se autorizó explícitamente preparar la publicación de tres artefactos concretos,
+no de la carpeta completa `outputs/` ni de datos históricos sin auditar.
+La carpeta `deployment/model_artifacts/` puede contener el `joblib` final,
+`features197.parquet` y `distance197.npy`; la excepción de `.gitignore`
+se limita al nombre exacto del modelo final en esa ruta. **No utilizar
+`git add -f` para copiar archivos ajenos a este inventario.**
+
+El Parquet **contiene los 138 rendimientos reportados y los IDs** de las
+parcelas. La publicación los hace descargables por cualquier persona; no son
+«anónimos» por el mero hecho de tener un nombre técnico. Si se necesita
+restringir el acceso, se puede instalar el modelo y los datos como artefactos
+privados del servidor y fijar `GEOCEBADA_ARTIFACT_DIR`.
+El navegador sólo recibe la predicción solicitada, nunca un vector de 138 etiquetas.
