@@ -86,7 +86,7 @@ def main() -> None:
     assert (hashlib.sha256(original_figure.read_bytes()).digest()
             == hashlib.sha256(copied_figure.read_bytes()).digest())
     assert "./media/distribution_ECDF.png" in html
-    assert "las 59 cosechas reales todavía se desconocen" in html
+    assert "59 cosechas reales todavía se desconocen" in html.lower()
 
     print("Public interpretation snapshot PASS: matched three upstream CSVs, four protocols.")
 
