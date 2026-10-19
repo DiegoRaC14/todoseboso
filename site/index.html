@@ -6,9 +6,10 @@
 <meta name="description" content="Cómo funciona la regresión local con mezcla geológica para estimar el rendimiento de cebada: 26 variables, tratamiento de faltantes, K-means, Ridge, Elastic Net, hiperparámetros, resultados y pruebas.">
 <title>Cómo estimamos el rendimiento de cebada · Regresión local con mezcla geológica</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css">
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css">
 <script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
 <script src="./reference26_engine.js" defer></script>
+<script src="./predictions59.js" defer></script>
 <script src="./browser_inference.js" defer></script>
 </head>
 <body>
@@ -18,7 +19,7 @@
 <a href="#inicio" class="brand"><span class="brand-icon" aria-hidden="true">✳</span><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
 <button id="menu-toggle" class="menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false">Menú ☰</button>
 <nav id="nav-links" class="nav-links" aria-label="Índice de la explicación">
-<a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a><a href="#simulador">Probar parcelas</a>
+<a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a><a href="#predicciones-59">59 estimaciones</a><a href="#simulador">Probar parcelas</a>
 </nav>
 </div></header>
 <main id="contenido">
@@ -192,7 +193,7 @@
 <div class="section-heading"><div><p class="eyebrow">10 · ENTREGA Y LÍMITES</p><h2>Se pueden generar 59 estimaciones. <em>¿Qué no sabemos todavía?</em></h2></div><p>Que dos conjuntos de parcelas tengan el mismo promedio no significa que las predicciones individuales sean correctas. Además, las parcelas pueden quedar fuera de las condiciones mejor representadas en el entrenamiento.</p></div>
 <div class="scoreline"><div><span>Corrección R3 disponible</span><strong>51</strong><small>de 59 parcelas</small></div><div><span>Corrección R3 desactivada</span><strong>8</strong><small>de 59 parcelas</small></div><div><span>Con algún aviso de soporte</span><strong>11</strong><small>de 59 parcelas; avisos superpuestos</small></div></div>
 <div class="detail-pair"><div><h3>Distribución de las cosechas y las estimaciones</h3><p>Medianas y percentiles por estado. Las 138 cosechas conocidas y las 59 estimaciones corresponden a parcelas distintas: la gráfica no mide el error de las 59.</p><div id="distribution-quantiles"></div></div><div><h3>¿Qué cobertura tuvieron los intervalos?</h3><p>Selecciona el nivel nominal. La línea corresponde a la cobertura solicitada y los puntos a la observada en validación aleatoria; no hay garantía de igual cobertura para las 59 parcelas.</p><div class="buttonset"><button data-level="0.8" type="button" aria-pressed="false">80 % nominal</button><button data-level="0.9" class="active" type="button" aria-pressed="true">90 % nominal</button></div><div id="interval-results"></div></div></div>
-<div class="note-inline">Las 59 cosechas reales todavía se desconocen. La media de esas estimaciones es <strong>3.9564 t/ha</strong>, frente a <strong>3.9554 t/ha</strong> entre las cosechas conocidas, pero no son las mismas parcelas y esa coincidencia no demuestra precisión. No se ofrecen pronósticos individuales en esta página.</div>
+<div class="note-inline">Las 59 cosechas reales todavía se desconocen. La media de esas estimaciones es <strong>3.9564 t/ha</strong>, frente a <strong>3.9554 t/ha</strong> entre las cosechas conocidas, pero no son las mismas parcelas y esa coincidencia no demuestra precisión. Las 59 estimaciones individuales, obtenidas por el modelo final, se presentan en la siguiente sección como resultados del estudio, no como cosechas observadas.</div>
 <details class="source-details"><summary>Consultar las curvas acumuladas originales</summary><figure class="distribution-figure"><img src="./media/distribution_ECDF.png" alt="Distribución acumulada original de cosechas conocidas y estimaciones del modelo por región."><figcaption>Gráfico original conservado; las curvas exactas no se reconstruyen a partir de percentiles.</figcaption></figure></details>
 </div></section>
 
@@ -205,11 +206,33 @@
 <details><summary>¿Se sustituyen los datos faltantes siempre por la media?</summary><p>No. Las columnas numéricas de los regresores se imputan por mediana de entrenamiento; el escalado utiliza estadísticas de entrenamiento. El corrector final se desactiva si falta alguno de sus tres indicadores requeridos.</p></details>
 <details><summary>¿Qué significa un peso geológico de 0.86?</summary><p>Que, en esa mezcla ajustada, la estimación local recibe un peso cercano a 86 % y la climática el resto. No significa que la geología explique 86 % del rendimiento o que lo cause.</p></details>
 <details><summary>¿Cuánto acierta el modelo?</summary><p>En LOOCV se evaluaron 138 parcelas, dejando fuera una distinta cada vez: RMSE de 0.468186 t/ha y R² aproximado de 0.6952. Otra evaluación de 16 particiones obtuvo RMSE medio de 0.4625 t/ha. Ninguno representa un porcentaje de aciertos ni una garantía para cada parcela.</p></details>
-<details><summary>¿Puedo estimar aquí mi parcela?</summary><p>Puedes preparar las 26 variables en el formulario final o experimentar con parcelas inventadas. La página no ofrece una predicción real: se necesita ejecutar el modelo entrenado con sus datos y preprocesamiento.</p></details>
+<details><summary>¿Puedo estimar aquí mi parcela?</summary><p>Sí, puedes introducir las 26 variables y usar el motor Reference26 que funciona en tu navegador. Antes de permitir el cálculo, comprueba que reproduce las 59 estimaciones originales de Python. También puedes explorar directamente esos 59 resultados del estudio. La validez para parcelas nuevas fuera del área o ciclo estudiados no está demostrada.</p></details>
 </div>
 <div class="source-index"><strong>Documentación técnica original</strong><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Fórmula, 26 variables y ajuste final ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de cada componente ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Soporte, sensibilidad e intervalos ↗</a></div></div></section>
+<section class="section" id="predicciones-59"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">11 · RESULTADOS POR PARCELA</p><h2>Las 59 parcelas sin cosecha reportada: <em>estimaciones del modelo final.</em></h2></div>
+<p>Estas son las predicciones individuales de la regresión local con mezcla geológica, entrenada con las otras 138 parcelas. Son resultados reales del modelo, <strong>no ejemplos inventados</strong>, pero el rendimiento de esas 59 parcelas todavía no se ha observado o confirmado.</p></div>
+<div class="pred59-status" id="pred59-status" role="status" aria-live="polite">Verificando las 59 estimaciones frente a los resultados originales de Python…</div>
+<div class="pred59-data" id="pred59-data" hidden>
+<div class="pred59-summary" id="pred59-summary" aria-label="Resumen de las 59 estimaciones"></div>
+<div class="pred59-highlights"><div><h3>Tres parcelas como ejemplo</h3><p>Seleccionadas automáticamente por sus valores estimados: menor, mediano y mayor. No son parcelas elegidas por un rendimiento observado.</p></div><div id="pred59-examples" class="pred59-example-grid"></div></div>
+<div class="pred59-viz"><div class="pred59-viz-top"><div><h3>¿Cómo se distribuyen las estimaciones?</h3><p>Cada punto representa una parcela. La posición horizontal indica el rendimiento estimado, en toneladas por hectárea. Selecciona un punto para consultar su predicción.</p></div></div><div id="pred59-plot" class="pred59-plot" role="group" aria-label="Predicciones de las parcelas por estado"></div></div>
+<div class="pred59-explorer"><div class="pred59-explorer-heading"><h3>Consultar las 59 predicciones</h3><p>Busca por identificador o municipio, filtra por estado y ordena los resultados. Todos los valores provienen del mismo ajuste final Reference26.</p></div>
+<div class="pred59-filters">
+<label for="pred59-search">Buscar parcela o municipio<input id="pred59-search" type="search" placeholder="ID de parcela o municipio" autocomplete="off"></label>
+<label for="pred59-state">Estado<select id="pred59-state"><option value="all">Todos los estados</option></select></label>
+<label for="pred59-sort">Ordenar por<select id="pred59-sort"><option value="value-desc">Rendimiento: mayor a menor</option><option value="value-asc">Rendimiento: menor a mayor</option><option value="id-asc">Identificador: A–Z</option></select></label>
+</div>
+<p id="pred59-count" class="pred59-count" aria-live="polite">59 estimaciones disponibles</p>
+<div class="pred59-table-wrap"><table class="pred59-table"><thead><tr><th>Parcela</th><th>Estado / municipio</th><th>Estimación (t/ha)</th><th>Corrección final</th><th>Detalle</th></tr></thead><tbody id="pred59-rows"></tbody></table></div>
+<div id="pred59-detail" class="pred59-detail" aria-live="polite"><p>Selecciona una parcela del gráfico o de la tabla para analizar su estimación.</p></div>
+<button id="pred59-export" type="button" class="pred59-export">Descargar las 59 estimaciones (CSV)</button>
+</div>
+<p class="small-note">**Procedencia:** resultado archivado de Reference26 calculado con 138 rendimientos de entrenamiento y verificado en el navegador contra los 59 resultados de Python. La columna de corrección indica si se activó la última etapa; no es una medida de calidad de los datos ni un intervalo de confianza. Los rendimientos reales de estas 59 parcelas son desconocidos.</p>
+</div></div></section>
+
 <section class="section section-soft" id="simulador"><div class="shell">
-<div class="section-heading"><div><p class="eyebrow">11 · LABORATORIO DE PREDICCIÓN</p><h2>Explora la predicción <em>con parcelas inventadas o con tus propios datos.</em></h2></div><p>Puedes experimentar con una simulación o ejecutar el modelo entrenado dentro de tu navegador cuando esté disponible su exportación verificada.</p></div>
+<div class="section-heading"><div><p class="eyebrow">12 · LABORATORIO DE PREDICCIÓN</p><h2>Explora la predicción <em>con parcelas inventadas o con tus propios datos.</em></h2></div><p>Puedes experimentar con una simulación o ejecutar el modelo entrenado dentro de tu navegador cuando esté disponible su exportación verificada.</p></div>
 <div class="prediction-mode" role="group" aria-label="Modo de exploración"><button type="button" data-predmode="fictitious" class="active" aria-pressed="true">Parcelas inventadas · simulación</button><button type="button" data-predmode="own" aria-pressed="false">Mi parcela · preparar datos</button></div>
 <div id="fictitious-mode" class="prediction-panel">
 <h3>¿Cómo cambia la estimación entre parcelas imaginarias?</h3>
