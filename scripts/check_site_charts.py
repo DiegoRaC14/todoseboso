@@ -63,7 +63,7 @@ def main():
                  "hhi-forest", "interval-results", "rain-chart",
                  "distribution-quantiles", "r3-comparison", "expert-weights"):
         assert name in parser.ids
-    assert parser.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js"]
+    assert parser.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js", "./inference_client.js"]
     assert (SITE / "charts.css").is_file()
     assert "originales del estudio" in html or "curvas acumuladas originales" in html.lower()
 
