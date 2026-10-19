@@ -87,9 +87,11 @@
     $("#mix-swatch").setAttribute("aria-label",
       fmt(100 * (1 - g), 1) + " % clima, " + fmt(100 * g, 1) + " % experto local");
     $("#example-result").textContent = fmt(result);
-    $("#example-equation").textContent = fmt(c) + " + " + fmt(g, 4) + " × (" +
-      fmt(e) + " − " + fmt(c) + ") " + (delta >= 0 ? "+ " : "− ") +
-      fmt(Math.abs(delta)) + " = " + fmt(result) + " t/ha";
+    $("#example-equation").textContent = "La parte climática aporta " +
+      fmt(c * (1 - g), 3) + " t/ha y la parte local aporta " +
+      fmt(e * g, 3) + " t/ha. La corrección final " +
+      (delta >= 0 ? "suma " : "resta ") + fmt(Math.abs(delta), 2) +
+      " t/ha. El resultado ilustrativo es " + fmt(result, 3) + " t/ha.";
   }
   ["example-climate", "example-local", "example-corrector"].forEach((id) =>
     $("#" + id).addEventListener("input", example));

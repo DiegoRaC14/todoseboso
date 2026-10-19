@@ -8,6 +8,7 @@ on:
       - "scripts/check_site_charts.py"
       - "scripts/check_model_story.py"
       - "tests/test_svg_charts.cjs"
+      - "tests/test_parcel_core.cjs"
       - "scripts/check_new_research.py"
       - "tests/test_story_site.py"
       - ".github/workflows/publish_story.yml"
@@ -59,10 +60,14 @@ jobs:
         run: python scripts/check_model_story.py
       - name: Validate SVG chart rendering and data fidelity
         run: node --test tests/test_svg_charts.cjs
+      - name: Check parcel arithmetic and percentage interpretation
+        run: node --test tests/test_parcel_core.cjs
       - name: Validate JavaScript syntax
         run: |
           node --check site/charts.js
           node --check site/model.js
+          node --check site/parcel_core.js
+          node --check site/predictor.js
 
   deploy:
     needs: validate

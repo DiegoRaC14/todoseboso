@@ -63,11 +63,11 @@ def main():
                  "hhi-forest", "interval-results", "rain-chart",
                  "distribution-quantiles", "r3-comparison", "expert-weights"):
         assert name in parser.ids
-    assert parser.scripts == ["./charts.js", "./model.js"]
+    assert parser.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js"]
     assert (SITE / "charts.css").is_file()
     assert "originales del estudio" in html or "curvas acumuladas originales" in html.lower()
 
-    for path in ("charts.js", "model.js"):
+    for path in ("charts.js", "model.js", "parcel_core.js", "predictor.js"):
         text = (SITE / path).read_text(encoding="utf-8")
         assert "https://cdn." not in text
         assert "LOOCV" not in text
