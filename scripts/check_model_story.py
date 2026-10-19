@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Public single-model page contract, against the actual frozen model manifest."""
+"""Public ensemble-first page preserving the exact frozen Reference26 evidence."""
 from __future__ import annotations
 import json
 import math
@@ -94,8 +94,8 @@ def check() -> None:
     assert all(a in page.ids for a in page.anchors), "Broken internal navigation"
     for asset in page.assets:
         assert (SITE / asset).is_file(), ("missing site asset", asset)
-    assert page.scripts == ["./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./browser_inference.js"]
-    for forbidden in ("Compact14", "Champion", "B1</", "Local04D"):
+    assert page.scripts == ["./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./ensemble_contract.js", "./ensemble_story.js", "./browser_inference.js"]
+    for forbidden in ("B1</", "Local04D"):
         assert forbidden not in html, forbidden
     for required in ("Regresión local con mezcla geológica", "K-means",
                      "mediana", "faltantes", "24 vecinas", "α = 30",
@@ -109,6 +109,15 @@ def check() -> None:
     assert "no es el porcentaje de error esperado" in html.lower() or "no es el porcentaje de error esperado" in html
     assert "No se calcula un rendimiento real desde esta página" not in html
     assert "PREDICCIÓN REAL · EN TU NAVEGADOR" in html
+    assert "id=\"ensamble\"" in html
+    assert html.index('id="ensamble"') < html.index('id="datos"')
+    assert html.index('data-ensemble-tab="Ensemble"') < html.index('data-ensemble-tab="Reference26"') < html.index('data-ensemble-tab="Compact14"')
+    ensemble = json.loads((SITE / "data/ensemble_models.json").read_text(encoding="utf-8"))
+    assert ensemble["status"] == "awaiting_final_models"
+    assert ensemble["ensemble"]["weights"] is None
+    assert ensemble["ensemble"]["method"] is None
+    assert ensemble["presentation_order"] == ["Ensemble","Reference26","Compact14"]
+    assert not (SITE / "data/ensemble_predictions_v1.json").exists()
     assert "COSECHA" in html or "cosecha" in html
     assert (SITE / "predictions59.js").is_file()
     assert (SITE / "predictions59.css").is_file()
@@ -128,7 +137,7 @@ def check() -> None:
     assert "GeoCharts.performance" in js
     assert "GeoCharts.forest" in js
     assert "GeoCharts.distribution" in js
-    print("Single-model page PASS: 26 precise source variables, training settings, labels and public chart contracts.")
+    print("Ensemble-first page with frozen Reference26 PASS: 26 precise source variables, training settings, labels and public chart contracts.")
 
 
 if __name__ == "__main__":

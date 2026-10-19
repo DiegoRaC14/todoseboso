@@ -1,4 +1,4 @@
-"""Site is now a documented single-model explainer, never a leaderboard."""
+"""Site is an ensemble-first preparation with the original Reference26 research intact."""
 from __future__ import annotations
 
 import json
@@ -38,6 +38,9 @@ class StorySiteTest(unittest.TestCase):
         self.assertIn("Parcela de clima", (SITE / "predictor.js").read_text(encoding="utf-8"))
         self.assertIn("PREDICCIÓN REAL · EN TU NAVEGADOR", html)
         self.assertIn("id=\"predict-real\"", html)
+        self.assertIn("id=\"ensamble\"", html)
+        self.assertIn("data-ensemble-tab=\"Compact14\"", html)
+        self.assertIn("id=\"reference26-view\"", html)
         self.assertIn("id=\"predicciones-59\"", html)
         self.assertIn("id=\"pred59-rows\"", html)
         self.assertIn("id=\"pred59-plot\"", html)

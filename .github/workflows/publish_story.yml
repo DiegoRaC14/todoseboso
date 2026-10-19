@@ -11,6 +11,7 @@ on:
       - "scripts/export_reference26_browser.py"
       - "tests/test_reference26_browser.cjs"
       - "tests/test_predictions59.cjs"
+      - "tests/test_ensemble_story.cjs"
       - "scripts/sync_story_data.py"
       - "scripts/check_site_charts.py"
       - "scripts/check_model_story.py"
@@ -66,8 +67,6 @@ jobs:
         run: python scripts/check_new_research.py
       - name: Verify published chart data
         run: python scripts/check_site_charts.py
-      - name: Validate source-backed 2025 chart data
-        run: python -m unittest discover -s tests -p 'test_real_chart_snapshot.py'
       - name: Verify single-model description and all 26 features
         run: python scripts/check_model_story.py
       - name: Audit original Reference26 API and browser connector
@@ -81,10 +80,16 @@ jobs:
             python scripts/export_reference26_browser.py
             node --test tests/test_reference26_browser.cjs
             node --test tests/test_predictions59.cjs
+            node --test tests/test_ensemble_story.cjs
           else
             echo "No binary assets yet. Browser inference stays disabled."
             node --test tests/test_reference26_browser.cjs
+            node --test tests/test_ensemble_story.cjs
           fi
+      - name: Validate observed-data chart exporter syntax
+        run: python -m py_compile scripts/export_real_chart_data.py
+      - name: Validate source-backed 2025 chart data
+        run: python -m unittest discover -s tests -p 'test_real_chart_snapshot.py'
       - name: Validate SVG chart rendering and data fidelity
         run: node --test tests/test_svg_charts.cjs
       - name: Check parcel arithmetic and percentage interpretation
@@ -100,8 +105,8 @@ jobs:
           node --check site/reference26_engine.js
           node --check site/browser_inference.js
           node --check site/predictions59.js
-      - name: Validate real chart exporter syntax (no large data needed)
-        run: python -m py_compile scripts/export_real_chart_data.py
+          node --check site/ensemble_contract.js
+          node --check site/ensemble_story.js
 
   deploy:
     needs: validate

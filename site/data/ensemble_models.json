@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "awaiting_final_models",
+  "presentation_order": [
+    "Ensemble",
+    "Reference26",
+    "Compact14"
+  ],
+  "units": "t/ha",
+  "study": {
+    "total_parcels": 197,
+    "training_labels": 138,
+    "unlabeled_parcels": 59
+  },
+  "models": {
+    "Reference26": {
+      "display_name": "Regresión local con mezcla geológica",
+      "inputs": 26,
+      "short_description": "Regresión climática Elastic Net, experto Ridge local con siete señales, agrupamiento geológico K-means y corrector residual.",
+      "current_verified_browser_runtime": "./data/reference26_runtime.json",
+      "upcoming_artifact_sha256": null
+    },
+    "Compact14": {
+      "display_name": "Regresión local compacta",
+      "inputs": 14,
+      "short_description": "Regresión climática Elastic Net y Ridge local de cinco señales, mezcla de peso global y corrección residual. No incluye K-means geológico.",
+      "upcoming_artifact_sha256": null
+    }
+  },
+  "ensemble": {
+    "display_name": "Ensamble final de dos modelos",
+    "method": null,
+    "weights": null,
+    "training_protocol": null,
+    "metrics": null,
+    "source_artifact_hashes": null
+  },
+  "future_prediction_file": "./data/ensemble_predictions_v1.json",
+  "instructions": "Ensamble y Compact14 permanecen pendientes hasta recibir artefactos entrenados, predicciones verificadas para los mismos 59 IDs y pesos o regla final. Nunca utilizar pesos ficticios."
+}

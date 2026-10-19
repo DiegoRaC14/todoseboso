@@ -3,14 +3,17 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10372f">
-<meta name="description" content="Cómo funciona la regresión local con mezcla geológica para estimar el rendimiento de cebada: 26 variables, tratamiento de faltantes, K-means, Ridge, Elastic Net, hiperparámetros, resultados y pruebas.">
-<title>Cómo estimamos el rendimiento de cebada · Regresión local con mezcla geológica</title>
+<meta name="description" content="Preparación y análisis visual del futuro ensamble de Reference26 y Compact14: sus predicciones por parcela, sus variables y la comparación del modelo final cuando estén verificados los pesos.">
+<title>GeoCebada · Ensamble de Reference26 y Compact14</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css"><link rel="stylesheet" href="./interactive-map.css">
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css"><link rel="stylesheet" href="./ensemble_story.css">
 <script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./field_charts.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
 <script src="./reference26_engine.js" defer></script>
 <script src="./predictions59.js" defer></script>
+<script src="./ensemble_contract.js" defer></script>
+<script src="./ensemble_story.js" defer></script>
 <script src="./browser_inference.js" defer></script>
+<link rel="stylesheet" href="./interactive-map.css">
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -19,20 +22,20 @@
 <a href="#inicio" class="brand"><span class="brand-icon" aria-hidden="true">✳</span><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
 <button id="menu-toggle" class="menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false">Menú ☰</button>
 <nav id="nav-links" class="nav-links" aria-label="Índice de la explicación">
-<a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a><a href="#predicciones-59">59 estimaciones</a><a href="#simulador">Probar parcelas</a>
+<a href="#ensamble">Ensamble</a><a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a><a href="#predicciones-59">59 estimaciones</a><a href="#simulador">Probar parcelas</a><a href="#mapa-interactivo">Mapa</a>
 </nav>
 </div></header>
 <main id="contenido">
 <section class="hero model-hero"><div class="shell hero-grid">
 <div class="hero-content">
-<p class="eyebrow hero-eyebrow">UNA EXPLICACIÓN COMPLETA DE LA PREDICCIÓN</p>
-<h1>¿Cómo estimamos cuánto <em>rendirá una parcela de cebada?</em></h1>
-<p class="hero-description">Utilizamos la lluvia, la vegetación observada desde satélites y lo que sabemos de parcelas cercanas. La composición geológica nos ayuda a decidir cuánto confiar en cada estimación. Un último ajuste corrige parte del error que queda.</p>
-<p class="hero-description minor-intro"><strong>Nombre del método:</strong> regresión local con mezcla geológica. En el repositorio se identifica como <code>Reference26</code>. También incluye K-means, pero K-means <strong>no predice el rendimiento por sí solo</strong>.</p>
-<div class="hero-actions"><a class="primary-cta" href="#arquitectura">Ver cómo calcula <span aria-hidden="true">↗</span></a><a class="secondary-cta" href="#variables">Explorar las 26 variables ↓</a></div>
+<p class="eyebrow hero-eyebrow">DOS MODELOS, UNA ESTRATEGIA DE PREDICCIÓN</p>
+<h1>Hacia un ensamble para estimar <em>el rendimiento de cebada.</em></h1>
+<p class="hero-description">El resultado principal será la combinación calibrada de dos modelos complementarios: Reference26 (Regresión local con mezcla geológica, 26 indicadores) y Compact14 (regresión local compacta, 14 indicadores). Mientras se actualizan ambos ajustes y sus pesos, mostramos sólo los resultados individuales que ya están comprobados.</p>
+<p class="hero-description minor-intro"><strong>Orden de lectura:</strong> primero el <strong>ensamble pendiente de calibración</strong>, después <code>Reference26</code> y <code>Compact14</code>. No atribuimos al ensamble cifras de validación ni pesos todavía desconocidos.</p>
+<div class="hero-actions"><a class="primary-cta" href="#ensamble">Explorar ensamble <span aria-hidden="true">↗</span></a><a class="secondary-cta" href="#variables">Entender Reference26 ↓</a></div>
 <p class="hero-metadata">HIDALGO · PUEBLA · TLAXCALA · CICLO 2025</p>
 </div>
-<div class="hero-visual model-visual" aria-label="Esquema de etapas del modelo"><div class="visual-header"><span>UNA PREDICCIÓN, CUATRO OPERACIONES</span><span>t/ha</span></div>
+<div class="hero-visual model-visual" aria-label="Esquema de etapas del modelo"><div class="visual-header"><span>INTERIOR DE REFERENCE26 · PRIMER COMPONENTE</span><span>t/ha</span></div>
 <svg viewBox="0 0 580 440" role="img" aria-label="La lluvia y vegetación producen una estimación; las parcelas cercanas producen otra; la geología las mezcla y un corrector residual ajusta el resultado.">
 <path d="M124 99 H290 V174 M455 99 H290 V174" stroke="#aecda8" stroke-width="3" fill="none"/>
 <rect x="18" y="43" width="218" height="92" rx="9" fill="#235848" stroke="#92bc8d"/><text x="127" y="77" text-anchor="middle" font-size="15" fill="#e2eebd">Lluvia + vegetación</text><text x="127" y="104" text-anchor="middle" font-size="12" fill="#c2d9ca">Elastic Net</text>
@@ -43,10 +46,65 @@
 <div class="visual-foot"><span>26 indicadores en cinco grupos</span><span>MODELO ENTRENADO CON 138 COSECHAS</span></div>
 </div>
 </div></section>
-<div class="stat-band"><div class="shell stats-grid"><div class="stat-item"><strong>197</strong><span>parcelas del estudio</span></div><div class="stat-item"><strong>138</strong><span>con rendimiento conocido</span></div><div class="stat-item"><strong>59</strong><span>sin rendimiento conocido</span></div><div class="stat-item"><strong>26</strong><span>indicadores del modelo</span></div></div></div>
+<div class="stat-band"><div class="shell stats-grid"><div class="stat-item"><strong>197</strong><span>parcelas del estudio</span></div><div class="stat-item"><strong>138</strong><span>con rendimiento conocido</span></div><div class="stat-item"><strong>59</strong><span>sin rendimiento conocido</span></div><div class="stat-item"><strong>26 / 14</strong><span>indicadores de cada componente</span></div></div></div>
+
+<section class="section ensemble-story" id="ensamble"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">EL RESULTADO PRINCIPAL · EN PREPARACIÓN</p><h2>Primero el ensamble. <em>Después, sus dos componentes.</em></h2></div>
+<p>Este espacio mostrará las predicciones del ensamble y permitirá contrastarlas con las de Reference26 y Compact14, parcela por parcela. No se calculará un promedio arbitrario: la regla de combinación y sus pesos deberán proceder del ajuste final y de su validación.</p></div>
+<div class="ensemble-flow" aria-label="Estructura prevista del ensamble">
+<div class="ensemble-flow-sources"><div id="ensemble-card-reference" class="ensemble-flow-card"></div><div id="ensemble-card-compact" class="ensemble-flow-card"></div></div>
+<div class="ensemble-flow-middle" aria-hidden="true"><span>↓</span><p>regla y pesos por confirmar</p><span>↓</span></div>
+<div id="ensemble-card-output" class="ensemble-flow-card ensemble-flow-final"></div>
+</div>
+<p class="ensemble-source-status" id="ensemble-source-status" aria-live="polite">Preparando visualización de los dos modelos…</p>
+<div class="ensemble-selector" role="tablist" aria-label="Ver ensamble o modelo individual">
+<button type="button" role="tab" id="tab-ensemble" data-ensemble-tab="Ensemble" aria-controls="ensemble-dynamic-view" aria-selected="true" class="active" tabindex="0"><span>01 · Resultado principal</span><strong>Ensamble</strong><small>Regla y pesos finales</small></button>
+<button type="button" role="tab" id="tab-reference" data-ensemble-tab="Reference26" aria-controls="reference26-view" aria-selected="false" tabindex="-1"><span>02 · Componente</span><strong>Reference26</strong><small>26 indicadores</small></button>
+<button type="button" role="tab" id="tab-compact" data-ensemble-tab="Compact14" aria-controls="ensemble-dynamic-view" aria-selected="false" tabindex="-1"><span>03 · Componente</span><strong>Compact14</strong><small>14 indicadores</small></button>
+</div>
+<div class="ensemble-reading"><div><p class="eyebrow">VISTA SELECCIONADA</p><h3 id="ensemble-current-title">Ensamble de dos modelos</h3><p id="ensemble-current-description">La versión final del ensamble aún no está disponible.</p></div><span id="ensemble-current-status" class="ensemble-status-label">Esperando los ajustes finales</span></div>
+<div id="ensemble-dynamic-view" class="ensemble-dynamic-view" role="tabpanel" aria-labelledby="tab-ensemble">
+<p id="ensemble-method-description" class="ensemble-method">La combinación final todavía no se ha entrenado ni seleccionado.</p>
+<div id="ensemble-awaiting" class="ensemble-awaiting"><div class="ensemble-awaiting-icon" aria-hidden="true">∑</div><div><h4 id="ensemble-awaiting-title">La combinación final aún no está disponible</h4><p id="ensemble-awaiting-message">Necesitamos los dos modelos actualizados, sus predicciones y la regla de ensamble confirmada.</p><p>Podrás examinar ambos componentes y las diferencias entre sus estimaciones, pero no publicaremos pesos ni cifras ficticias.</p><button type="button" id="ensemble-jump-components" class="ensemble-see-reference">Ver Reference26 verificado →</button></div></div>
+<div id="ensemble-ready" class="ensemble-ready" hidden>
+<div class="ensemble-highlights"><div><span>Rendimiento estimado medio</span><strong id="ensemble-average">—</strong></div><div><span>Rango de las 59 estimaciones</span><strong id="ensemble-range">—</strong></div></div>
+<p id="ensemble-validation" class="ensemble-validation">Las métricas se mostrarán solamente con un protocolo de evaluación documentado.</p>
+<div class="ensemble-plot-area"><h4>59 predicciones por estado</h4><p>Un punto por parcela; selecciona uno para ver las estimaciones de ambos componentes y la del ensamble.</p><div id="ensemble-dot-chart" class="ensemble-dot-chart"></div></div>
+<div class="ensemble-table-container"><table class="ensemble-table"><thead><tr><th>Parcela</th><th>Ubicación</th><th>Rendimiento estimado</th><th>Detalle</th></tr></thead><tbody id="ensemble-result-rows"></tbody></table></div>
+<div id="ensemble-inspection" class="ensemble-inspection" aria-live="polite"></div>
+</div>
+</div>
+<div id="reference26-view" role="tabpanel" aria-labelledby="tab-reference" hidden>
+<div class="ensemble-reference-section" id="predicciones-59"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">REFERENCE26 · RESULTADOS INDIVIDUALES</p><h2>Reference26: <em>59 estimaciones verificadas.</em></h2></div>
+<p>Estas son las predicciones individuales de la regresión local con mezcla geológica, entrenada con las otras 138 parcelas. Son resultados reales del modelo, <strong>no ejemplos inventados</strong>, pero el rendimiento de esas 59 parcelas todavía no se ha observado o confirmado.</p></div>
+<div class="pred59-status" id="pred59-status" role="status" aria-live="polite">Verificando las 59 estimaciones frente a los resultados originales de Python…</div>
+<div class="pred59-data" id="pred59-data" hidden>
+<div class="pred59-summary" id="pred59-summary" aria-label="Resumen de las 59 estimaciones"></div>
+<div class="pred59-highlights"><div><h3>Tres parcelas como ejemplo</h3><p>Seleccionadas automáticamente por sus valores estimados: menor, mediano y mayor. No son parcelas elegidas por un rendimiento observado.</p></div><div id="pred59-examples" class="pred59-example-grid"></div></div>
+<div class="pred59-viz"><div class="pred59-viz-top"><div><h3>¿Cómo se distribuyen las estimaciones?</h3><p>Cada punto representa una parcela. La posición horizontal indica el rendimiento estimado, en toneladas por hectárea. Selecciona un punto para consultar su predicción.</p></div></div><div id="pred59-plot" class="pred59-plot" role="group" aria-label="Predicciones de las parcelas por estado"></div></div>
+<div class="pred59-explorer"><div class="pred59-explorer-heading"><h3>Consultar las 59 predicciones</h3><p>Busca por identificador o municipio, filtra por estado y ordena los resultados. Todos los valores provienen del mismo ajuste final Reference26.</p></div>
+<div class="pred59-filters">
+<label for="pred59-search">Buscar parcela o municipio<input id="pred59-search" type="search" placeholder="ID de parcela o municipio" autocomplete="off"></label>
+<label for="pred59-state">Estado<select id="pred59-state"><option value="all">Todos los estados</option></select></label>
+<label for="pred59-sort">Ordenar por<select id="pred59-sort"><option value="value-desc">Rendimiento: mayor a menor</option><option value="value-asc">Rendimiento: menor a mayor</option><option value="id-asc">Identificador: A–Z</option></select></label>
+</div>
+<p id="pred59-count" class="pred59-count" aria-live="polite">59 estimaciones disponibles</p>
+<div class="pred59-table-wrap"><table class="pred59-table"><thead><tr><th>Parcela</th><th>Estado / municipio</th><th>Estimación (t/ha)</th><th>Corrección final</th><th>Detalle</th></tr></thead><tbody id="pred59-rows"></tbody></table></div>
+<div id="pred59-detail" class="pred59-detail" aria-live="polite"><p>Selecciona una parcela del gráfico o de la tabla para analizar su estimación.</p></div>
+<button id="pred59-export" type="button" class="pred59-export">Descargar las 59 estimaciones (CSV)</button>
+</div>
+<p class="small-note"><strong>Procedencia:</strong> resultado archivado de Reference26 calculado con 138 rendimientos de entrenamiento y verificado en el navegador contra los 59 resultados de Python. La columna de corrección indica si se activó la última etapa; no es una medida de calidad de los datos ni un intervalo de confianza. Los rendimientos reales de estas 59 parcelas son desconocidos.</p>
+</div></div></div>
+
+
+</div>
+<div class="ensemble-component-note"><h3>Qué aporta Compact14</h3><p>Comparte la regresión climática con Reference26, pero utiliza cinco señales locales en Ridge, un peso global de mezcla y la corrección residual. No utiliza las diez proporciones geológicas ni K-means. Su menor complejidad puede aportar errores complementarios al ensamble; <strong>eso debe comprobarse con predicciones fuera de muestra del mismo protocolo</strong>, no suponerse.</p>
+<p>Los dos <code>.joblib</code> actualizados y los pesos finales del ensamble se integrarán posteriormente. Esta vista mantiene separado el modelo final por preparar de las predicciones ya verificadas.</p></div>
+</div></section>
 
 <section class="section" id="datos"><div class="shell">
-<div class="section-heading"><div><p class="eyebrow">01 · EL PROBLEMA</p><h2>Sabemos lo que cosecharon 138 parcelas. <em>¿Y las otras 59?</em></h2></div><p>El rendimiento se mide en toneladas de cebada por hectárea (t/ha). Un valor de 4 t/ha significa cuatro toneladas por cada hectárea, sin importar el tamaño de la parcela.</p></div>
+<div class="section-heading"><div><p class="eyebrow">CONTEXTO · LOS DATOS</p><h2>Sabemos lo que cosecharon 138 parcelas. <em>¿Y las otras 59?</em></h2></div><p>El rendimiento se mide en toneladas de cebada por hectárea (t/ha). Un valor de 4 t/ha significa cuatro toneladas por cada hectárea, sin importar el tamaño de la parcela.</p></div>
 <div class="split-prose"><div><h3>Qué conocemos</h3><p>Para las 197 parcelas se prepararon variables de lluvia, vegetación, relieve, ubicación y geología. Sólo 138 tienen un rendimiento reportado para entrenar y evaluar el modelo.</p><p>Las series históricas provienen principalmente de 2022–2024; las medidas del ciclo que queremos describir utilizan 2025, incluso hasta octubre. <strong>Es una estimación retrospectiva del ciclo, no una predicción disponible desde mayo.</strong></p></div><div><h3>Qué intentamos aprender</h3><p>Una misma cantidad de lluvia no produce necesariamente el mismo rendimiento. Las parcelas varían en vegetación, ubicación y composición geológica. Por eso utilizamos varias estimaciones que se complementan.</p><p>Los rendimientos conocidos pueden contener errores de reporte. El modelo aprende de ellos, pero <strong>no puede verificar que todos sean mediciones exactas</strong>.</p></div></div>
 <div class="note-inline"><strong>Importante:</strong> los 59 rendimientos desconocidos no se usan para ajustar coeficientes, elegir parámetros ni calcular el error de validación. El error publicado procede de parcelas conocidas que se apartaron durante las pruebas.</div>
 <div class="real-data-figure">
@@ -87,7 +145,6 @@
 <div class="illustration-lab"><div class="lab-heading"><h3>Igual lluvia total, distinta distribución</h3><p>simulación educativa, con valores inventados: no son datos de las parcelas del estudio.</p></div>
 <div class="buttonset"><button type="button" class="active" data-rain="uniform" aria-pressed="true">30 mm cada mes</button><button type="button" data-rain="concentrated" aria-pressed="false">140 mm en agosto</button></div>
 <div id="rain-chart"></div><div class="rain-metrics"><div><span>Lluvia total</span><strong id="rain-total">210 mm</strong></div><div><span>Fracción temprana</span><strong id="rain-early">42.9 %</strong></div><div><span>Índice HHI</span><strong id="rain-hhi">0.143</strong></div></div>
-</div>
 <div class="real-data-figure" id="datos-reales">
 <h3>El clima y la vegetación observados en 2025</h3>
 <p class="chart-explain">Estas gráficas están reservadas para los datos <strong>reales de las 197 parcelas</strong>. Se generan a partir de las series originales, sin inventar lluvia ni vegetación. Las líneas representan las medianas mensuales y los segmentos verticales delimitan los percentiles 10 y 90; no son intervalos predictivos.</p>
@@ -186,8 +243,7 @@
 <div class="previous-validation-heading"><h3>Otra evaluación utilizada durante el desarrollo</h3><p>Se conserva por separado el experimento de 16 particiones, con 97 parcelas para entrenar y 41 para evaluar. Sus métricas no deben confundirse con las del LOOCV.</p></div>
 <div class="scoreline"><div><span>RMSE · 16 evaluaciones 97/41</span><strong>0.4625</strong><small>t/ha</small></div><div><span>Error absoluto medio, MAE</span><strong>0.3387</strong><small>t/ha</small></div><div><span>R² de esas evaluaciones</span><strong>0.6971</strong><small>no es un porcentaje de aciertos</small></div></div>
 <p class="chart-explain">En cada una de esas 16 evaluaciones se entrenó con 97 rendimientos y se midió el error en 41 parcelas reservadas. Se informa el promedio de las métricas de cada partición. También se evaluó el método dejando fuera perfiles climáticos, municipios y bloques geográficos completos.</p>
-<div id="performance-chart" aria-live="polite">Cargando los resultados originales…</div>
-<div class="real-data-figure">
+<div id="performance-chart" aria-live="polite">Cargando los resultados originales…</div><div class="real-data-figure">
 <h3>Errores reales, parcela por parcela</h3>
 <p class="chart-explain">La tabla se activa únicamente cuando se reciben las 138 predicciones reservadas de una ejecución LOOCV auténtica. Sin esos datos no es correcto inferir MAE, sesgo o error máximo a partir del RMSE.</p>
 <div id="real-loocv">Falta el archivo de predicciones individuales LOOCV.</div>
@@ -230,28 +286,6 @@
 <details><summary>¿Puedo estimar aquí mi parcela?</summary><p>Sí, puedes introducir las 26 variables y usar el motor Reference26 que funciona en tu navegador. Antes de permitir el cálculo, comprueba que reproduce las 59 estimaciones originales de Python. También puedes explorar directamente esos 59 resultados del estudio. La validez para parcelas nuevas fuera del área o ciclo estudiados no está demostrada.</p></details>
 </div>
 <div class="source-index"><strong>Documentación técnica original</strong><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Fórmula, 26 variables y ajuste final ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de cada componente ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Soporte, sensibilidad e intervalos ↗</a></div></div></section>
-<section class="section" id="predicciones-59"><div class="shell">
-<div class="section-heading"><div><p class="eyebrow">11 · RESULTADOS POR PARCELA</p><h2>Las 59 parcelas sin cosecha reportada: <em>estimaciones del modelo final.</em></h2></div>
-<p>Estas son las predicciones individuales de la regresión local con mezcla geológica, entrenada con las otras 138 parcelas. Son resultados reales del modelo, <strong>no ejemplos inventados</strong>, pero el rendimiento de esas 59 parcelas todavía no se ha observado o confirmado.</p></div>
-<div class="pred59-status" id="pred59-status" role="status" aria-live="polite">Verificando las 59 estimaciones frente a los resultados originales de Python…</div>
-<div class="pred59-data" id="pred59-data" hidden>
-<div class="pred59-summary" id="pred59-summary" aria-label="Resumen de las 59 estimaciones"></div>
-<div class="pred59-highlights"><div><h3>Tres parcelas como ejemplo</h3><p>Seleccionadas automáticamente por sus valores estimados: menor, mediano y mayor. No son parcelas elegidas por un rendimiento observado.</p></div><div id="pred59-examples" class="pred59-example-grid"></div></div>
-<div class="pred59-viz"><div class="pred59-viz-top"><div><h3>¿Cómo se distribuyen las estimaciones?</h3><p>Cada punto representa una parcela. La posición horizontal indica el rendimiento estimado, en toneladas por hectárea. Selecciona un punto para consultar su predicción.</p></div></div><div id="pred59-plot" class="pred59-plot" role="group" aria-label="Predicciones de las parcelas por estado"></div></div>
-<div class="pred59-explorer"><div class="pred59-explorer-heading"><h3>Consultar las 59 predicciones</h3><p>Busca por identificador o municipio, filtra por estado y ordena los resultados. Todos los valores provienen del mismo ajuste final Reference26.</p></div>
-<div class="pred59-filters">
-<label for="pred59-search">Buscar parcela o municipio<input id="pred59-search" type="search" placeholder="ID de parcela o municipio" autocomplete="off"></label>
-<label for="pred59-state">Estado<select id="pred59-state"><option value="all">Todos los estados</option></select></label>
-<label for="pred59-sort">Ordenar por<select id="pred59-sort"><option value="value-desc">Rendimiento: mayor a menor</option><option value="value-asc">Rendimiento: menor a mayor</option><option value="id-asc">Identificador: A–Z</option></select></label>
-</div>
-<p id="pred59-count" class="pred59-count" aria-live="polite">59 estimaciones disponibles</p>
-<div class="pred59-table-wrap"><table class="pred59-table"><thead><tr><th>Parcela</th><th>Estado / municipio</th><th>Estimación (t/ha)</th><th>Corrección final</th><th>Detalle</th></tr></thead><tbody id="pred59-rows"></tbody></table></div>
-<div id="pred59-detail" class="pred59-detail" aria-live="polite"><p>Selecciona una parcela del gráfico o de la tabla para analizar su estimación.</p></div>
-<button id="pred59-export" type="button" class="pred59-export">Descargar las 59 estimaciones (CSV)</button>
-</div>
-<p class="small-note"><strong>Procedencia:</strong> resultado archivado de Reference26 calculado con 138 rendimientos de entrenamiento y verificado en el navegador contra los 59 resultados de Python. La columna de corrección indica si se activó la última etapa; no es una medida de calidad de los datos ni un intervalo de confianza. Los rendimientos reales de estas 59 parcelas son desconocidos.</p>
-</div></div></section>
-
 <section class="section section-soft" id="simulador"><div class="shell">
 <div class="section-heading"><div><p class="eyebrow">12 · LABORATORIO DE PREDICCIÓN</p><h2>Explora la predicción <em>con parcelas inventadas o con tus propios datos.</em></h2></div><p>Puedes experimentar con una simulación o ejecutar el modelo entrenado dentro de tu navegador cuando esté disponible su exportación verificada.</p></div>
 <div class="prediction-mode" role="group" aria-label="Modo de exploración"><button type="button" data-predmode="fictitious" class="active" aria-pressed="true">Parcelas inventadas · simulación</button><button type="button" data-predmode="own" aria-pressed="false">Mi parcela · preparar datos</button></div>
@@ -290,7 +324,6 @@
 <p class="small-note">Este JSON <strong>no contiene una predicción</strong>. La inferencia exige el modelo ajustado, su preprocesamiento, los centroides geológicos y los 138 ejemplos de entrenamiento, que estarán incluidos en la exportación web verificada. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
 </div>
 </div></section>
-
 <section class="section section-soft collaborator-map" id="mapa-interactivo" aria-labelledby="collaborator-map-title">
 <div class="shell">
 <div class="section-heading collaborator-map-heading"><div>
@@ -304,5 +337,5 @@
 </div>
 </section>
 
-</main><footer class="model-footer"><div class="shell"><strong>GeoCebada · AgroCebada FIRA 2026</strong><span>Regresión local con mezcla geológica · Código: Reference26 · Investigación retrospectiva del ciclo 2025</span><a href="#inicio">Volver al inicio ↑</a></div></footer>
+</main><footer class="model-footer"><div class="shell"><strong>GeoCebada · AgroCebada FIRA 2026</strong><span>Ensamble en preparación · Reference26 + Compact14 · Investigación retrospectiva de 2025</span><a href="#inicio">Volver al inicio ↑</a></div></footer>
 </body></html>
