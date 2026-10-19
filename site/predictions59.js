@@ -78,6 +78,9 @@
       button.classList.toggle("active",selected);
       button.setAttribute("aria-pressed",String(selected));
     });
+    document.querySelectorAll("[data-pred59-row-id]").forEach(tableRow=>{
+      tableRow.classList.toggle("selected",tableRow.dataset.pred59RowId===chosen);
+    });
     const detail=$("#pred59-detail");
     detail.replaceChildren();
     const head=make("div","pred59-detail-head");
@@ -205,6 +208,7 @@
     const values=all.map(x=>x.estimate),min=Math.min(...values),max=Math.max(...values);
     for(const item of matched){
       const tr=make("tr","");
+      tr.dataset.pred59RowId=item.id;
       if(item.id===chosen)tr.classList.add("selected");
       const id=make("td","",item.id);
       const loc=make("td","");
