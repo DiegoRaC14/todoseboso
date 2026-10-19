@@ -72,8 +72,8 @@ def check() -> None:
     assert fit["r3_available"] + fit["r3_missing"] == fit["unknown"]
     assert data["selection"]["geology_groups"] == [4, 8]
     assert data["selection"]["climate_alpha"] == [.001, .01, .1, 1]
-    for fragment in ("0.372869", "0.855580", "0.816305", "0.866107",
-                     "0.779654", "alpha .001", "alpha .1", "24 vecinos",
+    for fragment in (".372869", ".855580", ".816305", ".866107",
+                     ".779654", "alpha .001", "alpha .1", "24 vecinos",
                      "±.25", "51 completas", "8 se desactiva"):
         assert fragment in desc, ("model document missing", fragment)
 
