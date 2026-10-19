@@ -36,6 +36,9 @@
       if(!response.ok)throw Error("Falta exportar y publicar el archivo de inferencia del modelo.");
       const value=await response.json();
       const verification=window.Reference26Browser.parity(value,1e-7);
+      // The public gallery must not render a single individual estimate until
+      // all 59 Python-to-JavaScript numerical parity cases have passed.
+      window.GeoCebadaPredictions.render(value);
       runtime=value;
       ready(runtime);
       text(status,"Reference26 cargado y verificado en tu computadora. Reproducidas "+
@@ -45,6 +48,9 @@
           "Puedes introducir las 26 variables de una parcela nueva." :
           "La geometría de parcelas nuevas todavía no está verificada."));
     } catch (error) {
+      runtime=null;
+      ready(null);
+      window.GeoCebadaPredictions.unavailable(error.message);
       text(status,"El motor local todavía no está disponible: "+error.message+
         " Puedes usar las simulaciones educativas y preparar los datos en JSON.");
     }
