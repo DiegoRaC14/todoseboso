@@ -77,7 +77,7 @@ def main():
     assert "GeoCharts.r3" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.coefficients" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.performance" in (SITE / "model.js").read_text(encoding="utf-8")
-    print("PASS: all 8 distribution rows and 10 chart mounts match their published sources.")
+    print("PASS: all 8 distribution rows and 9 chart mounts match their published sources.")
 
 
 if __name__ == "__main__":
