@@ -105,3 +105,152 @@
  .result-label small{font-size:9px}
  .hero-tag{min-width:190px}
 }
+
+
+/* ==============================
+   TRABAJO A FUTURO — GEOCEBADA
+   ============================== */
+
+.future-work {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 76px 24px 88px;
+}
+
+.future-work__header {
+  max-width: 780px;
+  margin-bottom: 36px;
+}
+
+.future-work__eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #65865c;
+}
+
+.future-work__header h2 {
+  margin: 0 0 18px;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.future-work__header > p {
+  margin: 0;
+  font-size: 1.04rem;
+  line-height: 1.8;
+  opacity: 0.8;
+}
+
+.future-work__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.future-work__card {
+  padding: 26px;
+  border: 1px solid rgba(128, 145, 118, 0.28);
+  border-radius: 18px;
+  background: rgba(128, 145, 118, 0.06);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.future-work__card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(101, 134, 92, 0.7);
+}
+
+.future-work__number {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #65865c;
+}
+
+.future-work__card h3 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.future-work__card p {
+  margin: 0 0 20px;
+  font-size: 0.96rem;
+  line-height: 1.75;
+  opacity: 0.82;
+}
+
+.future-work__tag {
+  display: inline-block;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(101, 134, 92, 0.13);
+  color: #65865c;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.future-work__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 24px;
+  border-left: 4px solid #65865c;
+  border-radius: 0 14px 14px 0;
+  background: rgba(128, 145, 118, 0.09);
+}
+
+.future-work__note-icon {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #65865c;
+}
+
+.future-work__note h3 {
+  margin: 0 0 8px;
+  font-size: 1.08rem;
+}
+
+.future-work__note p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.75;
+  opacity: 0.85;
+}
+
+@media (max-width: 700px) {
+  .future-work {
+    padding: 52px 18px 64px;
+  }
+
+  .future-work__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .future-work__card {
+    padding: 22px;
+  }
+
+  .future-work__note {
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .future-work__card {
+    transition: none;
+  }
+
+  .future-work__card:hover {
+    transform: none;
+  }
+}
