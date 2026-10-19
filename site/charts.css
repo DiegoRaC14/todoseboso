@@ -51,3 +51,13 @@
 .real-data-figure .chart-explain{max-width:780px}
 #parcel-coverage.figure-host{margin-top:14px}
 @media(max-width:740px){.real-data-figure{padding:18px 14px}}
+
+/* Empirical series are absent until a reviewed compact export is published. */
+.real-chart-pair{align-items:start}
+.real-chart-pair h4{margin:18px 0 4px;color:var(--forest)}
+#real-chart-status{color:var(--forest);font-size:13px;line-height:1.7;margin:8px 0 16px}
+#real-rainfall .figure-scroll,#real-ndvi .figure-scroll{margin:0 0 8px}
+#real-loocv{overflow-x:auto;max-width:100%}
+.real-model-metrics{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.real-model-metrics th,.real-model-metrics td{padding:10px 9px;border-bottom:1px solid var(--rule);text-align:left}
+.real-model-metrics th{color:var(--forest);font-weight:750;white-space:nowrap}
