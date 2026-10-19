@@ -6,8 +6,8 @@
 <meta name="description" content="Cómo funciona la regresión local con mezcla geológica para estimar el rendimiento de cebada: 26 variables, tratamiento de faltantes, K-means, Ridge, Elastic Net, hiperparámetros, resultados y pruebas.">
 <title>Cómo estimamos el rendimiento de cebada · Regresión local con mezcla geológica</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css">
-<script src="./charts.js" defer></script><script src="./model.js" defer></script>
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css">
+<script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./predictor.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -16,7 +16,7 @@
 <a href="#inicio" class="brand"><span class="brand-icon" aria-hidden="true">✳</span><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
 <button id="menu-toggle" class="menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false">Menú ☰</button>
 <nav id="nav-links" class="nav-links" aria-label="Índice de la explicación">
-<a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a><a href="#simulador">Probar</a>
+<a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a><a href="#simulador">Probar parcelas</a>
 </nav>
 </div></header>
 <main id="contenido">
@@ -203,8 +203,34 @@
 <details><summary>¿Se sustituyen los datos faltantes siempre por la media?</summary><p>No. Las columnas numéricas de los regresores se imputan por mediana de entrenamiento; el escalado utiliza estadísticas de entrenamiento. El corrector final se desactiva si falta alguno de sus tres indicadores requeridos.</p></details>
 <details><summary>¿Qué significa un peso geológico de 0.86?</summary><p>Que, en esa mezcla ajustada, la estimación local recibe un peso cercano a 86 % y la climática el resto. No significa que la geología explique 86 % del rendimiento o que lo cause.</p></details>
 <details><summary>¿Cuánto acierta el modelo?</summary><p>En LOOCV se evaluaron 138 parcelas, dejando fuera una distinta cada vez: RMSE de 0.468186 t/ha y R² aproximado de 0.6952. Otra evaluación de 16 particiones obtuvo RMSE medio de 0.4625 t/ha. Ninguno representa un porcentaje de aciertos ni una garantía para cada parcela.</p></details>
-<details><summary>¿Puedo estimar aquí mi parcela?</summary><p>No. La página describe y documenta el método empleado en el estudio. No hay una herramienta pública para cargar parcelas nuevas ni se exponen las predicciones individuales.</p></details>
+<details><summary>¿Puedo estimar aquí mi parcela?</summary><p>Puedes preparar las 26 variables en el formulario final o experimentar con parcelas inventadas. La página no ofrece una predicción real: se necesita ejecutar el modelo entrenado con sus datos y preprocesamiento.</p></details>
 </div>
 <div class="source-index"><strong>Documentación técnica original</strong><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Fórmula, 26 variables y ajuste final ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de cada componente ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Soporte, sensibilidad e intervalos ↗</a></div></div></section>
+<section class="section section-soft" id="simulador"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">11 · LABORATORIO DE PREDICCIÓN</p><h2>Explora la predicción <em>con parcelas inventadas o con tus propios datos.</em></h2></div><p>Elige qué deseas hacer. Una simulación sirve para entender cómo se combinan las partes del modelo, mientras que una predicción real requiere ejecutar todos los regresores entrenados con las 26 variables.</p></div>
+<div class="prediction-mode" role="group" aria-label="Modo de exploración"><button type="button" data-predmode="fictitious" class="active" aria-pressed="true">Parcelas inventadas · simulación</button><button type="button" data-predmode="own" aria-pressed="false">Mi parcela · preparar datos</button></div>
+<div id="fictitious-mode" class="prediction-panel">
+<h3>¿Cómo cambia la estimación entre parcelas imaginarias?</h3>
+<p>Estos casos utilizan estimaciones climáticas, locales y correcciones <strong>inventadas</strong>. Los pesos geológicos corresponden al ajuste final documentado; el cálculo de mezcla es exacto, pero <strong>no equivale a ejecutar el modelo entrenado</strong> sobre los 26 indicadores.</p>
+<div class="fictional-presets" id="fictional-presets" role="group" aria-label="Elegir una parcela inventada"></div>
+<div class="parcel-config">
+<div class="parcel-inputs"><label for="parcel-climate">Estimación climática ficticia (t/ha)<input id="parcel-climate" type="number" min="0" max="12" step="0.05" value="4.10"></label>
+<label for="parcel-local">Estimación local ficticia (t/ha)<input id="parcel-local" type="number" min="0" max="12" step="0.05" value="4.55"></label>
+<label for="parcel-geogroup">Grupo geológico de ejemplo<select id="parcel-geogroup"><option value="0">Grupo 0</option><option value="1">Grupo 1</option><option value="2">Grupo 2</option><option value="3">Grupo 3</option></select></label>
+<label for="parcel-delta">Corrección ficticia (t/ha)<input id="parcel-delta" type="number" min="-0.25" max="0.25" step="0.01" value="0.10"></label>
+<label class="parcel-support"><input type="checkbox" id="parcel-r3" checked> Los tres indicadores residuales están disponibles</label></div>
+<div class="parcel-output"><span class="output-heading">Resultado de la fórmula ilustrativa</span><strong id="parcel-estimate" aria-live="polite">—</strong><small>toneladas por hectárea</small><div id="parcel-mixbar" class="parcel-mixbar" aria-label="Pesos climático y local"><span></span><span></span></div><p id="parcel-breakdown" aria-live="polite"></p><p id="parcel-status" role="status">No se han ejecutado los coeficientes del modelo entrenado.</p></div>
+</div>
+</div>
+<div id="own-mode" class="prediction-panel" hidden>
+<h3>Prepara los indicadores de una parcela</h3>
+<p>Esta herramienta organiza <strong>las mismas 26 variables derivadas</strong> que utiliza el modelo. Algunas proceden de imágenes satelitales, información geológica y series históricas; por eso no basta con escribir la latitud y la longitud. Los valores se introducen ya calculados, con las unidades que se indican en el inventario de variables.</p>
+<p><strong>No se calcula un rendimiento real desde esta página.</strong> El archivo del modelo entrenado es privado y el sitio estático no dispone de un servidor de inferencia. Puedes preparar y descargar un archivo JSON para procesarlo más adelante con el modelo en un entorno autorizado; ningún dato se envía a un servidor desde este formulario.</p>
+<div class="own-status"><strong id="parcel-completeness" aria-live="polite">0 de 26 variables completadas</strong><span id="own-r3-status">Sin evaluar soporte R3</span></div>
+<div id="parcel-input-groups"></div>
+<div class="own-actions"><button id="parcel-export" type="button">Descargar mis 26 indicadores en JSON</button><button id="parcel-clear" type="button" class="secondary-cta">Limpiar el formulario</button></div>
+<p class="small-note">Este JSON <strong>no contiene una predicción</strong>. Para una inferencia exacta hacen falta el modelo ajustado, su preprocesamiento, los centroides geológicos y los datos de los 138 vecinos disponibles en el entrenamiento. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
+</div>
+</div></section>
 </main><footer class="model-footer"><div class="shell"><strong>GeoCebada · AgroCebada FIRA 2026</strong><span>Regresión local con mezcla geológica · Código: Reference26 · Investigación retrospectiva del ciclo 2025</span><a href="#inicio">Volver al inicio ↑</a></div></footer>
 </body></html>
