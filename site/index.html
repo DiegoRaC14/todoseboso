@@ -1,334 +1,167 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#10352f">
-  <meta name="description" content="Cómo estimamos el rendimiento de cebada con lluvia, satélites, parcelas cercanas y geología. Explicación sencilla, resultados y pruebas estadísticas.">
-  <meta property="og:title" content="GeoCebada | ¿Cuánto puede producir una parcela?">
-  <meta property="og:description" content="De cuatro señales agroclimáticas a dos modelos locales y reproducibles. Una investigación contada paso a paso.">
-  <title>¿Cuánto puede producir una parcela? · GeoCebada</title>
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./charts.css">
-  <script src="./charts.js" defer></script>
-  <script src="./app.js" defer></script>
-  <script src="./preguntas.js" defer></script>
-  <link rel="stylesheet" href="./preguntas.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10372f">
+<meta name="description" content="Cómo funciona la regresión local con mezcla geológica para estimar el rendimiento de cebada: 26 variables, tratamiento de faltantes, K-means, Ridge, Elastic Net, hiperparámetros, resultados y pruebas.">
+<title>Cómo estimamos el rendimiento de cebada · Regresión local con mezcla geológica</title>
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css">
+<script src="./charts.js" defer></script><script src="./model.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#contenido">Saltar al contenido</a>
-  <div class="read-progress" id="read-progress" aria-hidden="true"></div>
-  <header class="site-header" id="inicio">
-    <div class="shell nav-inner">
-      <a href="#inicio" class="brand" aria-label="GeoCebada, ir al inicio"><span class="brand-icon" aria-hidden="true">✳</span><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
-      <button class="menu-toggle" type="button" id="menu-toggle" aria-controls="nav-links" aria-expanded="false" aria-label="Abrir menú">Menú <span aria-hidden="true">☰</span></button>
-      <nav class="nav-links" id="nav-links" aria-label="Secciones del sitio">
-        <a href="#historia">Cómo llegamos aquí</a>
-        <a href="#de-donde-sale">Cómo se calcula</a>
-        <a href="#significancia">Qué muestran las pruebas</a>
-        <a href="#retirar-hhi">El experimento sin HHI</a>
-        <a href="#cobertura">Las 59 parcelas</a>
-        <a href="#preguntas-tecnicas">Preguntas</a>
-      </nav>
-      <a class="nav-report" href="https://github.com/heri-espino/todoseboso" target="_blank" rel="noopener noreferrer">Ver repositorio <span aria-hidden="true">↗</span></a>
-    </div>
-  </header>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<header class="site-header" id="inicio">
+<div class="shell nav-inner">
+<a href="#inicio" class="brand"><span class="brand-icon" aria-hidden="true">✳</span><span>Geo<span>Cebada</span></span><small>FIRA / 2026</small></a>
+<button id="menu-toggle" class="menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false">Menú ☰</button>
+<nav id="nav-links" class="nav-links" aria-label="Índice de la explicación">
+<a href="#datos">Datos</a><a href="#variables">26 variables</a><a href="#preparacion">Preparación</a><a href="#arquitectura">Algoritmo</a><a href="#ajuste">Ajuste</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#limites">Límites</a>
+</nav>
+</div></header>
+<main id="contenido">
+<section class="hero model-hero"><div class="shell hero-grid">
+<div class="hero-content">
+<p class="eyebrow hero-eyebrow">UNA EXPLICACIÓN COMPLETA DE LA PREDICCIÓN</p>
+<h1>¿Cómo estimamos cuánto <em>rendirá una parcela de cebada?</em></h1>
+<p class="hero-description">Utilizamos la lluvia, la vegetación observada desde satélites y lo que sabemos de parcelas cercanas. La composición geológica nos ayuda a decidir cuánto confiar en cada estimación. Un último ajuste corrige parte del error que queda.</p>
+<p class="hero-description minor-intro"><strong>Nombre del método:</strong> regresión local con mezcla geológica. En el repositorio se identifica como <code>Reference26</code>. También incluye K-means, pero K-means <strong>no predice el rendimiento por sí solo</strong>.</p>
+<div class="hero-actions"><a class="primary-cta" href="#arquitectura">Ver cómo calcula <span aria-hidden="true">↗</span></a><a class="secondary-cta" href="#variables">Explorar las 26 variables ↓</a></div>
+<p class="hero-metadata">HIDALGO · PUEBLA · TLAXCALA · CICLO 2025</p>
+</div>
+<div class="hero-visual model-visual" aria-label="Esquema de etapas del modelo"><div class="visual-header"><span>UNA PREDICCIÓN, CUATRO OPERACIONES</span><span>t/ha</span></div>
+<svg viewBox="0 0 580 440" role="img" aria-label="La lluvia y vegetación producen una estimación; las parcelas cercanas producen otra; la geología las mezcla y un corrector residual ajusta el resultado.">
+<path d="M124 99 H290 V174 M455 99 H290 V174" stroke="#aecda8" stroke-width="3" fill="none"/>
+<rect x="18" y="43" width="218" height="92" rx="9" fill="#235848" stroke="#92bc8d"/><text x="127" y="77" text-anchor="middle" font-size="15" fill="#e2eebd">Lluvia + vegetación</text><text x="127" y="104" text-anchor="middle" font-size="12" fill="#c2d9ca">Elastic Net</text>
+<rect x="343" y="43" width="218" height="92" rx="9" fill="#235848" stroke="#92bc8d"/><text x="453" y="77" text-anchor="middle" font-size="15" fill="#e2eebd">24 parcelas cercanas</text><text x="453" y="104" text-anchor="middle" font-size="12" fill="#c2d9ca">Ridge local</text>
+<rect x="165" y="172" width="250" height="93" rx="9" fill="#e7edcc"/><text x="290" y="202" text-anchor="middle" font-size="15" fill="#10372f">Mezcla según geología</text><text x="290" y="229" text-anchor="middle" font-size="12" fill="#436550">K-means + pesos aprendidos</text>
+<path d="M290 265 V307" stroke="#e7edcc" stroke-width="3"/><rect x="170" y="307" width="240" height="70" rx="9" fill="#2c6752" stroke="#92bc8d"/><text x="290" y="335" text-anchor="middle" font-size="15" fill="#f7f7ef">Corrección residual</text><text x="290" y="356" text-anchor="middle" font-size="12" fill="#d6e8d5">Máximo ±0.25 t/ha</text><path d="M290 377 V407" stroke="#e7edcc" stroke-width="3"/>
+</svg>
+<div class="visual-foot"><span>26 indicadores en cinco grupos</span><span>MODELO ENTRENADO CON 138 COSECHAS</span></div>
+</div>
+</div></section>
+<div class="stat-band"><div class="shell stats-grid"><div class="stat-item"><strong>197</strong><span>parcelas del estudio</span></div><div class="stat-item"><strong>138</strong><span>con rendimiento conocido</span></div><div class="stat-item"><strong>59</strong><span>sin rendimiento conocido</span></div><div class="stat-item"><strong>26</strong><span>indicadores del modelo</span></div></div></div>
 
-  <main id="contenido">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="shell hero-grid">
-        <div class="hero-content">
-          <p class="eyebrow hero-eyebrow"><span class="eyebrow-line"></span> INVESTIGACIÓN APLICADA · CICLO 2025</p>
-          <h1 id="hero-title">¿Cuánta cebada puede producir una parcela <em>si todavía no conocemos su cosecha?</em></h1>
-          <p class="hero-description">Con los rendimientos de 138 parcelas y datos del clima, los satélites y el terreno, desarrollamos modelos para estimar la cosecha de otras 59 parcelas de Hidalgo, Puebla y Tlaxcala. Aquí explicamos cómo funcionan y qué tan bien resultaron en las pruebas.</p>
-          <div class="hero-actions"><a class="primary-cta" href="#historia">Cómo construimos los modelos <span aria-hidden="true">↘</span></a><a class="secondary-cta" href="#evidencia">Ver los resultados <span aria-hidden="true">→</span></a></div>
-          <div class="hero-metadata"><span>HIDALGO</span><i></i><span>PUEBLA</span><i></i><span>TLAXCALA</span></div>
-        </div>
-        <div class="hero-visual" role="img" aria-label="Ilustración conceptual de parcelas agrícolas, lluvia y vegetación. No representa datos ni ubicaciones reales.">
-          <div class="visual-header"><span><span class="status-dot"></span> LLUVIA, CULTIVO Y UBICACIÓN</span><span>01 — 04</span></div>
-          <svg class="hero-svg" viewBox="0 0 580 495" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <clipPath id="land-clip"><rect x="25" y="30" width="530" height="425" rx="13"/></clipPath>
-              <pattern id="crop-lines" width="15" height="15" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><path d="M0 0V15" stroke="#f8e8b6" stroke-opacity=".22" stroke-width="1.7"/></pattern>
-              <linearGradient id="land1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#659279"/><stop offset="1" stop-color="#164c49"/></linearGradient>
-            </defs>
-            <g clip-path="url(#land-clip)">
-              <rect x="25" y="30" width="530" height="425" fill="#1d504a"/>
-              <g transform="rotate(-17 290 250)">
-                <rect x="-95" y="-30" width="770" height="120" fill="#4b806a"/>
-                <rect x="-95" y="96" width="770" height="81" fill="#9f9c67"/>
-                <rect x="-95" y="183" width="770" height="130" fill="url(#land1)"/>
-                <rect x="-95" y="319" width="770" height="95" fill="#778e68"/>
-                <rect x="-95" y="419" width="770" height="117" fill="#305d56"/>
-                <path d="M47 -80V600 M182 -80V600 M335 -80V600 M469 -80V600" stroke="#e9d6a8" stroke-opacity=".35" stroke-width="7"/>
-                <path d="M-110 92H690 M-110 179H690 M-110 315H690 M-110 415H690" stroke="#e8ddbc" stroke-opacity=".38" stroke-width="7"/>
-                <rect x="-100" y="-30" width="780" height="570" fill="url(#crop-lines)"/>
-              </g>
-              <path d="M146 136l92-28 33 103-92 31z" fill="#c8e7a0" fill-opacity=".2" stroke="#def4aa" stroke-width="2.7"/>
-              <path d="M330 266l108-36 30 104-108 35z" fill="#d8eaa9" fill-opacity=".18" stroke="#def4aa" stroke-width="2.7"/>
-              <circle cx="209" cy="173" r="6" fill="#e1f4af"/><circle cx="209" cy="173" r="32" stroke="#e1f4af" stroke-dasharray="4 6" fill="none" stroke-opacity=".8"/>
-              <circle cx="399" cy="295" r="6" fill="#e1f4af"/><circle cx="399" cy="295" r="34" stroke="#e1f4af" stroke-dasharray="4 6" fill="none" stroke-opacity=".8"/>
-              <path d="M209 173L399 295" stroke="#e2efbc" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".6"/>
-            </g>
-            <rect x="25" y="30" width="530" height="425" rx="13" stroke="#cfddc3" stroke-opacity=".2" fill="none"/>
-          </svg>
-          <div class="visual-foot"><span>SATÉLITE + CLIMA + RELIEVE</span><span>ESQUEMA, NO MAPA REAL</span></div>
-          <div class="hero-tag"><span>MODELO PRINCIPAL</span><strong>Clima y territorio</strong><small>Reference26 · 26 indicadores</small></div>
-        </div>
-      </div>
-      <div class="shell hero-baseline"><span>LA IDEA</span><span>La lluvia por sí sola no describe todo lo que ocurre en una parcela.</span><span aria-hidden="true">↓</span></div>
-    </section>
+<section class="section" id="datos"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">01 · EL PROBLEMA</p><h2>Sabemos lo que cosecharon 138 parcelas. <em>¿Y las otras 59?</em></h2></div><p>El rendimiento se mide en toneladas de cebada por hectárea (t/ha). Un valor de 4 t/ha significa cuatro toneladas por cada hectárea, sin importar el tamaño de la parcela.</p></div>
+<div class="split-prose"><div><h3>Qué conocemos</h3><p>Para las 197 parcelas se prepararon variables de lluvia, vegetación, relieve, ubicación y geología. Sólo 138 tienen un rendimiento reportado para entrenar y evaluar el modelo.</p><p>Las series históricas provienen principalmente de 2022–2024; las medidas del ciclo que queremos describir utilizan 2025, incluso hasta octubre. <strong>Es una estimación retrospectiva del ciclo, no una predicción disponible desde mayo.</strong></p></div><div><h3>Qué intentamos aprender</h3><p>Una misma cantidad de lluvia no produce necesariamente el mismo rendimiento. Las parcelas varían en vegetación, ubicación y composición geológica. Por eso utilizamos varias estimaciones que se complementan.</p><p>Los rendimientos conocidos pueden contener errores de reporte. El modelo aprende de ellos, pero <strong>no puede verificar que todos sean mediciones exactas</strong>.</p></div></div>
+<div class="note-inline"><strong>Importante:</strong> los 59 rendimientos desconocidos no se usan para ajustar coeficientes, elegir parámetros ni calcular el error de validación. El error publicado procede de parcelas conocidas que se apartaron durante las pruebas.</div>
+</div></section>
 
-    <section class="stat-band" aria-label="Universo del estudio"><div class="shell stats-grid">
-      <div class="stat-item"><strong>197</strong><span>parcelas estudiadas</span></div>
-      <div class="stat-item"><strong>138</strong><span>parcelas con cosecha conocida</span></div>
-      <div class="stat-item"><strong>59</strong><span>parcelas con cosecha desconocida</span></div>
-      <div class="stat-item"><strong>2025</strong><span>ciclo agrícola analizado</span></div>
-    </div></section>
+<section class="section section-soft" id="variables"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">02 · LAS ENTRADAS</p><h2>¿Qué contienen exactamente <em>las 26 variables?</em></h2></div><p>No son 26 coeficientes de una regresión. Son 26 entradas con cinco trabajos diferentes. Selecciona un grupo para leer las variables, cómo se calculan y qué significa cada una.</p></div>
+<div class="input-sum"><span><strong>4</strong> lluvia y vegetación</span><span><strong>7</strong> señales locales</span><span><strong>2</strong> coordenadas</span><span><strong>10</strong> geología</span><span><strong>3</strong> corrección</span></div>
+<div id="feature-tabs" class="feature-tabs" role="group" aria-label="Grupo de variables"><button type="button" data-feature="clima" aria-pressed="true" class="active">Lluvia y NDVI · 4</button><button type="button" data-feature="local" aria-pressed="false">Satélites y relieve · 7</button><button type="button" data-feature="ubicacion" aria-pressed="false">Coordenadas · 2</button><button type="button" data-feature="geologia" aria-pressed="false">Geología · 10</button><button type="button" data-feature="correccion" aria-pressed="false">Corrección · 3</button></div>
+<div class="feature-intro"><h3 id="feature-title">Lluvia y vegetación del ciclo</h3><p id="feature-why">Una estimación general del rendimiento a partir del ciclo de 2025.</p></div>
+<div class="feature-table-wrap"><table class="feature-table"><thead><tr><th>Variable</th><th>Cómo se obtiene</th><th>Cómo interpretarla</th></tr></thead><tbody id="feature-rows"></tbody></table></div>
+<p class="small-note">Cada variable conserva debajo su identificador exacto del código. Las categorías geológicas son códigos cartográficos, no etiquetas de calidad agrícola. <a href="https://github.com/heri-espino/todoseboso/blob/main/configs/current_champions_inputs.json" target="_blank" rel="noopener noreferrer">Inventario fuente de las 26 entradas ↗</a></p>
+</div></section>
 
-    <section class="section problem" id="pregunta" aria-labelledby="question-title"><div class="shell problem-grid">
-      <div><p class="eyebrow">LA PREGUNTA</p><h2 id="question-title">¿Qué podemos saber de una cosecha <em>antes de tener su rendimiento?</em></h2></div>
-      <div class="problem-prose"><p>Tenemos el rendimiento reportado de <strong>138 parcelas</strong>, expresado en toneladas de cebada por hectárea (t/ha). De otras <strong>59 parcelas</strong> conocemos el clima, la vegetación observada por satélite y características del terreno, pero no cuánto cosecharon.</p><p>Queremos aprovechar lo que aprendimos de las parcelas conocidas sin suponer que todas se comportan igual. Por eso combinamos información general del clima con información de parcelas cercanas.</p><div class="problem-principle"><span class="principle-num">01</span><div><strong>Evaluar sin conocer la respuesta</strong><p>En cada prueba separamos las parcelas que sirven para ajustar el modelo de las que sirven para evaluar su predicción. El rendimiento que intentamos predecir no se utiliza para entrenar ese ajuste.</p></div></div></div>
-    </div></section>
+<section class="section" id="preparacion"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">03 · DEL DATO A LA VARIABLE</p><h2>Antes de ajustar una regresión, <em>preparamos los datos.</em></h2></div><p>Las transformaciones dependen de la función de cada columna. No sustituimos todos los valores faltantes por cero ni normalizamos indiscriminadamente.</p></div>
+<div class="process-grid">
+<article><span>01</span><h3>Resumir la lluvia</h3><p>De siete meses obtenemos lluvia total, fracción de abril a junio y concentración HHI. Si falta un mes, la variable derivada queda sin información completa y se trata durante el ajuste.</p><code>T = Σ Pₘ · F = (Pₐᵦᵣ+Pₘₐᵧ+Pⱼᵤₙ)/(T+10⁻⁶)</code></article>
+<article><span>02</span><h3>Resumir los satélites</h3><p>Calculamos medias, dispersiones temporales, cambios entre meses y cambios de dirección sobre observaciones válidas. No creamos imágenes faltantes ni hacemos una PCA de estas siete señales.</p><code>ΔNDVI = NDVIₐᵍₒ − NDVIⱼᵤₙ</code></article>
+<article><span>03</span><h3>Imputar sin mirar el resultado</h3><p>En las regresiones, los faltantes numéricos se sustituyen por medianas del <strong>entrenamiento</strong>; una columna completamente vacía recibe el tratamiento de respaldo definido en el código. Después se centra y escala con ese mismo entrenamiento.</p><code>z = (x imputado − mediaₜᵣ)/escalaₜᵣ</code></article>
+<article><span>04</span><h3>Transformar la geología</h3><p>Las diez proporciones se expresan entre 0 y 1. La representación física toma su raíz cuadrada y las centra usando el entrenamiento. No divide por la rareza de una clase ni usa PCA en este modelo.</p><code>zgeo,j = √(proporciónⱼ) − mediaₜᵣ,j</code></article>
+<article><span>05</span><h3>Medir distancia real</h3><p>Latitud y longitud sirven para medir distancias geográficas entre centroides y elegir los 24 vecinos de entrenamiento. Se respeta la escala de distancia congelada del experimento original.</p><code>peso vecinoᵢ ∝ 1 / (dᵢ + 10⁻⁶)</code></article>
+<article><span>06</span><h3>Comprobar datos para corregir</h3><p>El corrector final necesita tres indicadores completos. Si falta alguno, <strong>no inventamos el indicador ausente para activar la corrección</strong>: esa etapa se omite para la parcela.</p><code>corrección = 0 cuando falta soporte R3</code></article>
+</div>
+<div class="illustration-lab"><div class="lab-heading"><h3>Igual lluvia total, distinta distribución</h3><p>simulación educativa, con valores inventados: no son datos de las parcelas del estudio.</p></div>
+<div class="buttonset"><button type="button" class="active" data-rain="uniform" aria-pressed="true">30 mm cada mes</button><button type="button" data-rain="concentrated" aria-pressed="false">140 mm en agosto</button></div>
+<div id="rain-chart"></div><div class="rain-metrics"><div><span>Lluvia total</span><strong id="rain-total">210 mm</strong></div><div><span>Fracción temprana</span><strong id="rain-early">42.9 %</strong></div><div><span>Índice HHI</span><strong id="rain-hhi">0.143</strong></div></div>
+</div></div></section>
 
-    <section class="section narrative" id="historia" aria-labelledby="story-title"><div class="shell">
-      <div class="section-heading"><div><p class="eyebrow">CÓMO LLEGAMOS AL MODELO</p><h2 id="story-title">De estudiar la lluvia <em>a aprender de las parcelas cercanas.</em></h2></div><p>Primero probamos si la lluvia y la vegetación bastaban. Después incorporamos diferencias entre parcelas y comprobamos si esos cambios ayudaban a predecir mejor.</p></div>
-      <div class="story-list">
-        <article class="story-step"><div class="story-index"><span>01</span><i></i></div><div class="story-body"><span class="story-kicker">PRIMERO: LLUVIA Y VEGETACIÓN</span><h3>Empezamos con la lluvia y el estado del cultivo en mayo.</h3><p>Resumimos cuánto llovió entre abril y octubre, qué parte cayó al inicio y cómo se repartió entre los meses. Añadimos el verdor observado por satélite en mayo (NDVI). Con esas cuatro medidas construimos nuestra primera estimación.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/CT3/README.md" target="_blank" rel="noopener noreferrer" class="source-link">Ver origen y fórmulas <span aria-hidden="true">↗</span></a></div><div class="story-side"><strong>4</strong><span>indicadores de clima y vegetación</span></div></article>
-        <article class="story-step"><div class="story-index"><span>02</span><i></i></div><div class="story-body"><span class="story-kicker">DESPUÉS: DIFERENCIAS ENTRE PARCELAS</span><h3>Dos parcelas con la misma lluvia pueden ser muy diferentes.</h3><p>Incorporamos siete medidas de vegetación pasada, cambios observados por satélite durante 2025, humedad aproximada de la vegetación (NDWI) y pendiente del terreno. Así el modelo distingue parcelas que comparten clima, pero no las mismas condiciones.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/signal_role_allocation_results.md" target="_blank" rel="noopener noreferrer" class="source-link">Ver selección de señales <span aria-hidden="true">↗</span></a></div><div class="story-side"><strong>7</strong><span>medidas para comparar parcelas</span></div></article>
-        <article class="story-step"><div class="story-index"><span>03</span><i></i></div><div class="story-body"><span class="story-kicker">UBICACIÓN: PARCELAS CERCANAS</span><h3>Cada predicción utiliza parcelas cercanas con cosecha conocida.</h3><p>Para cada parcela elegimos las <strong>24 parcelas conocidas más cercanas</strong> y ajustamos una regresión con sus siete medidas agrícolas. Las más cercanas tienen mayor peso. No copiamos el rendimiento de un vecino ni calculamos un simple promedio.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/src/local_ridge_sufficient_statistics.py" target="_blank" rel="noopener noreferrer" class="source-link">Ver la implementación <span aria-hidden="true">↗</span></a></div><div class="story-side"><strong>24</strong><span>vecinos por consulta</span></div></article>
-        <article class="story-step"><div class="story-index"><span>04</span><i></i></div><div class="story-body"><span class="story-kicker">POR ÚLTIMO: SUELO Y CORRECCIÓN</span><h3>Combinamos el clima y los vecinos, y corregimos errores anteriores.</h3><p>La composición geológica ayuda al modelo a decidir cuánto peso dar a la estimación climática y cuánto a la local. Una última corrección utiliza tres señales adicionales para ajustar diferencias que las etapas anteriores no lograron explicar.</p><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer" class="source-link">Ver arquitectura completa <span aria-hidden="true">↗</span></a></div><div class="story-side"><strong>26</strong><span>indicadores en total</span></div></article>
-      </div>
-    </div></section>
+<section class="section section-dark" id="arquitectura"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">04 · EL ALGORITMO</p><h2>Una predicción pasa por <em>cuatro cálculos.</em></h2></div><p>Los rendimientos no salen directamente de K-means. El agrupamiento sólo determina qué mezcla de dos estimaciones se usa.</p></div>
+<div class="formula" aria-label="Fórmula de la predicción">ŷ(x) = C(x) + g(x) · [ E(x) − C(x) ] + s · m(x) · δ(x)</div>
+<div class="step-stack">
+<article><span class="step-index">1</span><div><h3>Elastic Net estima con lluvia y NDVI</h3><p>Las cuatro variables iniciales alimentan una regresión global regularizada. Esta primera predicción, <strong>C(x)</strong>, resume el patrón general del ciclo agrícola.</p></div><span class="step-pill">C(x)</span></article>
+<article><span class="step-index">2</span><div><h3>Ridge aprende de 24 parcelas cercanas</h3><p>Para cada consulta se seleccionan sus 24 vecinas conocidas, se ponderan por cercanía y se ajusta una regresión Ridge sobre siete señales de vegetación y relieve. Una Elastic Net adicional puede corregir sus residuos. La predicción resultante es <strong>E(x)</strong>.</p></div><span class="step-pill">E(x)</span></article>
+<article><span class="step-index">3</span><div><h3>K-means agrupa la composición geológica</h3><p>Con las diez proporciones del terreno, K-means forma grupos sin consultar el rendimiento. Después, usando predicciones internas fuera de entrenamiento, se aprende un peso de mezcla <strong>g(x)</strong> para cada grupo, entre 0 y 1.</p></div><span class="step-pill">g(x)</span></article>
+<article><span class="step-index">4</span><div><h3>Una última Elastic Net corrige el error restante</h3><p>Aprende un ajuste con tres indicadores de historia, heterogeneidad del NDVI y pendiente mínima. La corrección está limitada a <strong>±0.25 t/ha</strong> y sólo se activa si los tres indicadores están disponibles.</p></div><span class="step-pill">δ(x)</span></article>
+</div>
+</div></section>
 
-    <section class="section rain-section" aria-labelledby="rain-title"><div class="shell rain-grid">
-      <div class="rain-copy"><p class="eyebrow">PRUEBA INTERACTIVA: LA MISMA LLUVIA, DISTINTOS MESES</p><h2 id="rain-title">No sólo importa <em>cuánto llueve.</em></h2><p>Dos ciclos con la misma lluvia acumulada pueden distribuirla de forma distinta. C-T3 resume esa diferencia con la fracción de lluvia temprana y un índice de concentración mensual (HHI).</p><p class="small-note">El gráfico es una <strong>simulación educativa</strong> con valores inventados; no representa mediciones de parcelas ni coeficientes estimados.</p><div class="rain-switch" role="group" aria-label="Distribución de lluvia ilustrativa"><button type="button" class="choice active" data-rain="uniform" aria-pressed="true">Lluvia repartida</button><button type="button" class="choice" data-rain="concentrated" aria-pressed="false">Lluvia concentrada</button></div></div>
-      <div class="rain-demo"><div class="demo-top"><span>ABR → OCT · 2025</span><span>VALORES SIMULADOS</span></div><div class="rain-bars" id="rain-bars" aria-live="polite">Selecciona cómo distribuir la lluvia para ver la gráfica.</div><div class="rain-metrics"><div><span>LLUVIA TOTAL</span><strong id="rain-total">210 mm</strong></div><div><span>FRACCIÓN TEMPRANA</span><strong id="rain-early">42.9 %</strong></div><div><span>CONCENTRACIÓN HHI</span><strong id="rain-hhi">0.143</strong></div></div><p class="rain-formula">HHI = Σ (lluvia mensual / lluvia total)². Cuanto más concentrada esté la precipitación, mayor será el índice.</p></div>
-    </div></section>
+<section class="section" id="geologia"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">05 · ¿QUÉ HACE K-MEANS?</p><h2>La geología no asigna un rendimiento: <em>elige cuánto pesan dos estimaciones.</em></h2></div><p>El ajuste final formó cuatro grupos geológicos. K-means encuentra semejanzas en la composición de terrenos; los rendimientos sólo se usan después para aprender cuánto confiar en el cálculo local de cada grupo.</p></div>
+<div class="geo-layout">
+<div><div class="geo-cluster-list" id="cluster-list" role="group" aria-label="Peso aprendido del experto local en cuatro grupos geológicos"></div>
+<p class="small-note">Los números 0–3 son identificadores arbitrarios de K-means. No son municipios, clases de fertilidad ni niveles ordenados de rendimiento. Los porcentajes son los pesos del ajuste final sobre las 138 parcelas conocidas.</p></div>
+<div class="geo-interactive">
+<h3>Prueba cómo funciona la mezcla</h3><p>Ejemplo numérico inventado. Conservamos el mismo clima y experto local; cambia únicamente el peso geológico y el ajuste final.</p>
+<label for="example-climate">Estimación climática <output id="climate-number">4.00 t/ha</output></label><input id="example-climate" type="range" min="250" max="550" value="400" step="10">
+<label for="example-local">Estimación con vecinos <output id="local-number">4.80 t/ha</output></label><input id="example-local" type="range" min="250" max="550" value="480" step="10">
+<label for="example-corrector">Corrección final ilustrativa <output id="corrector-number">+0.00 t/ha</output></label><input id="example-corrector" type="range" min="-25" max="25" value="0" step="5">
+<div class="mix-swatch" id="mix-swatch" aria-label="Mezcla de pesos según el grupo"><span id="mix-climate"></span><span id="mix-local"></span></div>
+<div class="example-total"><span>Resultado ilustrativo</span><strong id="example-result">—</strong><small>t/ha</small></div><p id="example-equation" class="equation-caption" aria-live="polite"></p>
+</div></div>
+<div class="note-inline"><strong>La diferencia entre K y k:</strong> en el ajuste final <strong>K = 4 grupos geológicos</strong> y <strong>k = 24 vecinos geográficos</strong>. Son dos operaciones distintas. Los parámetros de Ridge y la agrupación se ajustan sólo con el entrenamiento de cada evaluación.</div>
+</div></section>
 
-    <section class="section architecture" id="arquitectura" aria-labelledby="architecture-title"><div class="shell">
-      <div class="section-heading architecture-heading"><div><p class="eyebrow">CÓMO FUNCIONA LA ESTIMACIÓN</p><h2 id="architecture-title">Una estimación que reúne <em>clima, vecinos y geología.</em></h2></div><p>El modelo principal utiliza 26 indicadores, pero no los introduce todos en una sola ecuación. Cada grupo cumple una función: estimar, comparar, combinar o corregir. En el código se identifica como Reference26.</p></div>
-      <div class="architecture-summary"><div class="architecture-count"><b>4</b><span>lluvia y verdor</span></div><span class="sum" aria-hidden="true">+</span><div class="architecture-count"><b>7</b><span>medidas de cada parcela</span></div><span class="sum" aria-hidden="true">+</span><div class="architecture-count"><b>2</b><span>coordenadas</span></div><span class="sum" aria-hidden="true">+</span><div class="architecture-count"><b>10</b><span>geología</span></div><span class="sum" aria-hidden="true">+</span><div class="architecture-count"><b>3</b><span>señales para corregir errores</span></div><span class="sum" aria-hidden="true">=</span><div class="architecture-count total"><b>26</b><span>indicadores distintos</span></div></div>
-      <div class="architecture-board"><div class="route-start"><span class="route-label">DOS ESTIMACIONES QUE SE COMPLEMENTAN</span><div class="route-columns"><div class="route-card"><span>ESTIMACIÓN CLIMÁTICA</span><h3>Lluvia y vegetación</h3><p>Estima el rendimiento a partir de las cuatro medidas de lluvia y verdor de mayo.</p><strong>C(x)</strong></div><div class="route-card"><span>ESTIMACIÓN CON PARCELAS CERCANAS</span><h3>Vecinos y satélites</h3><p>Utiliza siete medidas agrícolas de las 24 parcelas conocidas más cercanas.</p><strong>E(x)</strong></div></div><div class="route-arrow" aria-hidden="true">↓</div><div class="route-mix"><span>CÓMO SE COMBINAN AMBAS ESTIMACIONES</span><strong>La composición geológica ayuda a decidir cuánto influye cada una.</strong><p>Diez medidas del terreno intervienen en el peso de la mezcla. No cambian qué parcelas se eligen como vecinas.</p><code>B(x) = C(x) + g(x) · [E(x) − C(x)]</code></div><div class="route-arrow" aria-hidden="true">↓</div><div class="route-final"><span>UNA ÚLTIMA CORRECCIÓN</span><strong>Si contamos con suficientes datos históricos, una corrección final puede cambiar la estimación hasta 0.25 t/ha hacia arriba o hacia abajo.</strong><code>ŷ(x) = B(x) + s · m(x) · δR3(x)</code></div></div><p class="architecture-disclaimer">Las letras representan cálculos del modelo. Los pesos se aprenden con las parcelas de entrenamiento; la cosecha reservada para la evaluación no interviene en ellos.</p></div>
-    </div></section>
+<section class="section section-soft" id="faltantes"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">06 · INFORMACIÓN INCOMPLETA</p><h2>¿Qué pasa cuando <em>falta un dato?</em></h2></div><p>No todas las ausencias se tratan igual. La imputación permite utilizar variables incompletas; la máscara del corrector evita aplicar una corrección cuando falta información necesaria.</p></div>
+<div class="missing-grid">
+<div class="missing-item"><span>Medidas del clima y experto</span><h3>Imputación en entrenamiento</h3><p>Se calcula la mediana de la columna dentro de las parcelas de entrenamiento. La misma mediana se aplica a las parcelas evaluadas. El escalado también se ajusta dentro del entrenamiento.</p></div>
+<div class="missing-item"><span>Datos geológicos</span><h3>Representación física</h3><p>Las columnas numéricas no observadas utilizan la mediana del entrenamiento antes de la transformación. Un cero real en la composición no es un dato faltante.</p></div>
+<div class="missing-item"><span>Información para R3</span><h3>Corrección desactivada</h3><p>Si falta cualquiera de los tres indicadores de la corrección, la predicción conserva la mezcla base. En el ajuste final esto ocurre para 8 de las 59 parcelas.</p></div>
+</div>
+<div class="missing-demo"><div><h3>¿Qué parte de la fórmula se usa?</h3><p>Selecciona el estado de los indicadores residuales. El ejemplo sólo explica la regla de activación; no revela datos individuales.</p></div><div class="buttonset"><button class="active" type="button" data-support="complete" aria-pressed="true">Tres indicadores completos</button><button type="button" data-support="missing" aria-pressed="false">Falta algún indicador</button></div><div class="support-formula" id="support-formula" aria-live="polite">Mezcla climática-local + corrección acotada</div><p id="support-note">La corrección puede sumar o restar hasta 0.25 t/ha.</p></div>
+</div></section>
 
-    <section class="section neighbor-section" aria-labelledby="neighbor-title"><div class="shell neighbor-grid"><div><p class="eyebrow">EL TERRITORIO EN EL MODELO</p><h2 id="neighbor-title">La ubicación decide <em>qué parcelas sirven de referencia.</em></h2><p>La estimación local se ajusta con las 24 parcelas conocidas más cercanas. Utiliza su información satelital y física, dando más peso a las que están a menor distancia.</p><p>Mueve el control para ver cómo cambia el grupo de referencia. En el modelo utilizado para las estimaciones finales siempre se emplean <strong>24 vecinos</strong>. El dibujo sólo explica la selección: no modifica el resultado del estudio.</p><div class="neighbor-control"><label for="neighbor-k">Vecinos ilustrados <output id="neighbor-k-value" for="neighbor-k">24</output></label><input type="range" id="neighbor-k" min="8" max="32" step="1" value="24"><div class="range-ends"><span>8</span><span>24 · configuración real</span><span>32</span></div></div><p class="small-note">Las ubicaciones del dibujo son inventadas; no representan las parcelas del estudio.</p></div><div class="neighbor-art"><div class="demo-top"><span>CONSULTA HIPOTÉTICA</span><span>RÍDGE PONDERADO</span></div><svg id="neighbor-svg" viewBox="0 0 460 420" role="img" aria-label="Diagrama conceptual con una parcela central y los vecinos seleccionados más cercanos"><g id="neighbor-connections"></g><g id="neighbor-points"></g><circle cx="230" cy="207" r="12" fill="#d9ebaa" stroke="#144538" stroke-width="5"/><circle cx="230" cy="207" r="24" fill="none" stroke="#a8c781" stroke-width="1.5" stroke-dasharray="4 5"/></svg><div class="neighbor-legend"><span><i class="dot bright"></i> Vecinos elegidos</span><span><i class="dot dull"></i> Otros puntos</span><span><i class="dot center"></i> Consulta</span></div></div></div></section>
+<section class="section" id="ajuste"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">07 · CÓMO SE AJUSTÓ</p><h2>Qué parámetros se fijaron y <em>cuáles se eligieron con los datos.</em></h2></div><p>Un hiperparámetro se fija o se selecciona antes de estimar coeficientes; un parámetro aprendido, como el coeficiente de una regresión o un peso de grupo, sale del ajuste con las 138 cosechas.</p></div>
+<div class="parameter-layout">
+<div><h3>Configuración del algoritmo</h3><table class="spec-table"><thead><tr><th>Componente</th><th>Qué se hizo</th></tr></thead><tbody>
+<tr><td>Elastic Net climática</td><td>Se probaron α ∈ {0.001, 0.01, 0.1, 1} y proporción L1 ∈ {0.1, 0.5, 0.9}, minimizando RMSE interno. Final: α = 0.1, L1 = 0.1.</td></tr>
+<tr><td>Ridge geográfico</td><td>24 vecinos, penalización α = 30, pesos de distancia inversa con potencia 1. Receta heredada y fija; no se volvió a optimizar usando las 59 parcelas.</td></tr>
+<tr><td>Corrección interna del experto</td><td>Elastic Net sobre residuos obtenidos sin entrenar con el rendimiento que se predice. Se probó amplitud 0, 0.25 y 0.5. Final: α = 0.001, L1 = 0.9, amplitud 0.5.</td></tr>
+<tr><td>Agrupación geológica</td><td>K-means con 4 u 8 grupos candidatos. El número y los pesos se eligieron con validación interna. Final: 4 grupos.</td></tr>
+<tr><td>Contracción del peso de grupo</td><td>Regularización hacia un peso global, con factor 20 multiplicado por la separación cuadrática media entre expertos.</td></tr>
+<tr><td>Corrector R3</td><td>Elastic Net α = 0.01 y L1 = 0.5. Intensidad candidata 0, 0.5 o 1. Final: 1; salida limitada a ±0.25 t/ha.</td></tr>
+</tbody></table></div>
+<div class="parameter-aside"><h3>Cómo se evitó ajustar a las respuestas reservadas</h3><ol class="number-steps"><li>Se separan parcelas conocidas para entrenamiento y evaluación.</li><li>Dentro del entrenamiento se obtienen predicciones fuera de muestra para elegir α, mezcla, grupos e intensidades.</li><li>Se recalculan medianas, escalas, coeficientes y grupos con el entrenamiento permitido.</li><li>Se evalúan las parcelas reservadas sin utilizar su rendimiento durante el ajuste.</li><li>Para las 59 parcelas sin etiqueta se ajusta la receta seleccionada con las 138 cosechas conocidas.</li></ol><p class="small-note">Las rejillas son finitas; no se ha demostrado un óptimo universal. Los mismos 138 rendimientos se utilizaron históricamente en muchas investigaciones, de modo que la validación sigue siendo exploratoria.</p></div>
+</div>
+</div></section>
 
+<section class="section section-soft" id="resultados"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">08 · LO QUE MOSTRARON LAS PRUEBAS</p><h2>¿Cuánto se equivoca <em>la regresión local con mezcla geológica?</em></h2></div><p>El RMSE se mide en t/ha y penaliza más los errores grandes. No es el porcentaje de parcelas acertadas ni un margen garantizado para cada predicción.</p></div>
+<div class="scoreline"><div><span>RMSE · 16 evaluaciones 97/41</span><strong>0.4625</strong><small>t/ha</small></div><div><span>Error absoluto medio, MAE</span><strong>0.3387</strong><small>t/ha</small></div><div><span>R² de esas evaluaciones</span><strong>0.6971</strong><small>no es un porcentaje de aciertos</small></div></div>
+<p class="chart-explain">En cada una de esas 16 evaluaciones se entrenó con 97 rendimientos y se midió el error en 41 parcelas reservadas. Se informa el promedio de las métricas de cada partición. También se evaluó el método dejando fuera perfiles climáticos, municipios y bloques geográficos completos.</p>
+<div id="performance-chart" aria-live="polite">Cargando los resultados originales…</div>
+<div class="detail-pair"><div><h3>¿Qué ocurre al añadir la última corrección?</h3><p>En las cuatro validaciones archivadas comparamos este mismo procedimiento con y sin corrección final. No son pruebas de significancia individuales de sus tres indicadores.</p><div id="r3-comparison"></div></div><div><h3>¿Cuánto se apoyó en los vecinos?</h3><p>El peso medio de la estimación local cambió cuando se dejaron fuera regiones o perfiles completos. No es el porcentaje de rendimiento causado por la cercanía.</p><div id="expert-weights"></div></div></div>
+<p class="small-note">El error en las 59 parcelas desconocidas no puede calcularse sin sus cosechas reales. <a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Ficha de métricas y configuración ↗</a></p>
+</div></section>
 
-    <section class="section new-evidence" id="componentes" aria-labelledby="component-title">
-      <div class="shell">
-        <div class="section-heading">
-          <div><p class="eyebrow">QUÉ CAMBIÓ AL QUITAR DATOS</p><h2 id="component-title">¿Qué información ayuda <em>a reducir el error?</em></h2></div>
-          <p>Comparamos versiones de los modelos a las que retiramos algunas medidas o correcciones. Así comprobamos cuánto cambia su error y en qué situaciones esas diferencias son más claras.</p>
-        </div>
-        <div class="evidence-context">
-          <strong>Son dos pruebas diferentes.</strong> En la primera quitamos una medida de lluvia o vegetación del modelo inicial y lo volvemos a entrenar. En la segunda comparamos el modelo completo con y sin su corrección final.
-        </div>
-        <div class="evidence-dashboard">
-          <article class="evidence-study">
-            <span class="evidence-kicker">CUATRO MEDIDAS DE LLUVIA Y VEGETACIÓN</span>
-            <h3>¿Qué pasa si quitamos una medida del primer modelo?</h3>
-            <p>Cada vez que quitamos una medida, volvemos a entrenar el modelo con las restantes. Las barras muestran el error obtenido en el mismo tipo de prueba. <strong>Cuanto menor es el valor, mejor predijo.</strong></p>
-            <div class="evidence-tabs" role="group" aria-label="Protocolo para ablaciones del núcleo">
-              <button type="button" class="evidence-tab active" data-ablation-protocol="random" aria-pressed="true">Aleatoria</button>
-              <button type="button" class="evidence-tab" data-ablation-protocol="climate_profile" aria-pressed="false">Perfil climático</button>
-              <button type="button" class="evidence-tab" data-ablation-protocol="municipality" aria-pressed="false">Municipio</button>
-              <button type="button" class="evidence-tab" data-ablation-protocol="spatial" aria-pressed="false">Espacial</button>
-            </div>
-            <div class="ablation-chart" id="ablation-chart" aria-live="polite">Cargando los resultados de las pruebas…</div>
-            <p class="evidence-insight" id="ablation-insight" aria-live="polite">Un cambio en el error no basta por sí solo para demostrar que una variable es indispensable.</p>
-            <a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/results/core4_relevance/v1/README.md" target="_blank" rel="noopener noreferrer">Consultar las pruebas estadísticas originales ↗</a>
-          </article>
-          <article class="evidence-study">
-            <span class="evidence-kicker">LA CORRECCIÓN FINAL DEL MODELO COMPLETO</span>
-            <h3>¿Corrige errores que antes quedaban sin explicar?</h3>
-            <p>La última etapa utiliza tres indicadores y puede modificar la estimación hasta 0.25 t/ha en cualquier dirección. Comparamos el mismo modelo con esa etapa y sin ella para ver si reduce el error.</p>
-            <div id="r3-comparison" class="r3-comparison" aria-live="polite">Cargando métricas de componentes…</div>
-            <p class="evidence-label">CUÁNTO PESÓ LA INFORMACIÓN DE PARCELAS CERCANAS</p>
-            <div id="expert-weights" class="expert-weights" aria-live="polite">Cargando los pesos aprendidos…</div>
-            <p class="evidence-insight">Esos porcentajes son promedios aprendidos por el modelo en cada evaluación. No son reglas fijas por municipio ni porcentajes de influencia causal sobre las cosechas.</p>
-            <a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Consultar las pruebas de cada componente ↗</a>
-          </article>
-        </div>
-        <div class="evidence-takeaway"><div><span>QUÉ MEJORÓ EN ESTAS PRUEBAS</span><strong>La corrección final redujo el error en las cuatro evaluaciones.</strong><p>Al quitar la corrección final, el error aumentó en las cuatro formas de evaluar que se estudiaron. La corrección interna también ayudó en algunas comparaciones. La utilidad de la geología cambió según la evaluación; algunas medidas locales aportan información parecida.</p></div><div><span>LO QUE TODAVÍA NO SE HA DEMOSTRADO</span><strong>No sabemos si cada una de las 26 medidas es necesaria.</strong><p>La concentración mensual de la lluvia es un ejemplo: quitarla del primer modelo mejoró una prueba por zonas, pero empeoró otras. Tras corregir por comparaciones múltiples, ninguna retirada individual aportó evidencia estadística suficiente.</p></div></div>
-        <p class="small-note evidence-bottom">Estas pruebas vuelven a utilizar las 138 cosechas conocidas. No constituyen una evaluación independiente ni revelan el error de las 59 cosechas desconocidas. Lo que ocurre al quitar una medida del primer modelo no necesariamente ocurre al quitarla del modelo completo. <a href="https://github.com/heri-espino/todoseboso/tree/main/results" target="_blank" rel="noopener noreferrer">Ver fuentes agregadas originales ↗</a></p>
-      </div>
-    </section>
+<section class="section" id="pruebas"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">09 · RESPALDO ESTADÍSTICO</p><h2>¿Qué podemos afirmar <em>con las pruebas disponibles?</em></h2></div><p>Relacionar una variable con la cosecha, observar una mejora en el RMSE y demostrar significancia son preguntas diferentes.</p></div>
+<div class="significance-summary">
+<div><span>ASOCIACIONES EN UNA REGRESIÓN DE DIAGNÓSTICO</span><strong>3 de 4</strong><p>Lluvia total, fracción temprana y NDVI de mayo mostraron evidencia de asociación después de Holm; HHI no. No son pruebas individuales dentro del modelo final.</p></div>
+<div><span>CONTRASTES HISTÓRICOS DE ARQUITECTURA</span><strong>0 de 952</strong><p>Ninguno superó su corrección de Holm. Esto no demuestra que las arquitecturas sean equivalentes ni que las partes del modelo carezcan de utilidad.</p></div>
+</div>
+<div class="detail-pair"><div><h3>Asociaciones condicionadas al estado</h3><p>Coeficientes de una regresión diagnóstica sobre las cuatro señales iniciales. Son asociaciones, no efectos causales ni coeficientes de la regresión local completa.</p><div id="association-chart"></div></div><div><h3>¿Y si quitamos el índice HHI?</h3><p>La variante sin esta medida mejora una evaluación espacial, pero empeora la municipal. Los intervalos del 95 % de la diferencia incluyen cero y ninguno de estos cuatro contrastes supera Holm.</p><div id="hhi-forest"></div></div></div>
+<div class="note-inline"><strong>Interpretación:</strong> no encontrar significancia no equivale a demostrar igualdad. Con sólo cinco grupos espaciales y muchas decisiones exploradas sobre los mismos rendimientos, la incertidumbre es considerable. <a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Auditoría de componentes ↗</a></div>
+</div></section>
 
+<section class="section section-soft" id="limites"><div class="shell">
+<div class="section-heading"><div><p class="eyebrow">10 · ENTREGA Y LÍMITES</p><h2>Se pueden generar 59 estimaciones. <em>¿Qué no sabemos todavía?</em></h2></div><p>Que dos conjuntos de parcelas tengan el mismo promedio no significa que las predicciones individuales sean correctas. Además, las parcelas pueden quedar fuera de las condiciones mejor representadas en el entrenamiento.</p></div>
+<div class="scoreline"><div><span>Corrección R3 disponible</span><strong>51</strong><small>de 59 parcelas</small></div><div><span>Corrección R3 desactivada</span><strong>8</strong><small>de 59 parcelas</small></div><div><span>Con algún aviso de soporte</span><strong>11</strong><small>de 59 parcelas; avisos superpuestos</small></div></div>
+<div class="detail-pair"><div><h3>Distribución de las cosechas y las estimaciones</h3><p>Medianas y percentiles por estado. Las 138 cosechas conocidas y las 59 estimaciones corresponden a parcelas distintas: la gráfica no mide el error de las 59.</p><div id="distribution-quantiles"></div></div><div><h3>¿Qué cobertura tuvieron los intervalos?</h3><p>Selecciona el nivel nominal. La línea corresponde a la cobertura solicitada y los puntos a la observada en validación aleatoria; no hay garantía de igual cobertura para las 59 parcelas.</p><div class="buttonset"><button data-level="0.8" type="button" aria-pressed="false">80 % nominal</button><button data-level="0.9" class="active" type="button" aria-pressed="true">90 % nominal</button></div><div id="interval-results"></div></div></div>
+<div class="note-inline">Las 59 cosechas reales todavía se desconocen. La media de esas estimaciones es <strong>3.9564 t/ha</strong>, frente a <strong>3.9554 t/ha</strong> entre las cosechas conocidas, pero no son las mismas parcelas y esa coincidencia no demuestra precisión. No se ofrecen pronósticos individuales en esta página.</div>
+<details class="source-details"><summary>Consultar las curvas acumuladas originales</summary><figure class="distribution-figure"><img src="./media/distribution_ECDF.png" alt="Distribución acumulada original de cosechas conocidas y estimaciones del modelo por región."><figcaption>Gráfico original conservado; las curvas exactas no se reconstruyen a partir de percentiles.</figcaption></figure></details>
+</div></section>
 
-    <section class="section understanding" id="de-donde-sale" aria-labelledby="calculo-title">
-      <div class="shell">
-        <div class="section-heading"><div><p class="eyebrow">PRUEBA TÚ MISMO CÓMO SE COMBINAN LOS RESULTADOS</p><h2 id="calculo-title">¿De dónde sale <em>una estimación?</em></h2></div><p>Primero calculamos dos estimaciones: una basada en lluvia y vegetación y otra basada en parcelas cercanas. Después el modelo las combina y, cuando tiene los datos necesarios, añade una corrección pequeña.</p></div>
-        <div class="calc-layout">
-          <div class="calc-explanation">
-            <p><strong>Un ejemplo con números inventados:</strong> una estimación climática da 4.0 toneladas por hectárea y la estimación local da 4.8. ¿Cómo cambia el resultado al dar más peso a una u otra?</p>
-            <p>Mueve los dos controles para comprobar el efecto del peso local y de la corrección. El modelo real aprende esos valores utilizando las parcelas conocidas.</p>
-            <p class="small-note">Este ejemplo no utiliza parcelas del estudio y <strong>no genera predicciones reales</strong>. Sirve exclusivamente para entender la operación aritmética.</p>
-            <a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Consultar las ecuaciones del modelo ↗</a>
-          </div>
-          <div class="calc-workshop" aria-label="Ejemplo interactivo de mezcla de modelos">
-            <div class="calc-endpoints"><span>Estimación climática <strong>4.00</strong> t/ha</span><span>Estimación local <strong>4.80</strong> t/ha</span></div>
-            <label for="geo-blend">¿Cuánto influye la estimación de parcelas cercanas? <output id="geo-blend-value" for="geo-blend">50 %</output></label>
-            <input id="geo-blend" type="range" min="0" max="100" value="50" step="5">
-            <div class="weight-preview" role="img" aria-label="Mitad de peso climático y mitad local" id="weight-preview"><span id="weight-climate" style="width:50%"></span><span id="weight-local" style="width:50%"></span></div>
-            <label for="error-correction">Ajuste adicional a la estimación <output id="error-correction-value" for="error-correction">+0.00 t/ha</output></label>
-            <input id="error-correction" type="range" min="-25" max="25" value="0" step="5">
-            <div class="calc-result"><div><span>ESTIMACIÓN ILUSTRATIVA</span><strong id="calc-result">4.40</strong><small>t/ha</small></div><p id="calc-equation">4.00 + 0.50 × (4.80 − 4.00) + 0.00 = 4.40</p></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section significance" id="significancia" aria-labelledby="significance-title">
-      <div class="shell">
-        <div class="section-heading"><div><p class="eyebrow">¿QUÉ RESPALDAN LAS PRUEBAS?</p><h2 id="significance-title">Una mejora en el RMSE <em>no lo demuestra todo.</em></h2></div><p>Una relación con el rendimiento no es lo mismo que una mejora predictiva. Por eso estudiamos las asociaciones, volvemos a entrenar modelos sin algunas medidas y contrastamos estadísticamente las diferencias.</p></div>
-        <div class="question-panels">
-          <article><span>RELACIÓN CON LA COSECHA</span><h3>¿La lluvia y el verdor están relacionados con lo que se cosecha?</h3><p>Al considerar las diferencias entre estados, la lluvia acumulada, la proporción de lluvia temprana y el verdor de mayo mantienen asociaciones estadísticas. Eso no significa que hayan causado las cosechas observadas.</p></article>
-          <article><span>CAMBIO EN EL ERROR</span><h3>¿El modelo se equivoca más cuando retiramos información?</h3><p>Volvemos a entrenar el modelo sin esa medida y comparamos su error con el de la versión original. No basta con que un error sea menor: hay que evaluar qué tan estable es la diferencia.</p></article>
-          <article><span>QUÉ TAN CONVINCENTE ES LA DIFERENCIA</span><h3>¿Podemos distinguir una mejora real de la variación entre pruebas?</h3><p>Comparamos los errores obtenidos en las mismas particiones y ajustamos los valores p cuando se hacen varias pruebas. Como ya se ensayaron muchos modelos con las mismas cosechas, seguimos tratando estos resultados con cautela.</p></article>
-        </div>
-        <div class="significance-lab">
-          <div class="significance-title-row"><div><h3>La relación de cuatro medidas con la cosecha</h3><p>El gráfico corresponde a una regresión estadística de diagnóstico que considera el estado y agrupa las observaciones por perfil climático. Muestra valores <em>p</em> corregidos por Holm, no la importancia de cada medida dentro del modelo final.</p></div><div class="significance-legend"><span class="sig-key"></span> p corregida menor que 0.05</div></div>
-          <div id="association-chart" class="association-chart" aria-live="polite">Cargando los contrastes documentados…</div>
-          <div class="sig-interpretation"><span>QUÉ SIGNIFICAN ESTOS RESULTADOS</span><p>Las primeras dos medidas de lluvia y el verdor de mayo conservan evidencia de asociación. Para la concentración mensual de lluvia (HHI), no hay evidencia suficiente después de considerar el estado. <strong>Una asociación estadística no demuestra que esa medida sea imprescindible para predecir, ni que la lluvia cause los cambios observados.</strong></p></div>
-        </div>
-        <div class="significance-findings">
-          <div class="significance-number"><span>PRUEBAS ENTRE VERSIONES DEL MODELO</span><strong id="holm-zero">0 / 952</strong><p>comparaciones que superaron la corrección por pruebas múltiples en tres grupos de 412, 332 y 208 contrastes. Una prueba no concluyente no demuestra igualdad entre modelos.</p></div>
-          <div class="significance-number"><span>MODELO COMPLETO FRENTE AL PRIMER MODELO CLIMÁTICO</span><strong>0.0253</strong><p>Valor p corregido en las particiones aleatorias: allí hay evidencia a favor del modelo completo frente al modelo climático inicial. Las demás formas de evaluación no dieron evidencia suficiente tras el ajuste.</p></div>
-          <div class="significance-number"><span>QUITAR UNA MEDIDA DEL MODELO CLIMÁTICO</span><strong>0 / 16</strong><p>retiradas individuales que conservaron significancia al ajustar la familia de 24 comparaciones. Las diferencias frente a modelos mucho más sencillos sí aportaron evidencia en ciertas evaluaciones.</p></div>
-        </div>
-        <p class="small-note">No encontrar una diferencia estadísticamente clara <strong>no significa que dos modelos sean iguales</strong>. Sólo hay nueve grupos municipales y cinco bloques geográficos para algunas pruebas. Además, utilizamos estas mismas 138 cosechas para desarrollar los modelos; falta una comprobación verdaderamente independiente.</p>
-        <div class="research-links"><a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/results/core4_relevance/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de las cuatro señales ↗</a><a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de los componentes de Reference26 ↗</a></div>
-      </div>
-    </section>
-
-    <section class="section hhi-study" id="retirar-hhi" aria-labelledby="hhi-title">
-      <div class="shell">
-        <div class="section-heading"><div><p class="eyebrow">QUÉ PASA SI OMITIMOS UNA MEDIDA DE LA LLUVIA</p><h2 id="hhi-title">¿Mejora la predicción si quitamos <em>la concentración mensual de la lluvia?</em></h2></div><p>Probamos otra versión del modelo principal sin el índice HHI, que resume qué tan concentrada estuvo la lluvia en determinados meses. Lo retiramos de las dos partes que lo utilizan, volvimos a ajustar los modelos y comparamos sus errores.</p></div>
-        <div class="hhi-layout">
-          <div class="hhi-selector">
-            <h3>Cambia el grupo de parcelas que dejamos para evaluar</h3>
-            <p>El error cambia según qué parcelas se dejen fuera del entrenamiento. Compara las dos barras dentro de cada prueba; un RMSE menor significa menos error cuadrático.</p>
-            <div class="hhi-buttons" role="group" aria-label="Tipo de validación del experimento sin HHI">
-              <button type="button" class="hhi-button active" data-hhi-protocol="random" aria-pressed="true">Parcelas al azar</button>
-              <button type="button" class="hhi-button" data-hhi-protocol="climate_profile" aria-pressed="false">Perfiles climáticos</button>
-              <button type="button" class="hhi-button" data-hhi-protocol="municipality" aria-pressed="false">Municipios completos</button>
-              <button type="button" class="hhi-button" data-hhi-protocol="spatial" aria-pressed="false">Bloques geográficos</button>
-            </div>
-            <p class="hhi-observation" id="hhi-observation" aria-live="polite">El tipo de exclusión cambia la respuesta.</p>
-          </div>
-          <div class="hhi-results">
-            <p class="chart-eyebrow" id="hhi-caption">PARCELAS ELEGIDAS AL AZAR</p>
-            <div id="hhi-forest" aria-live="polite">Cargando la comparación de cuatro pruebas e intervalos de confianza…</div>
-            <div class="hhi-score-row"><span>Modelo completo, con concentración de lluvia</span><div class="hhi-track"><span id="hhi-bar-26"></span></div><strong id="hhi-rmse-26">—</strong></div>
-            <div class="hhi-score-row"><span>Versión sin concentración de lluvia</span><div class="hhi-track"><span id="hhi-bar-25"></span></div><strong id="hhi-rmse-25">—</strong></div>
-            <div class="hhi-difference"><span>CAMBIO EN EL ERROR AL QUITAR LA CONCENTRACIÓN</span><strong id="hhi-delta">—</strong></div>
-            <div class="ci-scale"><span>−0.30</span><span>0</span><span>+0.30</span></div>
-            <div class="ci-track" role="img" id="hhi-ci-description" aria-label="Intervalo de la diferencia de RMSE"><i class="ci-zero"></i><span id="hhi-ci"></span><b id="hhi-ci-point"></b></div>
-            <p class="ci-note" id="hhi-ci-values">Intervalo del 95 % obtenido al remuestrear grupos sobre las predicciones de validación fijas.</p>
-            <div class="hhi-statistical"><span>Valor p corregido por 4 comparaciones</span><strong id="hhi-p">—</strong><small id="hhi-significance">Sin conclusión todavía</small></div>
-          </div>
-        </div>
-        <p class="hhi-warning"><strong>El resultado depende de la región que se excluya.</strong> Sin HHI, el error baja 0.10 t/ha en una prueba por bloques geográficos, pero sube cuando dejamos fuera municipios completos. Los intervalos incluyen cero y ninguna diferencia superó la corrección estadística. Por ahora mantenemos tanto el modelo completo como su versión simplificada.</p>
-        <details class="distribution-original"><summary>Ver la figura original de la comparación sin HHI</summary>
-        <figure class="hhi-original-figure"><img src="./media/NoHHI_delta_RMSE.png" loading="lazy" alt="Figura original del experimento: cambios de RMSE de la variante sin HHI frente a Reference26 bajo validaciones aleatoria, por perfil, municipio y bloque espacial; intervalos de confianza del 95 por ciento que cruzan cero."><figcaption>Cambios de error al retirar la concentración mensual de lluvia, según el tipo de validación. Las líneas de incertidumbre incluyen cero.</figcaption></figure>
-        </details>
-        <a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Ver las particiones y las pruebas estadísticas originales ↗</a>
-      </div>
-    </section>
-
-    <section class="section comparison" id="evidencia" aria-labelledby="evidence-title"><div class="shell"><div class="section-heading"><div><p class="eyebrow">QUÉ TAN BIEN PREDIJERON LOS MODELOS</p><h2 id="evidence-title">¿Qué modelo se equivocó menos <em>en las parcelas reservadas para evaluar?</em></h2></div><p>Comparamos los errores de cinco formas de hacer la estimación. Usamos el RMSE: la raíz del promedio de los errores elevados al cuadrado. Se mide en toneladas por hectárea; <strong>cuanto menor, mejor</strong>. Cambia la prueba para ver cómo varía el resultado.</p></div>
-      <div class="result-hero"><div><span>CLIMA, VECINOS Y GEOLOGÍA · PRUEBA 97/41</span><strong>0.4625<small> t/ha</small></strong><p>Error cuadrático medio, expresado como RMSE (t/ha)</p></div><div><span>R² DEL MODELO COMPLETO</span><strong>0.6971</strong><p>Medida estadística de ajuste en las mismas particiones; no significa 69.71 % de cosechas acertadas.</p></div><div class="result-context"><span>CÓMO SE EVALUÓ</span><p>En 16 pruebas distintas utilizamos <strong>97 parcelas conocidas para entrenar y 41 para evaluar</strong>. Calculamos el RMSE en cada prueba y promediamos sus resultados. No sabemos todavía el error de las 59 parcelas con cosecha desconocida.</p></div></div>
-      <div class="protocol-box"><div class="protocol-head"><div><span>COMPARA CINCO FORMAS DE PREDECIR</span><h3>¿Cambia el modelo que funciona mejor según qué parcelas dejemos fuera?</h3></div><p>Elige cómo se separaron las parcelas para entrenar y evaluar. En cada pantalla se comparan los cinco modelos con las mismas reglas.</p></div><div class="protocol-tabs" id="protocol-tabs" role="group" aria-label="Elegir protocolo de validación"><button class="protocol active" type="button" data-protocol="fresh_97_41" aria-pressed="true">97 para entrenar, 41 para evaluar</button><button class="protocol" type="button" data-protocol="random" aria-pressed="false">Parcelas al azar</button><button class="protocol" type="button" data-protocol="climate_profile" aria-pressed="false">Perfiles de clima</button><button class="protocol" type="button" data-protocol="municipality" aria-pressed="false">Municipios completos</button><button class="protocol" type="button" data-protocol="spatial" aria-pressed="false">Zonas geográficas</button></div>
-        <div class="protocol-caption" id="protocol-caption" aria-live="polite">Cargando los resultados de las comparaciones…</div><div class="results-chart" id="results-chart" aria-live="polite"><p>Si los resultados no aparecen, puedes consultar las tablas de investigación.</p></div><div class="protocol-foot"><span>Las barras muestran el RMSE en t/ha. Son promedios de las evaluaciones, no errores calculados sobre todas las predicciones reunidas.</span><a href="https://github.com/heri-espino/todoseboso/tree/main/results" target="_blank" rel="noopener noreferrer">Consultar las tablas con los resultados ↗</a></div>
-      </div><div class="result-notes"><article><span>UNA PARTICIÓN NO DICE TODO</span><h3>El error depende de qué parcelas dejamos fuera.</h3><p>Predecir parcelas distribuidas aleatoriamente no es igual a excluir municipios o bloques completos. Las métricas territoriales suelen ser más exigentes.</p></article><article><span>UN NÚMERO NO ELIGE EL MODELO</span><h3>El RMSE más bajo no basta para cambiar la receta.</h3><p>La combinación de dos estimaciones dio un RMSE ligeramente menor en una evaluación. Sin embargo, no resultó la mejor elección en todas las pruebas. Por eso conservamos el modelo completo y el modelo simplificado.</p></article><article><span>ASOCIACIÓN NO ES CAUSA</span><h3>Una mejor predicción no prueba efectos agronómicos.</h3><p>Los resultados respaldan la utilidad predictiva de la arquitectura completa; no permiten decir que la lluvia o la geología causaron las diferencias observadas.</p></article></div>
-    </div></section>
-
-    <section class="section alternative" aria-labelledby="alt-title"><div class="shell alternative-grid"><div><p class="eyebrow">¿NECESITAMOS TODAS LAS FUENTES DE DATOS?</p><h2 id="alt-title">Un modelo con menos datos <em>consigue resultados parecidos.</em></h2><p>También construimos una versión que utiliza menos información: prescinde de las señales Planet, de los datos geológicos y del mecanismo que modifica la mezcla según la geología. Conserva lluvia, vegetación Sentinel-2, relieve, parcelas cercanas y corrección final.</p><p>Este modelo necesita <strong>14 indicadores</strong> frente a los 26 de la versión completa. Los errores observados fueron parecidos, pero eso no demuestra que los dos modelos sean estadísticamente equivalentes.</p><a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Compact14/README.md" target="_blank" rel="noopener noreferrer">Ver cómo redujimos los datos necesarios ↗</a></div><div class="model-compare"><div class="model-compare-row"><div><span>MODELO COMPLETO</span><strong>Clima, vecinos y geología</strong><small>Reference26 · 26 indicadores</small></div><b>0.4625</b></div><div class="model-compare-row"><div><span>MODELO CON MENOS DATOS</span><strong>Clima y vecinos, sin geología</strong><small>Compact14 · 14 indicadores</small></div><b>0.4661</b></div><p>Error RMSE medio en 16 evaluaciones con 97 parcelas de entrenamiento y 41 de prueba. Diferencia: 0.0036 t/ha. Los dos modelos se compararon con las mismas particiones.</p></div></div></section>
-
-
-    <section class="section distribution-section" id="distribucion" aria-labelledby="distribution-title">
-      <div class="shell">
-        <div class="section-heading"><div><p class="eyebrow">¿CÓMO SON LAS ESTIMACIONES DE LAS 59 PARCELAS?</p><h2 id="distribution-title">Los promedios son parecidos, <em>pero los valores extremos son distintos.</em></h2></div><p>Comparamos cómo se distribuyen las 138 cosechas conocidas con las 59 estimaciones del modelo completo. No son las mismas parcelas: <strong>las 59 cosechas reales todavía se desconocen</strong>. Por eso esta gráfica describe las estimaciones, pero no mide sus errores.</p></div>
-        <div class="distribution-summary">
-          <div class="distribution-stat"><span>MEDIA OBSERVADA · 138</span><strong>3.9554</strong><small>t/ha</small></div>
-          <div class="distribution-stat"><span>MEDIA PREDICHA · 59</span><strong>3.9564</strong><small>t/ha</small></div>
-          <div class="distribution-stat"><span>SD OBSERVADA</span><strong>0.8512</strong><small>t/ha</small></div>
-          <div class="distribution-stat"><span>SD PREDICHA</span><strong>0.6976</strong><small>t/ha</small></div>
-        </div>
-        <p class="chart-explain">Compara las medianas y los intervalos centrales de las cosechas conocidas con los de las estimaciones, tanto en el conjunto completo como en cada estado. Las curvas acumuladas originales se conservan debajo para consulta.</p>
-        <div id="distribution-quantiles" aria-live="polite">Cargando resumen estadístico por estado…</div>
-        <div class="figure-key"><span><i class="green"></i> Cosechas conocidas</span><span><i class="gold"></i> Estimaciones de otras parcelas</span></div>
-        <details class="distribution-original"><summary>Ver las curvas acumuladas originales del estudio</summary>
-        <figure class="distribution-figure">
-          <img src="./media/distribution_ECDF.png" loading="lazy" width="1400" alt="Curvas de distribución acumulada, globales y por estado, de 138 rendimientos observados frente a 59 estimaciones de Reference26; los grupos tienen parcelas diferentes y la figura no compara errores individuales.">
-          <figcaption>Figura recuperada del análisis upstream, sin recalcular ni inventar curvas. Cada curva muestra qué proporción de parcelas tiene un rendimiento menor o igual a un valor. Los dos conjuntos contienen parcelas distintas; el gráfico no dice cuánto se equivoca cada predicción.</figcaption>
-        </figure>
-        </details>
-        <div class="distribution-lessons">
-          <article><span>LAS MEDIAS</span><h3>Los dos promedios son casi iguales.</h3><p>El promedio de las 59 estimaciones y el de las 138 cosechas conocidas difieren en aproximadamente 0.0011 t/ha. Esa cercanía <strong>no demuestra que las predicciones sean correctas</strong>, porque no son las mismas parcelas.</p></article>
-          <article><span>LOS VALORES EXTREMOS</span><h3>Hay menos valores muy altos o muy bajos.</h3><p>Las 59 estimaciones van de 2.760 a 4.820 t/ha; las cosechas conocidas, de 2.000 a 5.590. Los modelos de regresión suelen acercar los pronósticos a valores centrales, aunque aquí también cambian las parcelas.</p></article>
-          <article><span>DIFERENCIAS ENTRE ESTADOS</span><h3>En algunos estados las estimaciones varían menos.</h3><p>En Puebla, las estimaciones están más concentradas: su desviación estándar es 0.185 t/ha, frente a 0.584 para las cosechas conocidas. Son grupos diferentes, por lo que no podemos afirmar que el modelo esté subestimando los extremos.</p></article>
-        </div>
-        <p class="small-note">Cada parcela cuenta por igual, sin ponderar su superficie. Las diferencias entre grupos son descriptivas; no se modificaron los modelos para hacer coincidir ambas distribuciones. <a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_distribution/v1/README.md" target="_blank" rel="noopener noreferrer">Ver estadísticas y distribución por estado ↗</a></p>
-      </div>
-    </section>
-
-
-    <section class="section delivery" id="cobertura" aria-labelledby="delivery-title">
-      <div class="shell">
-        <div class="section-heading"><div><p class="eyebrow">QUÉ PODEMOS DECIR SOBRE LAS 59 PARCELAS</p><h2 id="delivery-title">El modelo entrega un número. <em>¿Cuánta confianza merece?</em></h2></div><p>La investigación revisó qué tan parecidas son las nuevas parcelas a las conocidas y cuánto se abren los intervalos calculados sobre validaciones anteriores.</p></div>
-        <div class="delivery-columns">
-          <article class="delivery-panel">
-            <h3>¿Hay parcelas con datos poco representados?</h3><p>De las 59 parcelas por estimar, 11 tienen por lo menos un aviso de soporte. Esto no significa que 11 estén mal pronosticadas.</p>
-            <div class="support-top"><strong id="support-total">11 de 59</strong><span>con al menos un aviso</span></div>
-            <div class="support-track" role="img" aria-label="11 parcelas con algún aviso y 48 sin avisos conocidos"><span id="support-shaded"></span></div>
-            <label class="delivery-control" for="state-support">Consulta los avisos por región</label>
-            <select id="state-support"><option value="all">Tres estados (59 parcelas)</option><option value="Hidalgo">Hidalgo</option><option value="Puebla">Puebla</option><option value="Tlaxcala">Tlaxcala</option></select>
-            <div id="support-categories" class="support-categories" aria-live="polite">Cargando el análisis de soporte…</div>
-            <p class="small-note">Los avisos pueden coincidir en la misma parcela. Por eso las categorías no se suman. Faltar historia para R3 significa que esa corrección se apaga, no que se ignore toda la parcela.</p>
-          </article>
-          <article class="delivery-panel" id="intervalos">
-            <h3>¿Qué tan amplios son los intervalos de validación?</h3><p>Un intervalo que cubre muchos rendimientos puede ser útil, pero también puede ser muy amplio. Elige el nivel nominal para ver ambas cosas.</p>
-            <div class="interval-buttons" role="group" aria-label="Nivel nominal del intervalo"><button type="button" data-interval="0.8" aria-pressed="false">80 % nominal</button><button type="button" class="active" data-interval="0.9" aria-pressed="true">90 % nominal</button></div>
-            <div class="interval-results" id="interval-results" aria-live="polite">Cargando cobertura y anchura…</div>
-            <p class="small-note">Cobertura observada en validación aleatoria con separación parcelaria para calibrar residuos; no es la cobertura certificada de las 59 predicciones finales. Las comparaciones territoriales requieren supuestos adicionales y a veces generan intervalos infinitos.</p>
-          </article>
-        </div>
-        <div class="delivery-warning">Una predicción de 4 t/ha <strong>no significa cuatro toneladas aseguradas</strong>. Antes de utilizarla en una decisión, conviene revisar la procedencia de los insumos, las limitaciones espaciales y qué tan diferentes son las parcelas nuevas.</div>
-        <a class="source-link" href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Cómo se construyeron los avisos y los intervalos ↗</a>
-      </div>
-    </section>
-
-    <section class="section technical-questions" id="preguntas-tecnicas" aria-labelledby="questions-title">
-      <div class="shell">
-        <div class="section-heading"><div><p class="eyebrow">RESPUESTAS A LAS DUDAS MÁS IMPORTANTES</p><h2 id="questions-title">¿Cómo interpretar las estimaciones <em>y sus pruebas?</em></h2></div><p>Estas preguntas aclaran cómo funciona el modelo, qué significan las métricas y qué conclusiones todavía no podemos sacar.</p></div>
-        <div class="faq-columns">
-          <div><h3>Sobre los datos y las estimaciones</h3>
-            <details><summary>¿Qué significa una tonelada por hectárea?</summary><p>Es una forma de expresar cuánto se cosecha en una superficie determinada. Por ejemplo, 4 t/ha equivalen a cuatro toneladas de cebada por cada hectárea. Eso permite comparar parcelas de tamaños distintos.</p></details>
-            <details><summary>¿Puedo consultar una predicción de mi propia parcela?</summary><p>Por ahora no. La página describe el estudio de 197 parcelas y no permite cargar parcelas nuevas. Tampoco publica las predicciones individuales ni los rendimientos desconocidos de las 59 parcelas.</p></details>
-            <details><summary>¿Por qué importa cuándo llueve, si la cantidad total es la misma?</summary><p>Dos ciclos pueden tener la misma lluvia total, pero repartida de forma muy distinta. El modelo inicial considera cuánta lluvia cayó al principio y cómo se concentró entre los meses. La simulación de esta página utiliza cifras inventadas.</p></details>
-            <details><summary>¿Se toma el promedio de las 24 parcelas más cercanas?</summary><p>No. Para cada parcela se ajusta una regresión con siete indicadores de sus 24 vecinas más cercanas que sí tienen cosecha conocida. Las cercanas tienen mayor peso, pero el modelo también utiliza la vegetación y el terreno de cada una.</p></details>
-            <details><summary>¿Si dos parcelas son vecinas tendrán el mismo rendimiento estimado?</summary><p>No necesariamente. Aunque estén cerca, dos parcelas pueden diferir en vegetación, pendiente y composición geológica. El ajuste local puede dar resultados diferentes.</p></details>
-          </div>
-          <div><h3>Sobre las pruebas estadísticas</h3>
-            <details><summary>¿Qué significan RMSE y R²?</summary><p>RMSE resume el tamaño de los errores y penaliza más las equivocaciones grandes. Se mide en t/ha: cuanto menor, mejor. R² compara qué tanto explican las predicciones la variación de los rendimientos frente a un punto de referencia; no es un porcentaje de parcelas acertadas. Aquí se muestran promedios de varias evaluaciones.</p></details>
-            <details><summary>¿Qué significa un valor p corregido por Holm?</summary><p>Un valor p ayuda a evaluar qué tan compatible es una diferencia con la hipótesis de que no existe un efecto detectable, bajo ciertos supuestos. Si probamos muchos modelos, aumentan las posibilidades de encontrar diferencias llamativas por azar. La corrección de Holm hace más exigente esa comparación. Un valor p alto no demuestra que dos modelos sean iguales.</p></details>
-            <details><summary>¿Se demostró que las 26 medidas son necesarias?</summary><p>No. Comprobamos asociaciones de algunas medidas climáticas y realizamos pruebas retirando grupos completos de información. No hay evidencia estadística que demuestre la necesidad de cada una de las 26 medidas por separado.</p></details>
-            <details><summary>¿Si una diferencia no es significativa, los modelos funcionan igual?</summary><p>No. Significa que esta prueba no aportó evidencia suficiente para distinguirlos. La ausencia de significancia no prueba que sean equivalentes; además, la evaluación espacial se basa en sólo cinco bloques.</p></details>
-            <details><summary>¿De dónde sale el RMSE de 0.4625 t/ha?</summary><p>Es el promedio del RMSE obtenido en 16 pruebas. En cada una se usaron 97 parcelas para entrenar y 41 para evaluar. No es el error medido sobre las 59 parcelas cuyo rendimiento todavía no conocemos.</p></details>
-            <details><summary>¿Se evitó usar la etiqueta de cada parcela que se evaluaba?</summary><p>En cada evaluación se separan las parcelas de entrenamiento de las de prueba, y los parámetros se eligen dentro del entrenamiento. Sin embargo, los investigadores ya probaron muchas arquitecturas con las mismas 138 cosechas; por eso los resultados pueden ser optimistas y requieren confirmación independiente.</p></details>
-            <details><summary>¿La geología demuestra por qué una parcela produce más cebada?</summary><p>No. Los datos geológicos ayudan a decidir cuánto peso dar a la predicción climática y cuánto a la predicción basada en vecinos. Eso puede mejorar algunas evaluaciones, pero no demuestra que la geología sea la causa de la diferencia de rendimiento.</p></details>
-            <details><summary>¿Por qué no quitamos la concentración de lluvia si mejora una de las pruebas?</summary><p>Porque en otras pruebas ocurre lo contrario: el modelo sin esa medida se equivoca más al dejar municipios completos fuera del entrenamiento. Las diferencias tampoco superaron las pruebas estadísticas corregidas.</p></details>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section limits" id="limites" aria-labelledby="limits-title"><div class="shell limits-grid"><div><p class="eyebrow">QUÉ FALTA COMPROBAR</p><h2 id="limits-title">Las estimaciones son útiles para estudiar las parcelas, <em>pero todavía tienen límites.</em></h2></div><div><div class="limit-item"><span>01</span><div><h3>Todavía desconocemos las 59 cosechas reales.</h3><p>El modelo ya produjo estimaciones para esas parcelas, pero no podemos medir su error sin conocer la cantidad realmente cosechada. Esas estimaciones se conservan fuera de esta página.</p></div></div><div class="limit-item"><span>02</span><div><h3>Las 138 cosechas se han usado en muchos experimentos.</h3><p>Aunque cada evaluación reserve parcelas, las mismas 138 cosechas han servido para estudiar y elegir modelos. Necesitamos resultados nuevos para comprobar qué tan bien se comportan fuera de este conjunto.</p></div></div><div class="limit-item"><span>03</span><div><h3>Una relación estadística no demuestra una causa.</h3><p>El modelo encuentra patrones entre lluvia, vegetación, terreno y cosecha; no demuestra que cambiar una de esas características produzca un cambio específico en el rendimiento.</p></div></div><div class="limit-item"><span>04</span><div><h3>Los intervalos de las pruebas no son garantías para nuevas parcelas.</h3><p>Calculamos cobertura y anchura de intervalos en evaluaciones anteriores, pero no está validado que esos intervalos cubran con la misma frecuencia las 59 cosechas desconocidas.</p></div></div></div></div></section>
-  </main>
-  <footer class="site-footer"><div class="shell footer-main"><div><a class="footer-brand" href="#inicio">GeoCebada<span> / investigación</span></a><p>Cómo usamos lluvia, satélites y parcelas cercanas para estimar cosechas y comprobar nuestros errores.</p></div><div class="footer-links"><a href="https://github.com/heri-espino/todoseboso" target="_blank" rel="noopener noreferrer">Código y documentación ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/current_champions_reproduction.md" target="_blank" rel="noopener noreferrer">Reproducibilidad ↗</a><a href="https://github.com/heri-espino/GeoC" target="_blank" rel="noopener noreferrer">Proyecto GeoC ↗</a></div></div><div class="shell footer-bottom"><span>AGROCEBADA · FIRA 2026 · ESTUDIO DE PREDICCIÓN DEL RENDIMIENTO DE CEBADA</span><span>DATOS PRIVADOS NO INCLUIDOS · <a href="#limites">LIMITACIONES</a></span></div></footer>
-</body>
-</html>
+<section class="section faq-section" id="preguntas"><div class="shell"><div class="section-heading"><div><p class="eyebrow">PREGUNTAS FRECUENTES</p><h2>Para interpretar el modelo <em>sin confundir sus partes.</em></h2></div></div>
+<div class="faq-layout">
+<details><summary>¿Es un K-means de 26 variables?</summary><p>No. K-means sólo agrupa las diez proporciones geológicas; el rendimiento lo estiman regresiones Elastic Net y Ridge, cuyos resultados se combinan con pesos aprendidos. Las 26 variables están repartidas en cinco funciones.</p></details>
+<details><summary>¿Por qué 24 vecinos y cuatro grupos geológicos?</summary><p>Los 24 vecinos y la penalización de Ridge se conservaron de una receta local anterior; no se demuestra que sean universalmente óptimos. Para la mezcla geológica se probaron internamente cuatro y ocho grupos y el ajuste final seleccionó cuatro.</p></details>
+<details><summary>¿Las 26 variables tienen valores p significativos?</summary><p>No se han realizado 26 pruebas individuales de efecto dentro de esta arquitectura. Hay asociaciones para algunas señales climáticas y experimentos de retirada de bloques. No se debe atribuir un efecto causal a una variable por aparecer en el modelo.</p></details>
+<details><summary>¿Qué pasa si la lluvia es cero o si falta un mes?</summary><p>Cuando todos los meses tienen cero precipitación observada, los resúmenes correspondientes toman cero. Si no se observó un mes, no se interpreta como cero: los faltantes derivados se tratan durante el ajuste con reglas aprendidas sólo en entrenamiento.</p></details>
+<details><summary>¿Se sustituyen los datos faltantes siempre por la media?</summary><p>No. Las columnas numéricas de los regresores se imputan por mediana de entrenamiento; el escalado utiliza estadísticas de entrenamiento. El corrector final se desactiva si falta alguno de sus tres indicadores requeridos.</p></details>
+<details><summary>¿Qué significa un peso geológico de 0.86?</summary><p>Que, en esa mezcla ajustada, la estimación local recibe un peso cercano a 86 % y la climática el resto. No significa que la geología explique 86 % del rendimiento o que lo cause.</p></details>
+<details><summary>¿Cuánto acierta el modelo?</summary><p>Su RMSE medio fue 0.4625 t/ha en 16 pruebas de 97 parcelas de entrenamiento y 41 de evaluación. Es una medida agregada de error, no una probabilidad de acierto ni la incertidumbre garantizada de cada parcela.</p></details>
+<details><summary>¿Puedo estimar aquí mi parcela?</summary><p>No. La página describe y documenta el método empleado en el estudio. No hay una herramienta pública para cargar parcelas nuevas ni se exponen las predicciones individuales.</p></details>
+</div>
+<div class="source-index"><strong>Documentación técnica original</strong><a href="https://github.com/heri-espino/todoseboso/blob/main/documentation/models/Reference26/README.md" target="_blank" rel="noopener noreferrer">Fórmula, 26 variables y ajuste final ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_component_evidence/v1/README.md" target="_blank" rel="noopener noreferrer">Pruebas de cada componente ↗</a><a href="https://github.com/heri-espino/todoseboso/blob/main/results/four_final_checks/v1/README.md" target="_blank" rel="noopener noreferrer">Soporte, sensibilidad e intervalos ↗</a></div></div></section>
+</main><footer class="model-footer"><div class="shell"><strong>GeoCebada · AgroCebada FIRA 2026</strong><span>Regresión local con mezcla geológica · Código: Reference26 · Investigación retrospectiva del ciclo 2025</span><a href="#inicio">Volver al inicio ↑</a></div></footer>
+</body></html>
