@@ -94,7 +94,7 @@ def check() -> None:
     assert all(a in page.ids for a in page.anchors), "Broken internal navigation"
     for asset in page.assets:
         assert (SITE / asset).is_file(), ("missing site asset", asset)
-    assert page.scripts == ["./navigation.js", "./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./ensemble_contract.js", "./ensemble_story.js", "./browser_inference.js"]
+    assert page.scripts == ["./navigation.js", "./scroll_motion.js", "./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./ensemble_contract.js", "./ensemble_story.js", "./browser_inference.js"]
     for forbidden in ("B1</", "Local04D"):
         assert forbidden not in html, forbidden
     for required in ("Regresión local con mezcla geológica", "K-means",
