@@ -7,7 +7,7 @@
 <title>Cómo estimamos el rendimiento de cebada · Regresión local con mezcla geológica</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css">
-<script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
+<script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./field_charts.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
 <script src="./reference26_engine.js" defer></script>
 <script src="./predictions59.js" defer></script>
 <script src="./browser_inference.js" defer></script>
@@ -87,6 +87,16 @@
 <div class="illustration-lab"><div class="lab-heading"><h3>Igual lluvia total, distinta distribución</h3><p>simulación educativa, con valores inventados: no son datos de las parcelas del estudio.</p></div>
 <div class="buttonset"><button type="button" class="active" data-rain="uniform" aria-pressed="true">30 mm cada mes</button><button type="button" data-rain="concentrated" aria-pressed="false">140 mm en agosto</button></div>
 <div id="rain-chart"></div><div class="rain-metrics"><div><span>Lluvia total</span><strong id="rain-total">210 mm</strong></div><div><span>Fracción temprana</span><strong id="rain-early">42.9 %</strong></div><div><span>Índice HHI</span><strong id="rain-hhi">0.143</strong></div></div>
+</div>
+<div class="real-data-figure" id="datos-reales">
+<h3>El clima y la vegetación observados en 2025</h3>
+<p class="chart-explain">Estas gráficas están reservadas para los datos <strong>reales de las 197 parcelas</strong>. Se generan a partir de las series originales, sin inventar lluvia ni vegetación. Las líneas representan las medianas mensuales y los segmentos verticales delimitan los percentiles 10 y 90; no son intervalos predictivos.</p>
+<p id="real-chart-status" role="status">Verificando si ya se han publicado los agregados observacionales…</p>
+<div class="detail-pair real-chart-pair">
+<div><h4>Precipitación mensual · 2025</h4><div id="real-rainfall"></div></div>
+<div><h4>NDVI satelital · 2025</h4><div id="real-ndvi"></div></div>
+</div>
+<p class="small-note">La cobertura satelital puede variar por mes. El gráfico indica cuántas parcelas tuvieron mediciones válidas, sin reemplazar valores ausentes por datos simulados. La demostración de 210 mm de arriba sigue siendo una simulación independiente.</p>
 </div></div></section>
 
 <section class="section section-dark" id="arquitectura"><div class="shell">
@@ -176,7 +186,12 @@
 <div class="previous-validation-heading"><h3>Otra evaluación utilizada durante el desarrollo</h3><p>Se conserva por separado el experimento de 16 particiones, con 97 parcelas para entrenar y 41 para evaluar. Sus métricas no deben confundirse con las del LOOCV.</p></div>
 <div class="scoreline"><div><span>RMSE · 16 evaluaciones 97/41</span><strong>0.4625</strong><small>t/ha</small></div><div><span>Error absoluto medio, MAE</span><strong>0.3387</strong><small>t/ha</small></div><div><span>R² de esas evaluaciones</span><strong>0.6971</strong><small>no es un porcentaje de aciertos</small></div></div>
 <p class="chart-explain">En cada una de esas 16 evaluaciones se entrenó con 97 rendimientos y se midió el error en 41 parcelas reservadas. Se informa el promedio de las métricas de cada partición. También se evaluó el método dejando fuera perfiles climáticos, municipios y bloques geográficos completos.</p>
-<div id="performance-chart" aria-live="polite">Cargando los resultados originales…</div><details class="math-details"><summary>Notación matemática de RMSE, MAE y R²</summary><p>Primero: el RMSE mide el tamaño de los errores con mayor penalización para los errores grandes; el MAE promedia magnitudes absolutas; R² compara el error del modelo con el de una predicción constante de referencia.</p><div class="math-grid">
+<div id="performance-chart" aria-live="polite">Cargando los resultados originales…</div>
+<div class="real-data-figure">
+<h3>Errores reales, parcela por parcela</h3>
+<p class="chart-explain">La tabla se activa únicamente cuando se reciben las 138 predicciones reservadas de una ejecución LOOCV auténtica. Sin esos datos no es correcto inferir MAE, sesgo o error máximo a partir del RMSE.</p>
+<div id="real-loocv">Falta el archivo de predicciones individuales LOOCV.</div>
+</div><details class="math-details"><summary>Notación matemática de RMSE, MAE y R²</summary><p>Primero: el RMSE mide el tamaño de los errores con mayor penalización para los errores grandes; el MAE promedia magnitudes absolutas; R² compara el error del modelo con el de una predicción constante de referencia.</p><div class="math-grid">
 <div class="math-item"><strong>Raíz del error cuadrático medio</strong><div class="math-scroll"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>RMSE</mi><mo>=</mo><msqrt><mfrac><mn>1</mn><mi>n</mi></mfrac><munder><mo>∑</mo><mi>i</mi></munder><msup><mrow><mo>(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo>)</mo></mrow><mn>2</mn></msup></msqrt></mrow></math></div><p>La raíz devuelve el error a las mismas unidades que el rendimiento: toneladas por hectárea.</p></div>
 <div class="math-item"><strong>Error absoluto medio</strong><div class="math-scroll"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>MAE</mi><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munder><mo>∑</mo><mi>i</mi></munder><mo>|</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo>|</mo></mrow></math></div><p>Promedia el tamaño de cada error sin conservar su signo.</p></div>
 <div class="math-item"><strong>Coeficiente de determinación</strong><div class="math-scroll"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mrow><mo>∑</mo><msup><mrow><mo>(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo>)</mo></mrow><mn>2</mn></msup></mrow><mrow><mo>∑</mo><msup><mrow><mo>(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><mi>y</mi><mo>¯</mo></mover><mo>)</mo></mrow><mn>2</mn></msup></mrow></mfrac></mrow></math></div><p>Se compara el error cuadrático del modelo con el de usar la media observada.</p></div>
