@@ -12,6 +12,7 @@ import json
 import math
 import os
 import sys
+import types
 from pathlib import Path
 from warnings import catch_warnings, simplefilter
 
@@ -22,6 +23,21 @@ from threadpoolctl import threadpool_limits
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+
+# Only inference classes are imported. Skip the legacy family_1 training
+# orchestration: it imports geopandas/raster processing during module import,
+# despite those packages not being used by the frozen Reference26 predict()
+# path. The shim provides exactly the module-level constants read by the
+# conditional-response CLASS definition; model parameters come from joblib.
+legacy = types.ModuleType("src.family_1.lm_multiblock")
+legacy.ROOT = ROOT
+legacy.ID = "ID_POLIGONO"
+legacy.TARGET = "RENDIMIENTO_T_HA"
+legacy.RAIN = ["compact_precip_total", "compact_early_fraction",
+               "compact_concentration_hhi"]
+legacy.k = types.SimpleNamespace(ALPHA=[0.001, 0.01, 0.1, 1.0],
+                                 L1=[0.1, 0.5, 0.9])
+sys.modules.setdefault("src.family_1.lm_multiblock", legacy)
 
 from src.current_champions import predict_saved
 from src.geoc_local04d_snapshot import haversine_distance_matrix
