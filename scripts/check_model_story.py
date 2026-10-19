@@ -91,7 +91,7 @@ def check() -> None:
     assert all(a in page.ids for a in page.anchors), "Broken internal navigation"
     for asset in page.assets:
         assert (SITE / asset).is_file(), ("missing site asset", asset)
-    assert page.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js", "./inference_client.js"]
+    assert page.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./browser_inference.js"]
     for forbidden in ("Compact14", "Champion", "B1</", "Local04D"):
         assert forbidden not in html, forbidden
     for required in ("Regresión local con mezcla geológica", "K-means",
@@ -105,7 +105,7 @@ def check() -> None:
     assert "11.84 %" in html and "468.186 kilogramos por hectárea" in html
     assert "no es el porcentaje de error esperado" in html.lower() or "no es el porcentaje de error esperado" in html
     assert "No se calcula un rendimiento real desde esta página" not in html
-    assert "PREDICCIÓN REAL · MODELO ENTRENADO" in html
+    assert "PREDICCIÓN REAL · EN TU NAVEGADOR" in html
     assert "parcel_core.js" in html and "predictor.js" in html
     assert (SITE / "parcel_core.js").is_file() and (SITE / "predictor.js").is_file()
     loocv = data["loocv"]

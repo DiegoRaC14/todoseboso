@@ -36,7 +36,7 @@ class StorySiteTest(unittest.TestCase):
         self.assertIn("aria-pressed", js)
         self.assertIn("LOOCV", html)
         self.assertIn("Parcela de clima", (SITE / "predictor.js").read_text(encoding="utf-8"))
-        self.assertIn("PREDICCIÓN REAL · MODELO ENTRENADO", html)
+        self.assertIn("PREDICCIÓN REAL · EN TU NAVEGADOR", html)
         self.assertIn("id=\"predict-real\"", html)
         self.assertIn("prefers-reduced-motion", (SITE / "model.css").read_text(encoding="utf-8"))
 

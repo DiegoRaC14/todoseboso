@@ -32,20 +32,17 @@ class InferenceContractTests(unittest.TestCase):
         self.assertIn("np.isclose", src)
         self.assertIn("HTTPException(503", src)
 
-    def test_browser_does_not_fake_real_predictions(self):
+    def test_browser_requires_59_reference26_numerical_parity(self):
         html = (SITE / "index.html").read_text(encoding="utf-8")
-        client = (SITE / "inference_client.js").read_text(encoding="utf-8")
-        assert "./inference_client.js" in html
-        for id in ("predict-real", "predict-existing", "api-check", "api-status", "live-result", "existing-result"):
-            self.assertIn('id="' + id + '"', html)
-        self.assertIn("/api/predict-existing", client)
-        self.assertIn("/api/predict", client)
-        self.assertIn("/api/health", client)
-        self.assertIn("data.reproduced_59_aggregate", client)
-        self.assertIn("response.is_real_model", client)
-        self.assertIn("ownButton.disabled = true", client)
-        self.assertNotIn("Math.random", client)
-        self.assertIn("Sin estado", (ROOT / "deployment/inference_api.py").read_text(encoding="utf-8"))
+        browser = (SITE / "browser_inference.js").read_text(encoding="utf-8")
+        engine = (SITE / "reference26_engine.js").read_text(encoding="utf-8")
+        self.assertIn("./browser_inference.js", html)
+        self.assertIn("./reference26_engine.js", html)
+        self.assertIn("Reference26Browser.parity", browser)
+        self.assertIn("ready(null)", browser)
+        self.assertIn("function ridge", engine)
+        self.assertIn("function geology", engine)
+        self.assertIn("function correction", engine)
 
     def test_no_fabricated_server_url(self):
         cfg = json.loads((SITE / "data/inference_config.json").read_text(encoding="utf-8"))
