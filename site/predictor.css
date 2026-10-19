@@ -99,3 +99,23 @@
 .math-scroll math{font-size:1.05rem}.prediction-mode button{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.fictional-choice,.prediction-mode button{transition:none}}
+/* Live fitted-model connector. No result is shown until the API confirms readiness. */
+.live-inference{margin:28px 0;padding:25px;background:#eaf2e8;border-top:3px solid var(--jade)}
+.live-inference>h3{font-size:24px;margin:7px 0 11px}
+.live-inference>p{font-size:13px;line-height:1.7}
+.live-api-config{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:17px 0}
+.live-api-config label{width:100%;font-size:12px;color:var(--forest);font-weight:690}
+.live-api-config input,.existing-parcel-lookup input{padding:12px;max-width:400px;width:100%;border:1px solid #9bbca1;background:var(--paper);font:inherit}
+.live-api-config button,.live-inference-actions button,.existing-parcel-lookup button{padding:13px 18px;border:0;background:var(--forest);color:#fff;font-weight:680;font-size:12px;cursor:pointer}
+.live-api-config button:disabled,.live-inference-actions button:disabled,.existing-parcel-lookup button:disabled{opacity:.42;cursor:not-allowed}
+#api-status{padding:12px 0;color:var(--forest);border-bottom:1px solid var(--rule)}
+.live-inference-actions{margin-top:24px}
+.live-result{font-size:17px;margin-top:14px;font-variant-numeric:tabular-nums}
+.live-result strong{font-size:32px;color:var(--forest)}
+.existing-parcel-lookup{border-top:1px solid var(--rule);margin:30px 0 0;padding-top:20px}
+.existing-parcel-lookup h4{font-size:17px;margin-bottom:9px}
+.existing-parcel-lookup p{font-size:12px;line-height:1.7}
+.existing-parcel-lookup label{display:block;font-size:12px;margin:0 0 7px;font-weight:700}
+.existing-parcel-lookup button{margin:10px 0;display:block}
+#existing-result{font-size:14px;min-height:24px}
+@media(max-width:550px){.live-inference{padding:18px}.live-api-config input{max-width:100%}}
