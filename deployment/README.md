@@ -2,15 +2,15 @@
 
 Esta implementación prepara **inferencia del ajuste entrenado real**, no un nuevo
 modelo ni una fórmula ilustrativa. El frente sigue en GitHub Pages. La API Python
-ejecuta el \`joblib\` original mediante
-\`src/current_champions.py:predict_saved\`, junto con las 26 columnas
+ejecuta el `joblib` original mediante
+`src/current_champions.py:predict_saved`, junto con las 26 columnas
 correctas, el entrenamiento local y la geometría congelada.
 
 ## Estado de la instalación
 
-- API: \`deployment/inference_api.py\` (FastAPI).
-- Despliegue sugerido: Render con \`render.yaml\`.
-- Front-end: \`site/inference_client.js\` y \`site/data/inference_config.json\`.
+- API: `deployment/inference_api.py` (FastAPI).
+- Despliegue sugerido: Render con `render.yaml`.
+- Front-end: `site/inference_client.js` y `site/data/inference_config.json`.
 - **Falta subir o montar los tres archivos binarios** y conectar el servicio
   externo. Mientras tanto la página mantiene desactivada la predicción real.
 - No se publicará una cifra de rendimiento si la API no confirma el modelo
@@ -18,7 +18,7 @@ correctas, el entrenamiento local y la geometría congelada.
 
 ## 1. Copiar los tres artefactos
 
-Desde PowerShell, en la raíz de \`todoseboso\`, después de actualizar \`main\`:
+Desde PowerShell, en la raíz de `todoseboso`, después de actualizar `main`:
 
 ~~~powershell
 git pull --ff-only
@@ -31,7 +31,7 @@ Get-FileHash deployment\model_artifacts\features197.parquet -Algorithm SHA256
 Get-FileHash deployment\model_artifacts\distance197.npy -Algorithm SHA256
 ~~~
 
-**Advertencia de publicación:** \`features197.parquet\` contiene IDs y las
+**Advertencia de publicación:** `features197.parquet` contiene IDs y las
 138 cosechas observadas. Si los tres binarios se suben al repositorio
 **público**, cualquiera podrá descargarlos. La inclusión de estos archivos
 se autorizó expresamente para este despliegue, pero revisa los permisos
@@ -46,13 +46,13 @@ git commit -m "Include verified Reference26 inference artifacts"
 git push origin main
 ~~~
 
-El \`.gitignore\` conserva la exclusión completa de \`outputs/\` y permite sólo
-el modelo del directorio anterior. No uses \`git add -f\`. Los tres SHA-256
-esperados están fijados en \`deployment/inference_api.py\`. Si alguno difiere,
+El `.gitignore` conserva la exclusión completa de `outputs/` y permite sólo
+el modelo del directorio anterior. No uses `git add -f`. Los tres SHA-256
+esperados están fijados en `deployment/inference_api.py`. Si alguno difiere,
 la API bloquea su carga.
 
 Una alternativa más privada es montar los tres archivos en un servicio
-seguro y definir \`GEOCEBADA_ARTIFACT_DIR\`, sin versionarlos.
+seguro y definir `GEOCEBADA_ARTIFACT_DIR`, sin versionarlos.
 
 ## 2. Probar el modelo de verdad antes de desplegar
 
@@ -75,7 +75,7 @@ El script debe verificar:
   los 138 predictores históricos; si no reproduce la geometría,
   la API bloquea parcelas nuevas.
 
-No hay un nuevo entrenamiento. El \`joblib\` serializado procede de
+No hay un nuevo entrenamiento. El `joblib` serializado procede de
 scikit-learn 1.7.2, por lo que se fija esa versión para reducir
 incompatibilidades de serialización.
 
@@ -91,18 +91,18 @@ En otra ventana:
 Invoke-RestMethod http://127.0.0.1:8000/api/health
 ~~~
 
-El resultado deberá incluir \`ready: true\`,
-\`reproduced_59_aggregate: true\` y, si se verificó la geometría,
-\`new_parcels_supported: true\`.
+El resultado deberá incluir `ready: true`,
+`reproduced_59_aggregate: true` y, si se verificó la geometría,
+`new_parcels_supported: true`.
 
 ## 3. Desplegar el servicio Python
 
 GitHub Pages sólo sirve HTML, CSS y JavaScript: **no ejecuta archivos
-\`.joblib\` ni Python de servidor**.
+`.joblib` ni Python de servidor**.
 
 Una solución sencilla es conectar el repositorio a
 [Render](https://render.com/docs/deploy-fastapi). El archivo
-\`render.yaml\` define el servicio y su comando de arranque. Selecciona
+`render.yaml` define el servicio y su comando de arranque. Selecciona
 el plan que corresponda al uso previsto; el gratuito puede suspenderse
 tras inactividad y no es un servicio de alta disponibilidad.
 
@@ -112,7 +112,7 @@ commit de GitHub, y el URL concreto del servicio no se presupone.
 
 Al obtener el URL HTTPS de tu API, ponlo en:
 
-\`site/data/inference_config.json\`
+`site/data/inference_config.json`
 
 ~~~json
 {
@@ -124,7 +124,7 @@ Al obtener el URL HTTPS de tu API, ponlo en:
 ~~~
 
 No uses ese ejemplo literalmente: reemplázalo por el URL que te entregue
-Render. Guarda el cambio en \`main\` para que GitHub Pages conecte el
+Render. Guarda el cambio en `main` para que GitHub Pages conecte el
 formulario automáticamente.
 
 También puedes introducir temporalmente ese URL en «Dirección del
@@ -133,15 +133,15 @@ servicio de inferencia» dentro del laboratorio y pulsar
 
 ## 4. Qué puede calcular
 
-- **Una de las 59 parcelas originales:** \`POST /api/predict-existing\`
-  con \`{"parcel_id":"ID_EXACTO"}\`. La API encuentra la fila y utiliza
+- **Una de las 59 parcelas originales:** `POST /api/predict-existing`
+  con `{"parcel_id":"ID_EXACTO"}`. La API encuentra la fila y utiliza
   **exactamente la matriz de distancias congelada**.
-- **Una parcela nueva:** \`POST /api/predict\`
-  con \`{"features":{"compact_precip_total":100,...}}\`. Acepta las 26
-  entradas del manifiesto, con valores \`null\` para datos faltantes,
+- **Una parcela nueva:** `POST /api/predict`
+  con `{"features":{"compact_precip_total":100,...}}`. Acepta las 26
+  entradas del manifiesto, con valores `null` para datos faltantes,
   siempre que latitud y longitud estén presentes. El servidor construye
   las distancias a las 138 parcelas conocidas con la **misma
-  normalización** y ejecuta \`predict_saved\`.
+  normalización** y ejecuta `predict_saved`.
 - Si falta alguno de los tres indicadores R3, la corrección final se
   desactiva como en el modelo original. Las imputaciones de otros
   indicadores son las aprendidas por sus pipelines originales.
@@ -152,7 +152,7 @@ garantiza un error individual de 0.468186 t/ha.
 
 ## 5. Seguridad y comprobaciones
 
-No aceptes \`joblib\` de terceros: deserializarlo puede ejecutar código.
+No aceptes `joblib` de terceros: deserializarlo puede ejecutar código.
 Sólo se permite el hash exacto ya auditado.
 
 En la API no se devuelve el objetivo de entrenamiento, los datos de
@@ -165,4 +165,4 @@ autenticación y cuotas **en el servidor**, nunca en JavaScript con una
 clave visible.
 
 La documentación de la arquitectura está en
-\`documentation/models/Reference26/README.md\`.
+`documentation/models/Reference26/README.md`.
