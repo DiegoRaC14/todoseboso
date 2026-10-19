@@ -55,7 +55,7 @@ class InferenceContractTests(unittest.TestCase):
         self.assertTrue((ROOT / "render.yaml").is_file())
         self.assertTrue((ROOT / "deployment/requirements-api.txt").is_file())
         readme = (ROOT / "deployment/README.md").read_text(encoding="utf-8")
-        self.assertIn("138 rendimientos", readme)
+        self.assertIn("138 cosechas observadas", readme)
         self.assertIn("scripts/check_inference_runtime.py", readme)
 
 
