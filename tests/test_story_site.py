@@ -34,7 +34,9 @@ class StorySiteTest(unittest.TestCase):
         self.assertIn("uniform: [30,30,30,30,30,30,30]", js)
         self.assertIn("concentrated: [10,10,10,20,140,10,10]", js)
         self.assertIn("aria-pressed", js)
-        self.assertNotIn("LOOCV", html)
+        self.assertIn("LOOCV", html)
+        self.assertIn("Parcela de clima", (SITE / "predictor.js").read_text(encoding="utf-8"))
+        self.assertIn("No se calcula un rendimiento real", html)
         self.assertIn("prefers-reduced-motion", (SITE / "model.css").read_text(encoding="utf-8"))
 
 
