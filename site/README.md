@@ -64,6 +64,20 @@ individuales suficientes para sustituirlos fielmente en este clon.
 En ningún caso se construyen series mensuales, dispersogramas observado
 contra predicho ni mapas de centroides a partir de resúmenes agregados.
 
+## Dataset pequeño para nuevas gráficas reales
+
+La herramienta [`scripts/export_real_chart_data.py`](../scripts/export_real_chart_data.py)
+extrae sólo las cinco columnas mensuales necesarias de los Parquet
+locales, resume lluvia y NDVI por mes sin inventar mediciones y, si se
+proporcionan OOF LOOCV genuinas, calcula métricas de error y su distribución.
+Escribe un JSON pequeño en `outputs/site_extract/real_charts.json`
+(excluido de Git) para revisión antes de publicar como
+`site/data/real_charts.json`. El navegador sólo muestra los gráficos
+empíricos si existe un archivo con esquema válido. Mientras no exista,
+informa que faltan los datos, sin trazar valores simulados.
+
+[Comandos, archivos exactos y garantías de procedencia](../documentation/real_chart_data_export.md).
+
 ## Validación
 
 ```bash
