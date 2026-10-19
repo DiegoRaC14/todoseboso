@@ -231,3 +231,27 @@ del soporte total de la estimación.
 La comprobación automática `tests/test_predictions59.cjs` asegura 59 IDs
 únicos, 59 predicciones con paridad frente a Python, 51 con R3 y ocho sin
 soporte para R3, y que se rechazan cifras o entradas manipuladas.
+
+
+## Explorador geográfico de Andrea-HH
+
+La última sección de `site/index.html` (`#mapa-interactivo`) integra el
+[explorador interactivo de Andrea-HH](https://github.com/Andrea-HH/todoseboso/tree/paginAndrea/site/explorador)
+por medio de un único `iframe` independiente con la
+[versión publicada](https://andrea-hh.github.io/todoseboso/explorador/mapa.html).
+Se mantienen sus propios filtros por estado y conjunto, selección de parcelas,
+controles Leaflet, base satelital y atribuciones. El código de modelado de
+este repositorio no se modifica.
+
+**Dependencia externa:** la capa de geometrías, los datos del explorador y
+los tiles satelitales son gestionados por el sitio original; no están incluidos
+en el `main` de este repositorio. Si el despliegue externo está caído o cambia
+su ruta, la vista embebida dejará de funcionar. Debajo del marco se incluye
+un enlace directo al sitio original como alternativa de acceso. Se recomienda
+coordinar con la autora una exportación versionada y autorizada de los datos
+antes de convertir la integración en una dependencia autocontenida.
+
+Prueba local sin acceso de red:
+`python -m unittest discover -s tests -p 'test_interactive_map_section.py'`.
+La disponibilidad del iframe y de sus capas remotas se debe verificar
+manualmente en el despliegue después de fusionar la PR.

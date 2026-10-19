@@ -6,7 +6,7 @@
 <meta name="description" content="Cómo funciona la regresión local con mezcla geológica para estimar el rendimiento de cebada: 26 variables, tratamiento de faltantes, K-means, Ridge, Elastic Net, hiperparámetros, resultados y pruebas.">
 <title>Cómo estimamos el rendimiento de cebada · Regresión local con mezcla geológica</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css">
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css"><link rel="stylesheet" href="./interactive-map.css">
 <script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./field_charts.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
 <script src="./reference26_engine.js" defer></script>
 <script src="./predictions59.js" defer></script>
@@ -290,5 +290,19 @@
 <p class="small-note">Este JSON <strong>no contiene una predicción</strong>. La inferencia exige el modelo ajustado, su preprocesamiento, los centroides geológicos y los 138 ejemplos de entrenamiento, que estarán incluidos en la exportación web verificada. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
 </div>
 </div></section>
+
+<section class="section section-soft collaborator-map" id="mapa-interactivo" aria-labelledby="collaborator-map-title">
+<div class="shell">
+<div class="section-heading collaborator-map-heading"><div>
+<p class="eyebrow">13 · EXPLORACIÓN GEOGRÁFICA</p>
+<h2 id="collaborator-map-title">¿Dónde están <em>las 197 parcelas?</em></h2>
+</div><p>Explora la ubicación de las parcelas agrícolas de Hidalgo, Puebla y Tlaxcala. Cambia entre vista satelital y mapa ligero, filtra por estado y distingue las 138 parcelas de entrenamiento de las 59 parcelas por predecir.</p></div>
+<div class="collaborator-map-frame">
+<iframe src="https://andrea-hh.github.io/todoseboso/explorador/mapa.html" title="Mapa interactivo de GeoCebada realizado por Andrea-HH, con filtros por estado, selección de parcelas y vista satelital" loading="lazy" referrerpolicy="no-referrer" aria-describedby="collaborator-map-credit"></iframe>
+</div>
+<p class="small-note collaborator-map-credit" id="collaborator-map-credit">Explorador elaborado por <a href="https://github.com/Andrea-HH/todoseboso/tree/paginAndrea/site/explorador" target="_blank" rel="noopener noreferrer">Andrea-HH</a>. El mapa se carga desde su <a href="https://andrea-hh.github.io/todoseboso/explorador/mapa.html" target="_blank" rel="noopener noreferrer">sitio original ↗</a>, donde también puedes abrirlo en pantalla completa. Las 59 cosechas desconocidas no son mediciones observadas.</p>
+</div>
+</section>
+
 </main><footer class="model-footer"><div class="shell"><strong>GeoCebada · AgroCebada FIRA 2026</strong><span>Regresión local con mezcla geológica · Código: Reference26 · Investigación retrospectiva del ciclo 2025</span><a href="#inicio">Volver al inicio ↑</a></div></footer>
 </body></html>

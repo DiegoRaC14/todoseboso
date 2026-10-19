@@ -1,0 +1,12 @@
+/* Andrea-HH's original map is isolated in a frame so its Leaflet controls,
+ * styling, and data-loading logic cannot affect the existing model site. */
+.collaborator-map{background:var(--paper,#f8f7f0)}
+.collaborator-map-heading{margin-bottom:28px}
+.collaborator-map-frame{border-radius:18px;overflow:hidden;border:1px solid var(--rule,#e0e3d8);background:#eaece5;box-shadow:0 18px 48px rgba(16,55,47,.10)}
+.collaborator-map-frame iframe{display:block;width:100%;height:810px;border:0;background:#eaece5}
+.collaborator-map-credit{margin:17px 0 0;line-height:1.8}
+.collaborator-map-credit a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.collaborator-map-credit a:focus-visible{outline:3px solid #d7a94c;outline-offset:3px}
+@media(max-width:980px){.collaborator-map-frame iframe{height:840px}}
+@media(max-width:720px){.collaborator-map-frame{border-radius:12px}.collaborator-map-frame iframe{height:1140px}.collaborator-map-heading{margin-bottom:20px}}
+@media(max-width:440px){.collaborator-map-frame iframe{height:1210px}}
