@@ -59,7 +59,7 @@ def main():
     html = (SITE / "index.html").read_text(encoding="utf-8")
     parser = PageHTML()
     parser.feed(html)
-    for name in ("performance-chart", "association-chart",
+    for name in ("parcel-coverage", "performance-chart", "association-chart",
                  "hhi-forest", "interval-results", "rain-chart",
                  "distribution-quantiles", "r3-comparison", "expert-weights"):
         assert name in parser.ids
@@ -71,12 +71,13 @@ def main():
         text = (SITE / path).read_text(encoding="utf-8")
         assert "https://cdn." not in text
         assert "LOOCV" not in text
+    assert "GeoCharts.parcelCounts" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.distribution" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.forest" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.r3" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.coefficients" in (SITE / "model.js").read_text(encoding="utf-8")
     assert "GeoCharts.performance" in (SITE / "model.js").read_text(encoding="utf-8")
-    print("PASS: all 8 distribution rows and 9 chart mounts match their published sources.")
+    print("PASS: all 8 distribution rows and 10 chart mounts match their published sources.")
 
 
 if __name__ == "__main__":

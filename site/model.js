@@ -159,6 +159,19 @@
       return {id, label: labels[id][0], description: labels[id][1],
         rmse: row.rmse, r2: row.r2, mae: row.mae};
     });
+    // This separately reported aggregate has no archived per-parcel validation
+    // predictions and cannot supply a source-backed MAE.
+    const loo = model.loocv;
+    if (loo && loo.folds === 138 && loo.training_labels_per_fold === 137 &&
+        Number.isFinite(loo.rmse_t_ha) && Number.isFinite(loo.r2_approx)) {
+      performance.unshift({
+        id: "leave_one_out",
+        label: "138 parcelas, una por turno",
+        description: "137 para entrenar; 1 para evaluar",
+        rmse: loo.rmse_t_ha, r2: loo.r2_approx, mae: null,
+        provenance: "Resultado comunicado por el equipo, sin predicciones individuales públicas."
+      });
+    }
     window.GeoCharts.performance($("#performance-chart"), performance);
     const names = {
       random: "Parcelas aleatorias", climate_profile: "Perfiles climáticos",
@@ -176,6 +189,7 @@
       ...p,label:names[p.id]
     }));
     window.GeoCharts.forest($("#hhi-forest"), sensitivity, "spatial");
+    window.GeoCharts.parcelCounts($("#parcel-coverage"), distributions.rows);
     window.GeoCharts.distribution($("#distribution-quantiles"), distributions.rows);
     research = newResearch;
     showIntervals("0.9");
@@ -204,7 +218,7 @@
       showFigures(evidence, results, newResearch, distributions);
     } catch (error) {
       console.error("Error al cargar el modelo documentado:", error);
-      for (const id of ["feature-rows", "cluster-list", "performance-chart",
+      for (const id of ["feature-rows", "cluster-list", "parcel-coverage", "performance-chart",
         "r3-comparison", "expert-weights", "association-chart", "hhi-forest",
         "interval-results", "distribution-quantiles"]) {
         const target = $("#" + id);

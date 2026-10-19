@@ -158,3 +158,41 @@ test("Rainfall demo is explicitly synthetic and preserves total rainfall", () =>
   assert.equal(values.reduce((a,b)=>a+b,0),210);
   assert.equal(marks.filter(n => n.getAttribute("aria-label").includes("ficticia")).length,7);
 });
+
+test("Real parcel inventory reflects all 197 source-backed state counts", () => {
+  const data = read("distribution.json");
+  const node = new MockNode("div");
+  charts.parcelCounts(node, data.rows);
+  const canvas = svg(node);
+  const marks = all(canvas, "rect").filter(p => p.getAttribute("role") === "img");
+  assert.equal(marks.length, 6);
+  for (const state of ["Hidalgo", "Puebla", "Tlaxcala"]) {
+    for (const cohort of ["Observed138", "Predicted59"]) {
+      const row = data.rows.find(p => p.region === state && p.cohort === cohort);
+      assert.ok(marks.some(p => p.getAttribute("aria-label").includes(state) &&
+        p.getAttribute("aria-label").includes(String(row.n) + " parcelas")));
+    }
+  }
+  assert.equal(data.rows.filter(p => p.region !== "all" && p.cohort === "Observed138")
+    .reduce((total, row) => total + row.n, 0), 138);
+  assert.equal(data.rows.filter(p => p.region !== "all" && p.cohort === "Predicted59")
+    .reduce((total, row) => total + row.n, 0), 59);
+});
+test("Reported leave-one-parcel-out RMSE appears without fabricating an MAE", () => {
+  const loo = read("model.json").loocv;
+  const originals = read("results.json").protocols.map(p => ({
+    ...p.results.find(r => r.id === "Reference26"),
+    label: p.id, description: p.description
+  }));
+  const rows = [{label:"Una parcela por turno", description:"137 para entrenar",
+    rmse: loo.rmse_t_ha, r2: loo.r2_approx, mae:null,
+    provenance:"Predicciones individuales no archivadas"}, ...originals];
+  const node = new MockNode("div");
+  charts.performance(node, rows);
+  svg(node);
+  const found = points(node).find(p => p.getAttribute("aria-label")
+    .includes(loo.rmse_t_ha.toFixed(4)));
+  assert.ok(found);
+  assert.ok(found.getAttribute("aria-label").includes("MAE no disponible"));
+  assert.equal(points(node).length, 6);
+});

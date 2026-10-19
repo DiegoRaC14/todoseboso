@@ -41,6 +41,29 @@ La versión antigua de comparación se conserva en el repositorio
 `.github/workflows/publish_story.yml` **no la publica** ni deja un segundo
 sitio alternativo. En Pages sólo se publica `site/`.
 
+## Gráficas vinculadas a datos reales
+
+El gráfico «¿En qué estados están las 197 parcelas?» se alimenta de
+`site/data/distribution.json`, derivado exclusivamente de
+`results/reference26_distribution/v1/descriptive_global_state.csv`.
+Los seis segmentos visualizados son recuentos verdaderos de registros
+(Hidalgo: 36 observados/15 sin rendimiento; Puebla: 71/29;
+Tlaxcala: 31/15). Las sumas deben ser 138 y 59, respectivamente.
+Los rendimientos de las 59 parcelas aún se desconocen.
+
+La comparación gráfica de errores ahora incorpora el resumen comunicado
+de 138 turnos dejando una parcela fuera (`site/data/model.json.loocv`).
+Su RMSE de 0.468186 t/ha se incluye como agregado comunicado, **no
+reconstruido** a partir de OOF individuales; por ello no se calcula un
+MAE inexistente, y se mantiene separado el protocolo original 97/41.
+Los demás puntos proceden de las tablas publicadas de validación.
+
+El ejemplo mensual de 210 mm y la calculadora manual de mezclas siguen
+siendo explícitamente ficticios: no existen datos públicos mensuales
+individuales suficientes para sustituirlos fielmente en este clon.
+En ningún caso se construyen series mensuales, dispersogramas observado
+contra predicho ni mapas de centroides a partir de resúmenes agregados.
+
 ## Validación
 
 ```bash

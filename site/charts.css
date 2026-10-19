@@ -44,3 +44,10 @@
 .hhi-results > .hhi-score-row,.hhi-results > .ci-scale,
 .hhi-results > .ci-track{display:none}
 #hhi-forest{border-top:1px solid var(--rule);padding-top:14px}
+
+/* Published data inventory: separates observed yields from the 59 hidden outcomes. */
+.real-data-figure{margin:24px 0 4px;padding:24px 26px;border:1px solid var(--rule);border-radius:12px;background:var(--paper)}
+.real-data-figure h3{margin:0;color:var(--forest)}
+.real-data-figure .chart-explain{max-width:780px}
+#parcel-coverage.figure-host{margin-top:14px}
+@media(max-width:740px){.real-data-figure{padding:18px 14px}}

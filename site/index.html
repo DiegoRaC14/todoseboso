@@ -49,6 +49,12 @@
 <div class="section-heading"><div><p class="eyebrow">01 · EL PROBLEMA</p><h2>Sabemos lo que cosecharon 138 parcelas. <em>¿Y las otras 59?</em></h2></div><p>El rendimiento se mide en toneladas de cebada por hectárea (t/ha). Un valor de 4 t/ha significa cuatro toneladas por cada hectárea, sin importar el tamaño de la parcela.</p></div>
 <div class="split-prose"><div><h3>Qué conocemos</h3><p>Para las 197 parcelas se prepararon variables de lluvia, vegetación, relieve, ubicación y geología. Sólo 138 tienen un rendimiento reportado para entrenar y evaluar el modelo.</p><p>Las series históricas provienen principalmente de 2022–2024; las medidas del ciclo que queremos describir utilizan 2025, incluso hasta octubre. <strong>Es una estimación retrospectiva del ciclo, no una predicción disponible desde mayo.</strong></p></div><div><h3>Qué intentamos aprender</h3><p>Una misma cantidad de lluvia no produce necesariamente el mismo rendimiento. Las parcelas varían en vegetación, ubicación y composición geológica. Por eso utilizamos varias estimaciones que se complementan.</p><p>Los rendimientos conocidos pueden contener errores de reporte. El modelo aprende de ellos, pero <strong>no puede verificar que todos sean mediciones exactas</strong>.</p></div></div>
 <div class="note-inline"><strong>Importante:</strong> los 59 rendimientos desconocidos no se usan para ajustar coeficientes, elegir parámetros ni calcular el error de validación. El error publicado procede de parcelas conocidas que se apartaron durante las pruebas.</div>
+<div class="real-data-figure">
+<h3>¿En qué estados están las 197 parcelas?</h3>
+<p class="chart-explain">Distribución <strong>real</strong> de los registros del estudio. Las barras distinguen los 138 rendimientos conocidos de las 59 parcelas que debemos estimar; no son ubicaciones simuladas ni cosechas inferidas.</p>
+<div id="parcel-coverage" aria-live="polite">Cargando los recuentos reales por estado…</div>
+<p class="small-note">Fuente: <a href="https://github.com/heri-espino/todoseboso/blob/main/results/reference26_distribution/v1/descriptive_global_state.csv" target="_blank" rel="noopener noreferrer">descriptivos versionados por estado ↗</a>. Cada parcela cuenta una vez, sin ponderación por superficie.</p>
+</div>
 </div></section>
 
 <section class="section section-soft" id="variables"><div class="shell">

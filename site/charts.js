@@ -144,11 +144,13 @@
         value: p.rmse,
         color: palette().jade,
         detail: p.label + ". RMSE " + fmt(p.rmse) +
-          " t/ha, MAE " + fmt(p.mae) +
-          " t/ha y R cuadrada " + fmt(p.r2) + "."
+          " t/ha, " + (Number.isFinite(p.mae) ?
+            "MAE " + fmt(p.mae) + " t/ha" : "MAE no disponible") +
+          " y R cuadrada " + fmt(p.r2) + "." +
+          (p.provenance ? " " + p.provenance : "")
       })),
       domain: [0.40, 0.72], ticks: [0.4, 0.5, 0.6, 0.7],
-      note: "El eje RMSE comienza en 0.40 t/ha. Estas evaluaciones retienen parcelas de manera distinta: no son cinco estimaciones de una misma incertidumbre."
+      note: "El eje RMSE comienza en 0.40 t/ha. Los protocolos tienen tamaños de entrenamiento y particiones distintos; sus errores no son directamente intercambiables. La evaluación de 138 turnos está confirmada por el equipo, pero no dispone de predicciones individuales públicas."
     });
   }
   const MODEL_COLORS = {Reference26: "jade", Compact14: "forest", B1: "gold", L40: "cool", CT3: "soft"};
@@ -316,6 +318,69 @@
       textContent: "Línea mostaza: cobertura nominal. Círculos: cobertura observada en evaluación aleatoria. No es una garantía para las 59 parcelas."
     }));
   }
+
+  /* Counts are derived only from the archived state-level distribution
+   * aggregates. No invented parcel coordinates, records or hidden yields. */
+  function parcelCounts(target, rows) {
+    const states = ["Hidalgo", "Puebla", "Tlaxcala"];
+    const counts = states.map((state) => {
+      const group = rows.filter((row) => row.region === state);
+      const known = group.find((row) => row.cohort === "Observed138");
+      const unknown = group.find((row) => row.cohort === "Predicted59");
+      if (!known || !unknown || !Number.isInteger(known.n) ||
+          !Number.isInteger(unknown.n) || known.n < 0 || unknown.n < 0) {
+        throw Error("Faltan conteos reales para " + state);
+      }
+      return {state, known: known.n, unknown: unknown.n,
+        total: known.n + unknown.n};
+    });
+    const observed = counts.reduce((sum, x) => sum + x.known, 0);
+    const predicted = counts.reduce((sum, x) => sum + x.unknown, 0);
+    if (observed !== 138 || predicted !== 59) {
+      throw Error("El inventario regional no coincide con 138+59 parcelas");
+    }
+    const {canvas, tip, colors} = start(target,
+      "Número de parcelas por estado: rendimiento conocido y rendimiento por estimar", 325, 700);
+    textNode(canvas, "Con rendimiento conocido · 138", 20, 26,
+      {size: 13, color: colors.jade, weight: 720});
+    textNode(canvas, "Rendimiento por estimar · 59", 350, 26,
+      {size: 13, color: colors.gold, weight: 720});
+    const x0 = 260, scale = 6.0, barHeight = 34;
+    const yBase = 86;
+    for (const [i, item] of counts.entries()) {
+      const y = yBase + i * 70;
+      textNode(canvas, item.state, 20, y + 16, {size: 16, weight: 700});
+      const known = svg("rect", {
+        x: x0, y, width: item.known * scale, height: barHeight,
+        rx: 3, fill: colors.jade
+      });
+      const unknown = svg("rect", {
+        x: x0 + item.known * scale, y,
+        width: item.unknown * scale, height: barHeight,
+        rx: 3, fill: colors.gold
+      });
+      canvas.append(known, unknown);
+      interactive(known, item.state + ": " + item.known +
+        " parcelas con rendimiento reportado.", tip);
+      interactive(unknown, item.state + ": " + item.unknown +
+        " parcelas cuyo rendimiento real todavía se desconoce.", tip);
+      textNode(canvas, String(item.total), x0 + item.total * scale + 16,
+        y + 17, {size: 15, weight: 750});
+    }
+    const axisY = 299;
+    for (const tick of [0, 25, 50, 75, 100]) {
+      const xx = x0 + tick * scale;
+      line(canvas, xx, 65, xx, 283, {color: colors.rule, dash: "3 7"});
+      textNode(canvas, String(tick), xx, axisY, {size: 12, anchor: "middle",
+        color: colors.muted});
+    }
+    target.append(Object.assign(document.createElement("p"), {
+      className: "figure-axis-note",
+      textContent: "197 parcelas reales: 138 con rendimiento reportado y 59 por estimar. " +
+        "Los conteos provienen de los agregados por estado, no de una simulación; " +
+        "el rendimiento verdadero de las 59 no se conoce."
+    }));
+  }
   function distribution(target, rows) {
     const {canvas, tip, colors} = start(target,
       "Resumen de rendimientos observados y rendimientos estimados por estado: mediana e intervalos entre percentiles", 570, 780);
@@ -372,5 +437,5 @@
       textNode(canvas, months[i], x + 36, 251, {size: 12, anchor: "middle"});
     });
   }
-  global.GeoCharts = Object.freeze({models, performance, ablations, r3, expertWeights, coefficients, forest, intervals, distribution, rainfall});
+  global.GeoCharts = Object.freeze({models, performance, ablations, r3, expertWeights, coefficients, forest, intervals, parcelCounts, distribution, rainfall});
 })(window);
