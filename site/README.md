@@ -290,3 +290,34 @@ Andrea-HH. La navegación funciona con enlaces HTML, sin dependencia de JS;
 `site/navigation.js` añade cierre por Escape/clic y resaltado según la
 posición real de cada sección. `tests/test_site_navigation.cjs` impide
 perder IDs, enlaces críticos o la ubicación final del mapa.
+
+## Portada compacta y contenido científico expandible
+
+La portada muestra un **resumen breve**, los recuentos observados y cuatro
+tarjetas cuadradas (Estudio, Modelos, Evaluación, Explorar). La nueva capa
+`site/portal.js` **reubica los nodos DOM originales**, sin clonarlos ni
+cambiar su contenido, dentro de capítulos interactivos. Por defecto, no hay
+ningún capítulo abierto; cada capítulo presenta pestañas de subsecciones
+individuales. Esto permite explorar, por ejemplo, sólo las pruebas estadísticas
+o los resultados sin un scroll continuo de toda la investigación.
+
+Se conservan TODOS los IDs, las tablas, figuras, el motor del ensamble,
+las 59 estimaciones, el simulador, las descargas, las imágenes y la integración
+del mapa de Andrea-HH. El diagrama hero original de Reference26 pasa a
+Arquitectura. La vista de resultados del ensamble queda pendiente de nuevos
+artefactos, nunca simulada. `site/portal.css` implementa el diseño,
+transiciones de altura/opacidad y `prefers-reduced-motion`.
+
+**Enlaces directos:** `#ensamble`, `#datos-reales`, `#pruebas`,
+`#predicciones-59`, `#simulador`, `#mapa-interactivo`, etc. abren
+automáticamente el capítulo y la subsección correctos. La galería
+`#predicciones-59` también selecciona la pestaña existente Reference26,
+que de otra manera permanece oculta bajo la vista inicial del ensamble.
+
+**Sin JavaScript:** no se oculta contenido y la página histórica queda
+completamente accesible como documento continuo. El modo compacto se
+habilita solamente después de construir las vistas con éxito.
+
+Verificaciones: `node tests/test_site_portal.cjs`,
+`node tests/test_site_navigation.cjs`, `node --check site/portal.js`
+y la batería de Pages existente.

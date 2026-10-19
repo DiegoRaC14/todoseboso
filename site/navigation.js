@@ -58,6 +58,8 @@
     const threshold = header.offsetHeight + 55;
     let closestTop = -Infinity;
     for (const entry of tracked) {
+      if (!entry.section.getClientRects().length ||
+          entry.section.closest(".portal-chapter[hidden],.portal-topic[hidden]")) continue;
       const top = entry.section.getBoundingClientRect().top;
       // Find the closest preceding section by on-page position, not menu order.
       if (top <= threshold && top > closestTop) {
@@ -84,5 +86,6 @@
   window.addEventListener("scroll", requestRefresh, {passive:true});
   window.addEventListener("resize", requestRefresh, {passive:true});
   window.addEventListener("hashchange", requestRefresh);
+  window.addEventListener("portal:change", requestRefresh);
   requestRefresh();
 })();

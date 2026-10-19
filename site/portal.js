@@ -158,6 +158,7 @@
     if(!open)panel.hidden=true;
     panel.style.height=open?"auto":"0px";
     panel.style.opacity=open?"1":"0";
+    panel.style.overflow=open?"visible":"hidden";
   };
   const showPanel = (panel,open) => {
     const token=(timing.get(panel)||0)+1;
@@ -173,6 +174,7 @@
       panel.style.height="0px";
       panel.style.opacity="0";
       panel.getBoundingClientRect(); // Establish transition start.
+      panel.style.overflow="hidden";
       panel.classList.add("is-open");
       panel.style.height=panel.scrollHeight+"px";
       panel.style.opacity="1";
