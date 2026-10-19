@@ -122,21 +122,28 @@ node --test tests/test_parcel_core.cjs
 node --check site/predictor.js
 ```
 
-## API opcional para ejecutar Reference26 de verdad
+## Inferencia del modelo entrenado dentro del navegador
 
-`site/inference_client.js` conecta el formulario de 26 indicadores con una
-API Python externa (`deployment/inference_api.py`). GitHub Pages no puede
-cargar un `joblib` directamente, por lo que el botón **«Calcular rendimiento»**
-permanece desactivado hasta que `site/data/inference_config.json` contenga
-la URL real del servicio y su endpoint de salud confirme la reproducción de
-las 59 predicciones originales.
+El motor `site/reference26_engine.js` reproduce el ajuste **real** de
+Reference26 con operaciones JavaScript nativas: Elastic Net climática,
+normalización guardada, siete señales locales, Ridge de 24 vecinos,
+centroides K-means y pesos geológicos, corrección interna y corrector R3.
 
-El modo ficticio continúa separado; nunca muestra resultados como si fueran
-predicciones del modelo entrenado. La inferencia remota utiliza exactamente
-`src/current_champions.py:predict_saved`, el `joblib` verificado por hash,
-las 197 características y la matriz geográfica. La predicción de parcelas
-nuevas sólo se habilita cuando el servicio confirma el algoritmo de
-normalización de distancias; en caso contrario siguen disponibles las 59
-parcelas originales por ID.
+`scripts/export_reference26_browser.py` genera el JSON ligero del modelo
+(`site/data/reference26_runtime.json`) **sólo** con los tres artefactos
+originales, después de verificar sus SHA-256. El exportador reproduce
+las 59 predicciones de Python y guarda sus resultados como pruebas.
+`tests/test_reference26_browser.cjs` reproduce esos 59 casos de nuevo con
+JavaScript y exige diferencia absoluta máxima de 0.0000001 t/ha, además
+de comparar la escala de distancia para parcelas nuevas.
 
-[Pasos y advertencias para desplegar la API](../deployment/README.md).
+La compilación se realiza en GitHub Actions cuando estén versionados
+los binarios, pero el visitante no necesita Python, Render, API, servidor
+propio ni GPU: **todos los cálculos de inferencia ocurren en su navegador**.
+
+El JSON contiene los **138 rendimientos históricos** de entrenamiento,
+pues el método Ridge local los necesita en cada predicción. Es un dato
+públicamente descargable cuando se publique la exportación; no se debe
+confundir con un formato que conserve privacidad de los rendimientos.
+La página deshabilita automáticamente las predicciones reales hasta que
+el JSON pase las 59 pruebas de coincidencia.
