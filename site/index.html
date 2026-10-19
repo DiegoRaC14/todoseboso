@@ -6,12 +6,12 @@
 <meta name="description" content="Preparación y análisis visual del futuro ensamble de Reference26 y Compact14: sus predicciones por parcela, sus variables y la comparación del modelo final cuando estén verificados los pesos.">
 <title>GeoCebada · Ensamble de Reference26 y Compact14</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css"><link rel="stylesheet" href="./ensemble_story.css">
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./model.css"><link rel="stylesheet" href="./charts.css"><link rel="stylesheet" href="./predictor.css"><link rel="stylesheet" href="./predictions59.css"><link rel="stylesheet" href="./ensemble_story.css"><link rel="stylesheet" href="./ensemble_metrics.css">
 <script src="./navigation.js" defer></script><script src="./scroll_motion.js" defer></script><script src="./charts.js" defer></script><script src="./model.js" defer></script><script src="./field_charts.js" defer></script><script src="./parcel_core.js" defer></script><script src="./predictor.js" defer></script>
 <script src="./reference26_engine.js" defer></script>
 <script src="./predictions59.js" defer></script>
 <script src="./ensemble_contract.js" defer></script>
-<script src="./ensemble_story.js" defer></script>
+<script src="./ensemble_story.js" defer></script><script src="./ensemble_metrics.js" defer></script><script src="./ensemble_predictions59.js" defer></script>
 <script src="./browser_inference.js" defer></script>
 <link rel="stylesheet" href="./interactive-map.css"><link rel="stylesheet" href="./navigation.css"><link rel="stylesheet" href="./editorial.css"><link rel="stylesheet" href="./scroll_motion.css">
 </head>
@@ -25,8 +25,8 @@
 <a href="#inicio" class="nav-home">Inicio</a>
 <details class="nav-group"><summary>El estudio<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">01 · CONTEXTO Y DATOS</p><a href="#datos">El problema y las parcelas</a><a href="#variables">Las 26 variables</a><a href="#preparacion">Preparación de datos</a><a href="#datos-reales">Clima y vegetación reales</a></div></details>
 <details class="nav-group"><summary>El modelo<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">02 · MÉTODOS Y ENSAMBLE</p><a href="#ensamble">Ensamble Reference26 + Compact14</a><a href="#arquitectura">Arquitectura Reference26</a><a href="#geologia">Geología y pesos</a><a href="#faltantes">Datos incompletos</a><a href="#ajuste">Entrenamiento y ajuste</a></div></details>
-<details class="nav-group"><summary>Evaluación<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">03 · EVIDENCIA Y ALCANCE</p><a href="#resultados">Resultados y métricas</a><a href="#pruebas">Pruebas estadísticas</a><a href="#limites">Limitaciones</a><a href="#preguntas">Preguntas frecuentes</a></div></details>
-<details class="nav-group"><summary>Explorar<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">04 · HERRAMIENTAS</p><a href="#predicciones-59">Las 59 estimaciones</a><a href="#simulador">Probar una parcela</a><a href="#mapa-interactivo">Mapa interactivo</a></div></details>
+<details class="nav-group"><summary>Evaluación<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">03 · EVIDENCIA Y ALCANCE</p><a href="#resultados">Resultados y métricas</a><a href="#estadisticas-finales">Diagnósticos completos</a><a href="#pruebas">Pruebas estadísticas</a><a href="#limites">Limitaciones</a><a href="#preguntas">Preguntas frecuentes</a></div></details>
+<details class="nav-group"><summary>Explorar<span class="nav-chevron" aria-hidden="true">⌄</span></summary><div class="nav-popover"><p class="nav-popover-label">04 · HERRAMIENTAS</p><a href="#predicciones-59">Las 59 estimaciones</a><a href="#estimaciones-finales">Predicciones del ensamble</a><a href="#simulador">Probar una parcela</a><a href="#mapa-interactivo">Mapa interactivo</a></div></details>
 <a href="#recorrido" class="nav-action">Índice</a>
 </nav>
 </div></header>
@@ -375,6 +375,100 @@
 <p class="small-note">Este JSON <strong>no contiene una predicción</strong>. La inferencia exige el modelo ajustado, su preprocesamiento, los centroides geológicos y los 138 ejemplos de entrenamiento, que estarán incluidos en la exportación web verificada. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
 </div>
 </div></section>
+<section class="section ensemble-jury" id="estadisticas-finales">
+  <div class="shell" id="ensemble-jury-metrics">
+    <div class="section-heading"><div><p class="eyebrow">ANÁLISIS ESTADÍSTICO DEL MODELO FINAL</p>
+      <h2>Evaluación exhaustiva de los tres pronósticos</h2></div>
+      <p>Consulta normas L¹, L², L∞, RMSE, R², métricas robustas, normalidad y autocorrelación espacial de los residuos. Todos los resultados proceden de 138 parcelas evaluadas una a una con LOOCV.</p>
+    </div>
+    <p id="ensemble-metrics-status" role="status" aria-live="polite">Comprobando si ya están disponibles los resultados estadísticos reentrenados…</p>
+    <div class="ensemble-top-line" id="ensemble-top-line" aria-label="Comparación de errores RMSE entre los tres modelos"></div>
+    <div class="ensemble-statistical-reading" id="ensemble-statistical-reading" aria-label="Interpretación académica de la validación">
+      <h3>Qué significan los resultados</h3>
+      <p class="ensemble-note">Interpretación documentada del informe LOOCV de 138 parcelas (19 de octubre de 2026). Se diferencia la evaluación fuera de muestra de los diagnósticos exploratorios y de la selección anterior de pesos. Las tablas detalladas se activarán al importar el archivo agregado de resultados.</p>
+      <p id="ensemble-interpretation-overview" role="status" aria-live="polite">El ensamble obtuvo el menor RMSE descriptivo (0.467811 t/ha), frente a 0.468138 de Reference26 con media y 0.469673 de Compact14. La mejora es pequeña y no demuestra superioridad estadística ni una validación independiente de los pesos del ensamble.</p>
+      <div class="ensemble-reading-grid">
+        <details class="ensemble-reading-item" open><summary>01 · Precisión y valor práctico</summary><p id="ensemble-reading-accuracy">El RMSE del ensamble disminuye aproximadamente 0.07% frente a Reference26 con media; su MAE es 0.332489 t/ha y su R² predictivo es 0.695717. Este R² describe una reducción de SSE frente a la variabilidad observada, no un 69.6% de predicciones correctas. La diferencia de RMSE es demasiado pequeña para afirmar un avance práctico por sí sola.</p></details>
+        <details class="ensemble-reading-item" open><summary>02 · Distribución y valores extremos</summary><p id="ensemble-reading-tails">En el ensamble, la mediana del error absoluto es 0.247911 t/ha y el percentil 95 es 0.779594 t/ha; el máximo alcanza 2.141844 t/ha. El 75.36% de las parcelas quedó con error de hasta 0.5 t/ha y el 96.38% con hasta 1.0 t/ha. Las colas importan: el promedio puede ocultar errores individuales importantes.</p></details>
+        <details class="ensemble-reading-item"><summary>03 · Sesgo y calibración</summary><p id="ensemble-reading-calibration">El sesgo medio del ensamble es −0.000617 t/ha, casi nulo; la mediana del error firmado es −0.046580 t/ha. Su pendiente de calibración descriptiva es 1.014672 y el intercepto −0.057409 t/ha. Esto sugiere buena alineación promedio, pero no elimina errores extremos ni prueba calibración probabilística.</p></details>
+        <details class="ensemble-reading-item"><summary>04 · Normalidad y heterocedasticidad</summary><p id="ensemble-reading-normality">Los tres modelos rechazan normalidad marginal de residuos en Shapiro–Wilk, D’Agostino–Pearson y Anderson–Darling. En el ensamble, Shapiro p = 1.306209 × 10⁻⁷, asimetría = 1.439 y exceso de curtosis = 4.468: hay una cola positiva pronunciada. Koenker–Breusch–Pagan (p = 0.3732) y Brown–Forsythe (p = 0.8555) no detectan heterocedasticidad, pero tampoco prueban varianza constante. Las pruebas son exploratorias por el solapamiento del LOOCV.</p></details>
+        <details class="ensemble-reading-item"><summary>05 · Autocorrelación geográfica</summary><p id="ensemble-reading-spatial">Para residuos firmados del ensamble con ocho vecinos, Moran I = −0.074302 y p bilateral = 0.0720; tras Holm p = 1.0. No se detecta autocorrelación significativa bajo esta prueba y familia de comparaciones. Esto no demuestra independencia espacial; los resultados cambian con el vecindario y el tipo de error.</p></details>
+        <details class="ensemble-reading-item"><summary>06 · Comparación emparejada y evidencia</summary><p id="ensemble-reading-paired">Frente a Reference26 con media, el ensamble reduce la pérdida cuadrática media en 0.000306 (t/ha)² y el error absoluto medio en 0.001297 t/ha; mejora en 77 de 138 parcelas (55.8%). Los p-valores Holm de Wilcoxon son 0.759932 (cuadrático) y 0.715473 (absoluto), sin evidencia de diferencia bajo ese contraste exploratorio. Los pesos fueron elegidos en estas mismas 138 parcelas.</p></details>
+      </div>
+    </div>
+    <div class="ensemble-controls">
+      <label for="ensemble-metrics-search">Buscar por nombre o interpretación
+        <input id="ensemble-metrics-search" type="search" placeholder="Ej. error absoluto, sesgo, normalidad, R²">
+      </label>
+      <label for="ensemble-metrics-family">Familia estadística
+        <select id="ensemble-metrics-family"><option value="all">Todas las métricas</option></select>
+      </label>
+    </div>
+    <p id="ensemble-metrics-count" class="ensemble-note" aria-live="polite">Esperando las 138 predicciones externas verificadas.</p>
+    <div class="ensemble-table-wrap" role="region" aria-label="Tabla desplazable de métricas predictivas y diagnósticos" tabindex="0">
+      <table><thead><tr><th scope="col">Indicador</th><th scope="col">Reference26 con media</th>
+        <th scope="col">Compact14</th><th scope="col">Ensamble sugerido</th>
+        <th scope="col">Interpretación</th></tr></thead><tbody id="ensemble-metrics-body"></tbody></table>
+    </div>
+    <h3>Dependencia espacial de los residuos</h3>
+    <p>Índice de Moran I y estadístico Geary C, sobre grafos geográficos de k vecinos. Los p-valores provienen de permutaciones; se muestran las correcciones Holm y Benjamini–Hochberg para múltiples pruebas.</p>
+    <div class="ensemble-controls">
+      <label for="ensemble-spatial-k">Número de vecinos
+        <select id="ensemble-spatial-k"><option value="4">4 vecinos</option><option value="8" selected>8 vecinos</option><option value="12">12 vecinos</option><option value="24">24 vecinos</option></select>
+      </label>
+      <label for="ensemble-spatial-target">Variable analizada
+        <select id="ensemble-spatial-target"><option value="signed_residual">Residuo firmado</option>
+          <option value="absolute_error">Error absoluto</option><option value="squared_error">Error cuadrático</option></select>
+      </label>
+    </div>
+    <div class="ensemble-table-wrap" role="region" aria-label="Pruebas espaciales de los tres modelos" tabindex="0">
+      <table><thead><tr><th scope="col">Modelo</th><th scope="col">Estadístico</th>
+        <th scope="col">Valor</th><th scope="col">p sin ajustar</th>
+        <th scope="col">p Holm</th><th scope="col">p FDR-BH</th></tr></thead>
+        <tbody id="ensemble-spatial-body"></tbody></table>
+    </div>
+    <p id="ensemble-spatial-status" class="ensemble-note" aria-live="polite"></p>
+    <h3>Comparación pareada de pérdidas</h3>
+    <p>Contrastes por la misma parcela frente a Reference26 con media. Los pesos del ensamble se determinaron previamente con estas mismas 138 etiquetas; por tanto, las pruebas siguientes son exploratorias, no una confirmación externa de superioridad.</p>
+    <div class="ensemble-table-wrap" role="region" aria-label="Contrastes de pérdidas emparejadas" tabindex="0">
+      <table><thead><tr><th scope="col">Modelo</th><th scope="col">Pérdida</th>
+        <th scope="col">Diferencia media</th><th scope="col">Fracción que mejora</th>
+        <th scope="col">p Wilcoxon</th><th scope="col">p Holm</th></tr></thead>
+        <tbody id="ensemble-paired-body"></tbody></table>
+    </div>
+    <p class="ensemble-note ensemble-disclaimer"><strong>Limitaciones.</strong> Ningún rendimiento real de las 59 parcelas ocultas se conoce. El R² ajustado no tiene grados de libertad efectivos bien definidos para esta receta y se informa como no aplicable. Las pruebas de normalidad, heterocedasticidad y dependencia espacial son diagnósticos, con posibles desviaciones de sus hipótesis de independencia. El RMSE del ensamble no constituye una validación independiente del procedimiento que seleccionó sus pesos.</p>
+  </div>
+</section>
+
+<section class="section ensemble-jury" id="estimaciones-finales">
+  <div class="shell" id="ensemble-predictions59">
+    <div class="section-heading"><div><p class="eyebrow">RESULTADOS DE LAS 59 PARCELAS SIN ETIQUETA</p>
+      <h2>Dos modelos y una estimación combinada</h2></div>
+      <p>Comparación de Reference26 reentrenado con imputación por media, Compact14 reentrenado con su receta original y el ensamble ponderado. Son estimaciones, no rendimientos observados.</p>
+    </div>
+    <p>El ensamble se calcula como <strong>0.704946 × Reference26 (media) + 0.295054 × Compact14</strong>.
+      Para publicarse, ambos modelos deben reproducir en Python las 59 estimaciones guardadas y superar la verificación de sus huellas digitales.</p>
+    <p id="ensemble-predictions59-status" role="status" aria-live="polite">Esperando la exportación final verificada de los dos modelos…</p>
+    <div class="ensemble-controls">
+      <label for="ensemble-predictions59-search">Buscar parcela por su identificador
+        <input id="ensemble-predictions59-search" type="search" placeholder="ID_POLIGONO">
+      </label>
+    </div>
+    <p id="ensemble-predictions59-count" aria-live="polite">Pendiente de generar las 59 predicciones nuevas.</p>
+    <div class="ensemble-table-wrap" role="region" tabindex="0" aria-label="Tres pronósticos de las 59 parcelas sin rendimiento conocido">
+      <table><thead><tr><th scope="col">Identificador</th>
+        <th scope="col">Reference26 con media (t/ha)</th>
+        <th scope="col">Compact14 (t/ha)</th>
+        <th scope="col">Ensamble sugerido (t/ha)</th></tr></thead>
+        <tbody id="ensemble-predictions59-body"></tbody></table>
+    </div>
+    <p class="ensemble-note ensemble-disclaimer"><strong>Advertencia:</strong>
+      las 59 cosechas verdaderas no se conocen; no hay RMSE real en estas parcelas.
+      La selección de los pesos del ensamble se basó previamente en las 138 cosechas
+      observadas y su ventaja predictiva aún no cuenta con confirmación independiente.
+      Este listado no reemplaza el motor interactivo antiguo de Reference26 con mediana.</p>
+  </div>
+</section>
 <section class="section section-soft collaborator-map" id="mapa-interactivo" aria-labelledby="collaborator-map-title">
 <div class="shell">
 <div class="section-heading collaborator-map-heading"><div>
