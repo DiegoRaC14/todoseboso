@@ -38,6 +38,11 @@ class StorySiteTest(unittest.TestCase):
         self.assertIn("Parcela de clima", (SITE / "predictor.js").read_text(encoding="utf-8"))
         self.assertIn("PREDICCIÓN REAL · EN TU NAVEGADOR", html)
         self.assertIn("id=\"predict-real\"", html)
+        self.assertIn("id=\"predicciones-59\"", html)
+        self.assertIn("id=\"pred59-rows\"", html)
+        self.assertIn("id=\"pred59-plot\"", html)
+        self.assertIn("id=\"pred59-export\"", html)
+        self.assertIn("cosechas reales siguen siendo desconocidas", (SITE / "predictions59.js").read_text(encoding="utf-8"))
         self.assertIn("prefers-reduced-motion", (SITE / "model.css").read_text(encoding="utf-8"))
 
 

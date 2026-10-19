@@ -55,8 +55,7 @@ node --check site/charts.js
 node --check site/model.js
 ```
 
-Los controles del navegador no realizan ajustes ni exponen predicciones
-individuales. No hacen nuevas pruebas de significancia. Conservar la
+Los controles del navegador no realizan nuevos ajustes de coeficientes ni pruebas de significancia. La galería publica las **59 predicciones individuales originalmente archivadas**, reproducidas desde el modelo final de Reference26 y nunca presentadas como cosechas observadas. Conservar la
 distinción entre efecto causal, asociación, utilidad predictiva y validación
 reutilizada cuando se edite texto o se añadan gráficos.
 
@@ -147,3 +146,29 @@ públicamente descargable cuando se publique la exportación; no se debe
 confundir con un formato que conserve privacidad de los rendimientos.
 La página deshabilita automáticamente las predicciones reales hasta que
 el JSON pase las 59 pruebas de coincidencia.
+
+## Las 59 parcelas sin rendimiento conocido: galería pública
+
+La sección `#predicciones-59` muestra **las 59 estimaciones del modelo final**,
+no valores inventados ni mediciones reales del rendimiento. La galería se
+activa sólo después de que el motor JavaScript reproduce los 59 valores
+originales del ajuste Python con una diferencia absoluta menor o igual
+a 1e-7 t/ha.
+
+Las ubicaciones por estado y municipio proceden de las filas originales de
+`features197.parquet`; se exportan con cada fila de predicción en
+`scripts/export_reference26_browser.py`. La galería se genera en
+`site/predictions59.js`: ejemplos de menor, mediana y mayor estimación;
+grupo visual por estado; búsqueda por ID o municipio; filtro por estado;
+ordenación; desglose de las etapas del modelo; descarga CSV con los 59
+valores reproducidos; y transferencia de las 26 entradas al laboratorio.
+
+El navegador calcula todas las estimaciones utilizando los parámetros
+serializados en el JSON del despliegue. **No existe columna de rendimiento
+real para estas 59 parcelas.** No se les asignan errores individuales ni
+certeza causal. La disponibilidad de la corrección residual es distinta
+del soporte total de la estimación.
+
+La comprobación automática `tests/test_predictions59.cjs` asegura 59 IDs
+únicos, 59 predicciones con paridad frente a Python, 51 con R3 y ocho sin
+soporte para R3, y que se rechazan cifras o entradas manipuladas.

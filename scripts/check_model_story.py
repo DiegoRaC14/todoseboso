@@ -86,12 +86,15 @@ def check() -> None:
                    "feature-rows", "performance-chart", "r3-comparison",
                    "association-chart", "distribution-quantiles", "interval-results",
                    "expert-weights", "hhi-forest", "simulador", "fictitious-mode", "own-mode",
-                   "parcel-input-groups", "parcel-export", "parcel-estimate", "yield-reference"):
+                   "parcel-input-groups", "parcel-export", "parcel-estimate", "yield-reference",
+                   "predicciones-59", "pred59-status", "pred59-summary", "pred59-examples",
+                   "pred59-plot", "pred59-search", "pred59-state", "pred59-sort", "pred59-rows",
+                   "pred59-detail", "pred59-export"):
         assert target in page.ids, target
     assert all(a in page.ids for a in page.anchors), "Broken internal navigation"
     for asset in page.assets:
         assert (SITE / asset).is_file(), ("missing site asset", asset)
-    assert page.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./browser_inference.js"]
+    assert page.scripts == ["./charts.js", "./model.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./browser_inference.js"]
     for forbidden in ("Compact14", "Champion", "B1</", "Local04D"):
         assert forbidden not in html, forbidden
     for required in ("Regresión local con mezcla geológica", "K-means",
@@ -106,6 +109,10 @@ def check() -> None:
     assert "no es el porcentaje de error esperado" in html.lower() or "no es el porcentaje de error esperado" in html
     assert "No se calcula un rendimiento real desde esta página" not in html
     assert "PREDICCIÓN REAL · EN TU NAVEGADOR" in html
+    assert "COSECHA" in html or "cosecha" in html
+    assert (SITE / "predictions59.js").is_file()
+    assert (SITE / "predictions59.css").is_file()
+    assert "No se ofrecen pronósticos individuales" not in html
     assert "parcel_core.js" in html and "predictor.js" in html
     assert (SITE / "parcel_core.js").is_file() and (SITE / "predictor.js").is_file()
     loocv = data["loocv"]
