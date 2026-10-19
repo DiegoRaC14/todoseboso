@@ -91,12 +91,15 @@ jobs:
         run: |
           node --check site/charts.js
           node --check site/model.js
+          node --check site/field_charts.js
           node --check site/parcel_core.js
           node --check site/predictor.js
           node --check site/inference_client.js
           node --check site/reference26_engine.js
           node --check site/browser_inference.js
           node --check site/predictions59.js
+      - name: Validate real chart exporter syntax (no large data needed)
+        run: python -m py_compile scripts/export_real_chart_data.py
 
   deploy:
     needs: validate
