@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 import os
+import sys
 from pathlib import Path
 from warnings import catch_warnings, simplefilter
 
@@ -19,10 +20,12 @@ import numpy as np
 import pandas as pd
 from threadpoolctl import threadpool_limits
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 from src.current_champions import predict_saved
 from src.geoc_local04d_snapshot import haversine_distance_matrix
 
-ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(os.environ.get("GEOCEBADA_ARTIFACT_DIR", ROOT / "deployment/model_artifacts"))
 DESTINATION = ROOT / "site/data/reference26_runtime.json"
 EXPECTED = {
