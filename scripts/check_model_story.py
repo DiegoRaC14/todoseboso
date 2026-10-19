@@ -92,9 +92,15 @@ def check() -> None:
                    "pred59-detail", "pred59-export"):
         assert target in page.ids, target
     assert all(a in page.ids for a in page.anchors), "Broken internal navigation"
+    for target in ("estadisticas-finales", "ensemble-interpretation-overview",
+                   "ensemble-reading-accuracy", "ensemble-reading-tails",
+                   "ensemble-reading-calibration", "ensemble-reading-normality",
+                   "ensemble-reading-spatial", "ensemble-reading-paired",
+                   "estimaciones-finales", "ensemble-predictions59"):
+        assert target in page.ids, ("missing jury dashboard", target)
     for asset in page.assets:
         assert (SITE / asset).is_file(), ("missing site asset", asset)
-    assert page.scripts == ["./navigation.js", "./scroll_motion.js", "./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./ensemble_contract.js", "./ensemble_story.js", "./browser_inference.js"]
+    assert page.scripts == ["./navigation.js", "./scroll_motion.js", "./charts.js", "./model.js", "./field_charts.js", "./parcel_core.js", "./predictor.js", "./reference26_engine.js", "./predictions59.js", "./ensemble_contract.js", "./ensemble_story.js", "./ensemble_metrics.js", "./ensemble_predictions59.js", "./browser_inference.js"]
     for forbidden in ("B1</", "Local04D"):
         assert forbidden not in html, forbidden
     for required in ("Regresión local con mezcla geológica", "K-means",
