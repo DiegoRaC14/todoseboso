@@ -170,3 +170,38 @@ button,.nav-popover,.chapter-card,.collaborator-map-frame{box-shadow:none!import
  .chapter-readmore,.chapter-subsections li a,.nav-links>a,.nav-group>summary,
  .primary-cta,.secondary-cta{transition:none!important}
 }
+
+/* Final light-neutral treatment for Reference26 architecture and mathematics.
+   The diagrams and original formula remain intact; only surfaces/colors change. */
+#arquitectura .model-visual{
+  background:#fff!important;color:var(--ink);
+  border:1px solid var(--rule)!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+#arquitectura .model-visual .visual-header,
+#arquitectura .model-visual .visual-foot{
+  color:#627268;background:#f7f8f5;border-color:var(--rule);
+}
+#arquitectura .model-visual svg{background:#fff}
+#arquitectura .model-visual svg path{stroke:#a8b8aa}
+#arquitectura .model-visual svg rect{
+  fill:#eef1eb;stroke:#c6d2c6;rx:0;ry:0;
+}
+#arquitectura .model-visual svg rect:nth-of-type(3){fill:#dfe8df}
+#arquitectura .model-visual svg rect:nth-of-type(4){fill:#e6ece5}
+#arquitectura .model-visual svg text{fill:#314438}
+#arquitectura .math-proof.model-formula{
+  background:#fff!important;color:var(--ink)!important;
+  border:1px solid var(--rule)!important;
+  box-shadow:none!important;border-radius:0!important;
+}
+#arquitectura .math-proof.model-formula .math-label{
+  color:var(--jade)!important;
+}
+#arquitectura .math-proof.model-formula .math-interpretation{
+  color:#56665b!important;font-style:normal!important;
+}
+#arquitectura .math-proof.model-formula .math-scroll math{
+  color:var(--ink)!important;
+}

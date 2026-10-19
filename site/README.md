@@ -322,3 +322,30 @@ Los archivos de interfaz de paneles del prototipo anterior se retiran del
 sitio; no participan ya en la página pública. Las pruebas
 `tests/test_site_portal.cjs` (nombre histórico) y
 `tests/test_site_navigation.cjs` protegen esta estructura.
+
+## Animación editorial y uniformidad visual
+
+Las animaciones están aisladas en `site/scroll_motion.js` y
+`site/scroll_motion.css`. Se activan una sola vez cuando los elementos
+entran en pantalla al desplazarse: opacidad y traslación vertical de
+22 px durante aproximadamente 0.7 s. Sólo reciben esta clase los
+componentes situados fuera de la pantalla inicial. El contenido HTML
+nunca es recreado, reemplazado ni colapsado. En scroll ascendente, los
+elementos todavía no vistos aparecen sin animación. Si JavaScript o
+`IntersectionObserver` no están disponibles, el texto permanece visible.
+
+Los botones, controles y paneles dan una respuesta leve al pasar el ratón
+(1.0–2.5 % de escala o 3 px de desplazamiento), sin usar sombras de colores.
+El iframe geográfico **no se escala** para no interferir con Leaflet; su
+marco sólo cambia discretamente el borde. La preferencia de accesibilidad
+`prefers-reduced-motion` desactiva las animaciones y transiciones.
+
+El marco del mapa, la cabecera, el subtítulo y su atribución utilizan
+el mismo estilo editorial que el resto del sitio. Su contenido interior
+sigue cargándose de la web de Andrea-HH, por lo que sus controles internos
+no pueden modificarse aquí sin reemplazar/autorizar el código remoto.
+Los fondos de la figura original de Reference26 y el panel MathML del
+apartado Arquitectura se unificaron en blanco/gris claro con tipografía
+oscura. No cambian las fórmulas ni las etiquetas.
+
+Verificar con `node tests/test_site_motion.cjs` y el workflow de Pages.
