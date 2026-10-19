@@ -225,10 +225,23 @@
 <div id="own-mode" class="prediction-panel" hidden>
 <h3>Prepara los indicadores de una parcela</h3>
 <p>Esta herramienta organiza <strong>las mismas 26 variables derivadas</strong> que utiliza el modelo. Algunas proceden de imágenes satelitales, información geológica y series históricas; por eso no basta con escribir la latitud y la longitud. Los valores se introducen ya calculados, con las unidades que se indican en el inventario de variables.</p>
-<p><strong>No se calcula un rendimiento real desde esta página.</strong> El archivo del modelo entrenado es privado y el sitio estático no dispone de un servidor de inferencia. Puedes preparar y descargar un archivo JSON para procesarlo más adelante con el modelo en un entorno autorizado; ningún dato se envía a un servidor desde este formulario.</p>
+<p>Los 26 indicadores pueden enviarse a una <strong>API Python que ejecuta Reference26 de verdad</strong>, después de conectar el servicio de inferencia. Mientras la API no esté publicada, el formulario continúa permitiendo preparar y descargar las variables. La simulación anterior permanece claramente separada de estas predicciones.</p>
 <div class="own-status"><strong id="parcel-completeness" aria-live="polite">0 de 26 variables completadas</strong><span id="own-r3-status">Sin evaluar soporte R3</span></div>
 <div id="parcel-input-groups"></div>
 <div class="own-actions"><button id="parcel-export" type="button">Descargar mis 26 indicadores en JSON</button><button id="parcel-clear" type="button" class="secondary-cta">Limpiar el formulario</button></div>
+<div class="live-inference" id="live-inference"><p class="eyebrow">PREDICCIÓN REAL · MODELO ENTRENADO</p>
+<h3>Ejecutar Reference26 en el servidor</h3><p>La API compara su modelo con el archivo final verificado y reproduce primero las 59 estimaciones originales. Para una parcela nueva también verifica que las distancias respeten la normalización geográfica del modelo.</p>
+<div class="live-api-config"><label for="api-override">Dirección del servicio de inferencia (opcional, para probar la conexión)</label>
+<input id="api-override" type="url" placeholder="https://mi-servicio.onrender.com" autocomplete="url">
+<button id="api-check" type="button">Comprobar conexión</button></div>
+<p id="api-status" role="status" aria-live="polite">Comprobando si el servicio está configurado…</p>
+<div class="live-inference-actions"><button id="predict-real" type="button" disabled>Calcular rendimiento con mis 26 indicadores</button>
+<div id="live-result" class="live-result" aria-live="polite"></div></div>
+<div class="existing-parcel-lookup"><h4>Reproducir la estimación de una de las 59 parcelas originales</h4>
+<p>Introduce el ID exacto de una parcela del conjunto de 59. El servidor utilizará las variables y distancias archivadas, sin necesitar introducir las 26 variables manualmente.</p>
+<label for="existing-id">ID de la parcela</label><input id="existing-id" type="text" placeholder="ID_POLIGONO" autocomplete="off">
+<button id="predict-existing" type="button" disabled>Consultar estimación original</button>
+<div id="existing-result" aria-live="polite"></div></div></div>
 <p class="small-note">Este JSON <strong>no contiene una predicción</strong>. Para una inferencia exacta hacen falta el modelo ajustado, su preprocesamiento, los centroides geológicos y los datos de los 138 vecinos disponibles en el entrenamiento. <a href="https://github.com/heri-espino/todoseboso/blob/main/src/current_champions.py" target="_blank" rel="noopener noreferrer">Consultar la implementación de inferencia ↗</a></p>
 </div>
 </div></section>
