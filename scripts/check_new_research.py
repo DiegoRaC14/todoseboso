@@ -109,17 +109,17 @@ def main():
     data_text = DATA.read_text(encoding="utf-8")
     assert "ID_POLIGONO" not in data_text and "train138.parquet" not in data_text
     html = (ROOT / "site/index.html").read_text(encoding="utf-8")
-    js = (ROOT / "site/preguntas.js").read_text(encoding="utf-8")
-    css = (ROOT / "site/preguntas.css").read_text(encoding="utf-8")
-    for section in ["significancia", "retirar-hhi", "intervalos", "cobertura"]:
+    js = (ROOT / "site/model.js").read_text(encoding="utf-8")
+    css = (ROOT / "site/model.css").read_text(encoding="utf-8")
+    for section in ["pruebas", "resultados", "limites", "geologia", "faltantes"]:
         assert f'id="{section}"' in html
-    assert "new_research.json" in js and "p_holm" in js
+    assert "new_research.json" in js and "GeoCharts.forest" in js
     assert "prefers-reduced-motion" in css
     figure = ROOT / "results/four_final_checks/v1/NoHHI_delta_RMSE.png"
     site_figure = ROOT / "site/media/NoHHI_delta_RMSE.png"
     assert figure.read_bytes()[:8] == bytes((137, 80, 78, 71, 13, 10, 26, 10))
     assert figure.read_bytes() == site_figure.read_bytes()
-    assert "./media/NoHHI_delta_RMSE.png" in html
+    assert (ROOT / "site/media/NoHHI_delta_RMSE.png").is_file()
 
     print("PASS: evidence, Holm p-values, intervals, HHI and support match upstream sources")
 

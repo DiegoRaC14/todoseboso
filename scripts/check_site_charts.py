@@ -59,24 +59,23 @@ def main():
     html = (SITE / "index.html").read_text(encoding="utf-8")
     parser = PageHTML()
     parser.feed(html)
-    for name in ("results-chart", "ablation-chart", "association-chart",
-                 "hhi-forest", "interval-results", "rain-bars",
+    for name in ("performance-chart", "association-chart",
+                 "hhi-forest", "interval-results", "rain-chart",
                  "distribution-quantiles", "r3-comparison", "expert-weights"):
         assert name in parser.ids
-    assert parser.scripts.index("./charts.js") < parser.scripts.index("./app.js")
-    assert parser.scripts.index("./charts.js") < parser.scripts.index("./preguntas.js")
+    assert parser.scripts == ["./charts.js", "./model.js"]
     assert (SITE / "charts.css").is_file()
     assert "originales del estudio" in html or "curvas acumuladas originales" in html.lower()
 
-    for path in ("charts.js", "app.js", "preguntas.js"):
+    for path in ("charts.js", "model.js"):
         text = (SITE / path).read_text(encoding="utf-8")
         assert "https://cdn." not in text
         assert "LOOCV" not in text
-    assert "GeoCharts.distribution" in (SITE / "app.js").read_text(encoding="utf-8")
-    assert "GeoCharts.forest" in (SITE / "preguntas.js").read_text(encoding="utf-8")
-    assert "GeoCharts.ablations" in (SITE / "app.js").read_text(encoding="utf-8")
-    assert "GeoCharts.coefficients" in (SITE / "preguntas.js").read_text(encoding="utf-8")
-    assert "GeoCharts.models" in (SITE / "app.js").read_text(encoding="utf-8")
+    assert "GeoCharts.distribution" in (SITE / "model.js").read_text(encoding="utf-8")
+    assert "GeoCharts.forest" in (SITE / "model.js").read_text(encoding="utf-8")
+    assert "GeoCharts.r3" in (SITE / "model.js").read_text(encoding="utf-8")
+    assert "GeoCharts.coefficients" in (SITE / "model.js").read_text(encoding="utf-8")
+    assert "GeoCharts.performance" in (SITE / "model.js").read_text(encoding="utf-8")
     print("PASS: all 8 distribution rows and 9 chart mounts match their published sources.")
 
 

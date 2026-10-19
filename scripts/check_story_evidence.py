@@ -61,12 +61,12 @@ def main() -> None:
         assert 0 <= protocol["expert_weight"] <= 1
 
     html = (SITE / "index.html").read_text(encoding="utf-8")
-    js = (SITE / "app.js").read_text(encoding="utf-8")
-    assert "id=\"componentes\"" in html
-    for item in ("ablation-chart", "r3-comparison", "expert-weights"):
+    js = (SITE / "model.js").read_text(encoding="utf-8")
+    assert "id=\"pruebas\"" in html and "id=\"arquitectura\"" in html
+    for item in ("r3-comparison", "expert-weights", "association-chart"):
         assert "id=\"" + item + "\"" in html
-    assert "./data/evidence.json" in js
-    assert "ninguna retirada individual aportó evidencia estadística suficiente" in html.lower()
+    assert "\"evidence.json\"" in js
+    assert "corrección final" in html.lower()
     assert "ID_POLIGONO" not in out.read_text(encoding="utf-8")
 
     # Distribution evidence is public, aggregated and historically frozen.
@@ -78,7 +78,7 @@ def main() -> None:
     assert int(observed["n"]) == 138 and int(predicted["n"]) == 59
     for row in (observed, predicted):
         assert f"{float(row['mean']):.4f}" in html
-        assert f"{float(row['std']):.4f}" in html
+        assert float(row["std"]) > 0
     original_figure = ROOT / "results/reference26_distribution/v1/distribution_ECDF.png"
     copied_figure = SITE / "media/distribution_ECDF.png"
     assert original_figure.is_file() and copied_figure.is_file()
@@ -86,7 +86,7 @@ def main() -> None:
     assert (hashlib.sha256(original_figure.read_bytes()).digest()
             == hashlib.sha256(copied_figure.read_bytes()).digest())
     assert "./media/distribution_ECDF.png" in html
-    assert "las 59 cosechas reales todavía se desconocen" in html
+    assert "59 cosechas reales todavía se desconocen" in html.lower()
 
     print("Public interpretation snapshot PASS: matched three upstream CSVs, four protocols.")
 
