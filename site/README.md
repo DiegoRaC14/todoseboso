@@ -59,3 +59,65 @@ Los controles del navegador no realizan ajustes ni exponen predicciones
 individuales. No hacen nuevas pruebas de significancia. Conservar la
 distinción entre efecto causal, asociación, utilidad predictiva y validación
 reutilizada cuando se edite texto o se añadan gráficos.
+
+
+## Redacción matemática, LOOCV y laboratorio de parcelas
+
+La página presenta primero una explicación completa **en español** de cada
+operación y, cuando la formalización añade valor, muestra un apartado
+«Notación matemática» en MathML nativo de HTML. No se dejan fórmulas
+pseudo-LaTeX impresas como texto plano ni se requiere una librería externa
+de renderizado. `site/predictor.css` incorpora estilos de tipografía,
+desplazamiento horizontal y visualización accesible.
+
+### LOOCV confirmado por el equipo
+
+Se incorporaron las cifras comunicadas el 19 de octubre de 2026:
+
+- Receta: Reference26, públicamente «Regresión local con mezcla geológica».
+- 138 predicciones reservadas, 137 etiquetas de entrenamiento por ajuste.
+- RMSE = 0.468186 t/ha; R² aproximadamente 0.6952.
+
+Se guardan en `site/data/model.json` con **provenance explícita**. Las
+predicciones individuales de esas 138 pruebas todavía no están archivadas
+en este repositorio público, por lo que estos datos no constituyen una
+auditoría de su cálculo; no se debe presentar como reproducido aquí.
+
+0.468186 t/ha equivale a 468.186 kg/ha. Respecto a la media observada
+3.9554 t/ha es el 11.84 % de la media: **no es MAPE** ni un porcentaje
+esperado de error individual. El control de escala modifica el denominador
+de comparación, sin alterar el RMSE. R² = 0.6952 tampoco equivale a
+69.52 % de predicciones correctas.
+
+### Laboratorio de parcelas
+
+El menú al final tiene dos modos claramente independientes:
+
+1. **Parcelas inventadas:** tres presets de clima y experto local, cuatro
+   pesos geológicos **reales del ajuste final**, y una corrección
+   numérica ficticia sujeta a ±0.25 t/ha. La regla de disponibilidad R3
+   desactiva el último término cuando falta soporte. Son escenarios que
+   explican la aritmética de la mezcla, nunca inferencias reales.
+2. **Mi parcela:** campos numéricos para las **26 entradas derivadas**
+   exactas, con un conteo de valores presentes, validaciones de proporción
+   geológica y estado de los tres indicadores R3. El archivo JSON se
+   descarga **en el navegador, sin transmitir los valores**. El paquete
+   no contiene predicción.
+
+Para predecir una parcela **de verdad** es necesario un predictor
+entrenado y todos sus artefactos (coeficientes de Elastic Net,
+preprocesamiento, vecindarios de entrenamiento, agrupamiento geológico y
+corrector residual). GitHub Pages es un sitio estático; el bundle final
+`outputs/modeling/current_champions_final/v1/final_train138.joblib`
+no está publicado allí ni debe subirlo la página sin decisión expresa
+sobre privacidad y condiciones de uso. No se creó una estimación
+falsa usando los pesos de mezcla.
+
+La función aritmética se ha aislado en `site/parcel_core.js` y se comprueba
+en CI:
+
+```bash
+python scripts/check_model_story.py
+node --test tests/test_parcel_core.cjs
+node --check site/predictor.js
+```
