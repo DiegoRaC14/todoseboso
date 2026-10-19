@@ -1,5 +1,22 @@
 # Real-data chart export (no large uploads)
 
+# Published 2025 snapshot (October 19, 2026)
+
+The user-supplied `monthly_inputs_apr_oct.parquet` was inspected and its
+observed monthly aggregates are now published as `site/data/real_charts.json`
+on `main`. The original Parquet contains 5,516 monthly rows (197 parcels,
+7 months per year, 2022–2025), with all 197 April–October 2025 observations
+complete for precipitation and NDVI. Historical NDVI has 39 missing values.
+Original SHA-256:
+`971bdac1808036e7ca9be3260faa7608e82e2530ef0285a0c0f432a6fae2d635`.
+
+The public file holds only 2025 per-month summary statistics, not raw
+parcel values. The genuine monthly charts load this published JSON.
+LOOCV-specific statistics remain unavailable until the corresponding 138
+out-of-fold predictions are supplied; do not substitute in-sample or
+59-unknown prediction rows.
+
+
 The public story website uses exact, versioned experimental summaries where
 available. This extractor fills the remaining empirical charts using only
 existing private observations; it **does not train**, interpolate, simulate,
